@@ -1,6 +1,5 @@
-package br.com.gabriel.pedidoeventos.monolito_pedidos;
+package br.com.gabriel.pedidoeventos.monolito_pedidos.erro;
 
-import br.com.gabriel.pedidoeventos.monolito_pedidos.erro.ErroResponse;
 import br.com.gabriel.pedidoeventos.monolito_pedidos.estoque.EstoqueInsuficienteException;
 import br.com.gabriel.pedidoeventos.monolito_pedidos.pagamento.PagamentoRecusadoException;
 import org.springframework.http.HttpStatus;
