@@ -21,7 +21,7 @@ public class EstoqueService {
 
             if(estoque.getQuantidadeDisponivel() < item.quantidade()) {
                 throw new EstoqueInsuficienteException(
-                        "Estoque insuficiente para o produto %s (disponível: %d, solicitado: %d"
+                        "Estoque insuficiente para o produto %s (disponível: %d, solicitado: %d)"
                                 .formatted(item.produtoId(), estoque.getQuantidadeDisponivel(), item.quantidade()));
             }
             estoque.setQuantidadeDisponivel(estoque.getQuantidadeDisponivel() - item.quantidade());

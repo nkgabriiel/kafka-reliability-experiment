@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.testcontainers.utility.TestcontainersConfiguration;
+import br.com.gabriel.pedidoeventos.monolito_pedidos.TestcontainersConfiguration;
 
 import java.math.BigDecimal;
 import java.util.List;
