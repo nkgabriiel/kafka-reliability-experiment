@@ -1,0 +1,15 @@
+services:
+  kafka:
+    container_name: kafka
+
+  postgres:
+    container_name: postgres
+
+  order-service:
+    container_name: order-service
+
+  payment-service:
+    container_name: payment-service
+
+  stock-service:
+    container_name: stock-service
