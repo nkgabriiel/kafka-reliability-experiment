@@ -1,6 +1,6 @@
 package br.com.gabriel.pedidoeventos.stock_service.estoque;
 
-import br.com.gabriel.pedidoeventos.stock_service.event.ItemReservaEvento;
+import br.com.gabriel.pedidoeventos.stock_service.evento.ItemReservaEvento;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

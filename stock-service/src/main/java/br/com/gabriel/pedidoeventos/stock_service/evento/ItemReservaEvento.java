@@ -1,4 +1,4 @@
-package br.com.gabriel.pedidoeventos.stock_service.event;
+package br.com.gabriel.pedidoeventos.stock_service.evento;
 
 import java.util.UUID;
 
