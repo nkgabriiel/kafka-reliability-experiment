@@ -28,7 +28,7 @@ services:
     image: postgres:16-alpine
     container_name: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: tcc
       POSTGRES_PASSWORD: tcc

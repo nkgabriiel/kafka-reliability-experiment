@@ -7,6 +7,7 @@ import br.com.gabriel.pedidoeventos.order_service.evento.PedidoCriadoEvent;
 import br.com.gabriel.pedidoeventos.order_service.evento.StatusPagamento;
 import br.com.gabriel.pedidoeventos.order_service.kafka.PedidoEventoProducer;
 import br.com.gabriel.pedidoeventos.order_service.pedido.dto.PedidoRequest;
+import br.com.gabriel.pedidoeventos.order_service.pedido.dto.PedidoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +37,10 @@ public class PedidoService {
     }
 
     @Transactional(readOnly = true)
-    public Pedido buscarPorId(UUID id) {
-        return pedidoRepository.findById(id)
+    public PedidoResponse buscarPorId(UUID id) {
+        Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Pedido %s não encontrado".formatted(id)));
+        return PedidoResponse.from(pedido);
     }
 
     @Transactional

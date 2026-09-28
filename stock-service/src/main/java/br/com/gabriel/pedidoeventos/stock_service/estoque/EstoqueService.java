@@ -16,7 +16,7 @@ public class EstoqueService {
     @Transactional
     public void reservarEstoque(List<ItemReservaEvento> itens) {
         for(ItemReservaEvento item: itens) {
-            Estoque estoque = estoqueRepository.findByProductId(item.produtoId())
+            Estoque estoque = estoqueRepository.findByProdutoId(item.produtoId())
                     .orElseThrow(() -> new EstoqueInsuficienteException(
                             "Produto %s não encontrado no estoque".formatted(item.produtoId())));
 

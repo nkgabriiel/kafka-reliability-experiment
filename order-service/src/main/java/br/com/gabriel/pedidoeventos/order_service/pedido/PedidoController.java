@@ -26,6 +26,6 @@ public class PedidoController {
 
     @GetMapping("/{id}")
     public PedidoResponse buscarPorId(@PathVariable UUID id) {
-        return PedidoResponse.from(pedidoService.buscarPorId(id));
+        return pedidoService.buscarPorId(id);
     }
 }
