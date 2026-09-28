@@ -59,3 +59,19 @@ Para validar que o ambiente subiu corretamente:
 docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 docker exec postgres psql -U tcc -d tcc_pedidos -c "\dn"
 ```
+## Fase 3 — Resultado de controle (Versão 1: baseline sem proteção)
+
+> Preencher após rodar `failure-injection/kill-payment-service.sh` algumas vezes
+> com valores diferentes de `espera_ms`.
+
+**Cenário testado:** matar o `payment-service` (`docker kill`) N milissegundos
+depois de criar um pedido, e reiniciá-lo em seguida.
+
+| Execução | Espera (ms) | Linhas em `pagamento.pagamento` p/ o pedido | Status final do pedido | Observação |
+|---|---|---|---|---|
+| 1 | | | | |
+| 2 | | | | |
+
+**Conclusão:** _(duplicação e/ou perda observada — explicar o porquê: sem
+idempotência de producer, sem deduplicação de consumer e sem outbox, o commit
+do offset do Kafka só acontece depois que o listener termina, então...)_

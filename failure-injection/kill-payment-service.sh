@@ -9,8 +9,8 @@ set -euo pipefail
 ESPERA_MS=${1:-50}
 ORDER_SERVICE_URL=${ORDER_SERVICE_URL:-http://localhost:8080}
 
-PRODUTO_ID=$(docker exec postgres psql -U tcc -d tcc_pedidos -t -c \
-  "INSERT INTO estoque.estoque (id, produto_id, nome_produto, quantidade_disponivel) VALUES (gen_random_uuid(), gen_random_uuid(), 'Produto Falha', 100) RETURNING produto_id;" | tr -d ' ')
+PRODUTO_ID=$(docker exec postgres psql -q -U tcc -d tcc_pedidos -t -A -c \
+  "INSERT INTO estoque.estoque (id, produto_id, nome_produto, quantidade_disponivel) VALUES (gen_random_uuid(), gen_random_uuid(), 'Produto Falha', 100) RETURNING produto_id;")
 echo "Produto semeado: $PRODUTO_ID"
 
 RESPOSTA=$(curl -s -X POST "$ORDER_SERVICE_URL/pedidos" \
