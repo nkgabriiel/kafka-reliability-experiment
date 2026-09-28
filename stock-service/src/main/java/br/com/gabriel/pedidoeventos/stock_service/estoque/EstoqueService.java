@@ -1,0 +1,31 @@
+package br.com.gabriel.pedidoeventos.stock_service.estoque;
+
+import br.com.gabriel.pedidoeventos.stock_service.event.ItemReservaEvento;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class EstoqueService {
+
+    private final EstoqueRepository estoqueRepository;
+
+    @Transactional
+    public void reservarEstoque(List<ItemReservaEvento> itens) {
+        for(ItemReservaEvento item: itens) {
+            Estoque estoque = estoqueRepository.findByProductId(item.produtoId())
+                    .orElseThrow(() -> new EstoqueInsuficienteException(
+                            "Produto %s não encontrado no estoque".formatted(item.produtoId())));
+
+            if(estoque.getQuantidadeDisponivel() < item.quantidade()) {
+                throw new EstoqueInsuficienteException(
+                        "Estoque insuficiente para o produto %s (disponível: %d, solicitado: %d)"
+                                .formatted(item.produtoId(), estoque.getQuantidadeDisponivel(), item.quantidade()));
+            }
+            estoque.setQuantidadeDisponivel(estoque.getQuantidadeDisponivel() - item.quantidade());
+        }
+    }
+}
