@@ -4,6 +4,7 @@ import br.com.gabriel.pedidoeventos.stock_service.estoque.EstoqueInsuficienteExc
 import br.com.gabriel.pedidoeventos.stock_service.estoque.EstoqueService;
 import br.com.gabriel.pedidoeventos.stock_service.evento.EstoqueProcessadoEvent;
 import br.com.gabriel.pedidoeventos.stock_service.evento.PagamentoProcessadoEvent;
+import br.com.gabriel.pedidoeventos.stock_service.evento.StatusPagamento;
 import br.com.gabriel.pedidoeventos.stock_service.evento.StatusProcessamentoFinal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +26,8 @@ public class PagamentoProcessadoListener {
     public void ouvir(PagamentoProcessadoEvent evento) {
         log.info("[pedidoId={}] evento recebido de pagamentos.processados: status={}", evento.pedidoId(), evento.status());
 
-        if (evento.status() == br.com.gabriel.pedidoeventos.stock_service.evento.StatusPagamento.RECUSADO) {
-            publicar(evento.pedidoId(), StatusProcessamentoFinal.PAGAMENTO_RECUSADO, evento.motivoRecusa());
+        if (evento.status() == StatusPagamento.RECUSADO) {
+            log.info("[pedidoId={}] pagamento recusado, estoque não tem nada a fazer aqui", evento.pedidoId());
             return;
         }
 
