@@ -43,6 +43,56 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  order-service:
+    build:
+      context: ./order-service
+    container_name: order-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc_pedidos?currentSchema=pedido
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
+
+  payment-service:
+    build:
+      context: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc_pedidos?currentSchema=pagamento
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
+
+  stock-service:
+    build:
+      context: ./stock-service
+    container_name: stock-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc_pedidos?currentSchema=estoque
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - tcc-network
 
 networks:
   tcc-network:
@@ -50,3 +100,5 @@ networks:
 
 volumes:
   postgres_data:
+
+
