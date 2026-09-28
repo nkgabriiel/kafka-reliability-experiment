@@ -10,6 +10,7 @@ import br.com.gabriel.pedidoeventos.payment_service.pagamento.ResultadoPagamento
 import br.com.gabriel.pedidoeventos.payment_service.pagamento.StatusPagamento;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,22 +30,29 @@ public class PedidoCriadoListener {
     @KafkaListener(topics = "${app.topico.pedidos-criados}", groupId = "${spring.kafka.consumer.group-id}")
     @Transactional
     public void ouvir(PedidoCriadoEvent evento) {
-        log.info("[pedidoId={}] processando pagamento, valor={}", evento.pedidoId(), evento.valorTotal());
+        MDC.put("pedidoId", evento.pedidoId().toString());
+        try {
+            log.info("Processando pagamento, valor={}", evento.valorTotal());
 
-        ResultadoPagamento resultado = pagamentoMockService.processar(evento.valorTotal());
-        StatusPagamento status = resultado.sucesso() ? StatusPagamento.APROVADO : StatusPagamento.RECUSADO;
+            ResultadoPagamento resultado = pagamentoMockService.processar(evento.valorTotal());
+            StatusPagamento status = resultado.sucesso() ? StatusPagamento.APROVADO : StatusPagamento.RECUSADO;
 
-        Pagamento pagamento = new Pagamento(
-                evento.pedidoId(), evento.valorTotal(), status, resultado.motivoRecusa(), Instant.now());
-        pagamentoRepository.save(pagamento);
+            Pagamento pagamento = new Pagamento(
+                    evento.pedidoId(), evento.valorTotal(), status, resultado.motivoRecusa(), Instant.now());
+            pagamentoRepository.save(pagamento);
 
-        pagamentoEventoProducer.publicarPagamentoProcessado(new PagamentoProcessadoEvent(
-                UUID.randomUUID(),
-                evento.pedidoId(),
-                status,
-                resultado.motivoRecusa(),
-                evento.itens().stream().map(item -> new ItemReservaEvento(item.produtoId(), item.quantidade())).toList(),
-                Instant.now()
-        ));
+            log.info("Pagamento processado: status={}, publicando em pagamentos.processados", status);
+
+            pagamentoEventoProducer.publicarPagamentoProcessado(new PagamentoProcessadoEvent(
+                    UUID.randomUUID(),
+                    evento.pedidoId(),
+                    status,
+                    resultado.motivoRecusa(),
+                    evento.itens().stream().map(item -> new ItemReservaEvento(item.produtoId(), item.quantidade())).toList(),
+                    Instant.now()
+            ));
+        } finally {
+            MDC.remove("pedidoId");
+        }
     }
 }
