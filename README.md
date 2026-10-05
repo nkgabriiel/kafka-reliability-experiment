@@ -60,13 +60,14 @@ docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:90
 docker exec postgres psql -U tcc -d tcc_pedidos -c "\dn"
 ```
 
+
 ## Fase 3 — Resultado de controle (Versão 1: baseline sem proteção)
 
 **Objetivo:** reproduzir, de forma controlada, a duplicação de efeito de negócio quando um consumidor cai no meio do processamento. Esse é o "resultado de controle" que justifica as proteções das próximas versões.
 
 ### Mecanismo
 
-O `payment-service` consome `pedidos.criados`, grava o `Pagamento` no seu schema e publica `pagamentos.processados`. O offset da mensagem só é commitado no Kafka **depois** que o listener termina (semântica *at-least-once*). Se o processo morrer entre "já gravei o pagamento" e "confirmei o offset", o Kafka não sabe que a mensagem foi tratada e a **reentrega** quando o serviço volta, e o pagamento é gravado uma segunda vez. Como a Versão 1 não tem idempotência no producer, nem deduplicação no consumer, nem outbox, nada impede isso.
+O `payment-service` consome `pedidos.criados`, grava o `Pagamento` no seu schema e publica `pagamentos.processados`. O offset da mensagem só é commitado no Kafka **depois** que o listener termina (semântica *at-least-once*). Se o processo morrer entre "já gravei o pagamento" e "confirmei o offset" (a **janela vulnerável**), o Kafka não sabe que a mensagem foi tratada e a **reentrega** quando o serviço volta, e o pagamento é gravado uma segunda vez. Como a Versão 1 não tem idempotência no producer, nem deduplicação no consumer, nem outbox, nada impede isso.
 
 O pedido ainda fecha como `CONCLUIDO`, então a falha é silenciosa: só aparece contando as linhas de `pagamento.pagamento`.
 
@@ -77,15 +78,18 @@ O pedido ainda fecha como `CONCLUIDO`, então a falha é silenciosa: só aparece
 1. aquece o `payment-service` com um pedido descartável (a primeira mensagem após um restart é lenta e mascara o tempo medido);
 2. cria o pedido de teste via `POST /pedidos`;
 3. espera `espera_ms` e executa `docker kill payment-service` (SIGKILL, sem desligamento limpo);
-4. reinicia o container e consulta a cada 3s (até 60s) quantas linhas existem em `pagamento.pagamento` para o pedido.
+4. reinicia o container e consulta periodicamente quantas linhas existem em `pagamento.pagamento` para o pedido.
 
-A reentrega não é imediata: o consumer group só reatribui as partições depois que o *session timeout* do consumidor morto expira. Nas execuções, a segunda linha apareceu cerca de **40s** depois do restart.
+A reentrega não é imediata: o consumer group só reatribui as partições depois que o *session timeout* do consumidor morto expira (cerca de 40 s com o padrão de 45 s).
 
-`failure-injection/varrer-falha.sh [repeticoes] [valores_ms...]` repete o cenário para vários tempos de espera e grava um CSV em `results/`.
+Scripts de apoio:
+
+- `failure-injection/varrer-falha.sh [repeticoes] [valores_ms...]` repete o cenário para vários tempos de espera e grava um CSV em `results/<versao>/`, com o atraso do ack e o session timeout registrados em colunas.
+- `failure-injection/varrer-janela.sh [repeticoes] [atrasos_ms...]` varre o tamanho da janela vulnerável: para cada atraso, recria o `payment-service` com ele e chama o `varrer-falha.sh`.
 
 ### Configuração do experimento
 
-O listener do `payment-service` usa `ack-mode=manual` e permite inserir um atraso entre o processamento e o `ack`, controlado por `app.demo.atraso-ack-ms` (variável `ATRASO_ACK_MS` no `docker-compose`):
+O listener do `payment-service` usa `ack-mode=manual` e permite inserir um atraso entre o processamento e o `ack`, controlado por `app.demo.atraso-ack-ms` (variável `ATRASO_ACK_MS` no `docker-compose`). O session timeout do consumer também é configurável (`SESSION_TIMEOUT_MS` e `HEARTBEAT_MS`):
 
 | Modo | Configuração | Janela vulnerável |
 |---|---|---|
@@ -96,9 +100,11 @@ O listener do `payment-service` usa `ack-mode=manual` e permite inserir um atras
 ATRASO_ACK_MS=800 docker compose up -d payment-service
 ```
 
-### Resultado (modo amplificado, atraso de 800 ms)
+Nas varreduras de tamanho de janela o session timeout foi reduzido para 6 s, só para detectar o consumidor morto mais rápido (a reentrega passou de ~40 s para 10–14 s). Isso não altera o mecanismo: o offset não foi commitado de qualquer forma, e o resultado do modo amplificado se manteve.
 
-Dados brutos: [`results/v1/varredura-atraso800ms-20261005.csv`](results/v1/varredura-atraso800ms-20261005.csv). Foram 9 tempos de espera × 3 repetições = 27 execuções.
+### Resultado 1: janela amplificada (800 ms)
+
+Dados brutos: [`results/v1/varredura-atraso800ms-20261005.csv`](results/v1/varredura-atraso800ms-20261005.csv). 9 tempos de espera × 3 repetições = 27 execuções, com o session timeout padrão (45 s).
 
 | Espera (ms) | Execuções | Com duplicação | Linhas em `pagamento.pagamento` por pedido | Status final |
 |---|---|---|---|---|
@@ -114,14 +120,39 @@ Dados brutos: [`results/v1/varredura-atraso800ms-20261005.csv`](results/v1/varre
 
 **27 de 27 execuções duplicaram**, sempre com exatamente 2 linhas por pedido (uma reentrega por falha).
 
+### Resultado 2: duplicação em função do tamanho da janela
+
+Espera fixa em 0 ms, 5 repetições por tamanho de janela (30 execuções), session timeout de 6 s. Os resultados são contagens (k de n), não percentuais: com n = 5 uma taxa estimada seria pouco estável.
+
+| Janela (atraso do ack) | Execuções com duplicação | Dados brutos |
+|---|---|---|
+| 0 ms (natural) | 0 de 5 | [csv](results/v1/varredura-atraso0ms-20261005-042530.csv) |
+| 50 ms | 0 de 5 | [csv](results/v1/varredura-atraso50ms-20261005-042842.csv) |
+| 100 ms | 0 de 5 | [csv](results/v1/varredura-atraso100ms-20261005-043156.csv) |
+| 200 ms | 0 de 5 | [csv](results/v1/varredura-atraso200ms-20261005-043507.csv) |
+| 400 ms | **3 de 5** | [csv](results/v1/varredura-atraso400ms-20261005-043822.csv) |
+| 800 ms | **5 de 5** | [csv](results/v1/varredura-atraso800ms-20261005-044052.csv) |
+
+A duplicação aparece quando a janela é grande o suficiente e cresce com ela: nenhuma ocorrência até 200 ms, ocorrência parcial em 400 ms e em todas as execuções em 800 ms.
+
+### O modo natural foi testado, mas não é mensurável com `docker kill` externo
+
+A linha de 0 ms da tabela acima (0 de 5) **não** deve ser lida como "a V1 não duplica no modo natural". Ela reflete o limite do método de medição:
+
+- O `payment-service` termina de processar a mensagem **antes** de o script receber a resposta do `POST` (nas medições, dezenas de milissegundos antes), e a janela natural entre gravar e confirmar o offset dura poucos milissegundos.
+- O script só começa a contar a espera depois que o `POST` retorna, e o próprio comando `docker kill` levou cerca de 470 ms para executar numa medição.
+- Portanto o `kill` chega depois do `ack`, e não há como acertar a janela natural com esse método, qualquer que seja o tempo de espera. O padrão 0% até 200 ms e 3 de 5 em 400 ms é consistente com o `kill` atingindo o processo algumas centenas de milissegundos depois do processamento.
+
+Medir a taxa natural exigiria injetar a falha de dentro do processo (ou com controle de tempo na escala de milissegundos), o que está fora do escopo desta fase.
+
 ### Conclusão
 
-Na Versão 1, uma queda do consumidor entre o processamento e o commit do offset **duplica o efeito de negócio** (dois pagamentos para o mesmo pedido), sem nenhum erro visível. O resultado confirma o mecanismo *at-least-once* descrito acima e é o ponto de comparação para as próximas versões.
+Na Versão 1, uma queda do consumidor entre o processamento e o commit do offset **duplica o efeito de negócio** (dois pagamentos para o mesmo pedido), sem nenhum erro visível, e a ocorrência cresce com o tamanho dessa janela. O mecanismo está demonstrado; a frequência natural não pôde ser medida e fica registrada como limitação. Esse resultado é o ponto de comparação para as próximas versões.
 
 ### Limitações e pendências
 
-- **A janela foi alargada de propósito.** Todos os tempos testados (0 a 50 ms) caem dentro dos 800 ms, por isso o resultado é 100% e a varredura não diferencia nenhum deles. O resultado prova o mecanismo, não a frequência natural da falha. A fronteira da janela (esperas próximas ou acima de 800 ms) ainda não foi testada.
-- **O modo natural (`ATRASO_ACK_MS=0`) ainda não foi medido.**
+- **A taxa natural de duplicação não foi medida** (ver a seção anterior). Os resultados provam o mecanismo e a dependência do tamanho da janela, não a frequência da falha em produção.
+- **Amostra pequena:** 5 execuções por tamanho de janela (3 por espera no resultado 1). A transição entre 200 ms e 800 ms não foi detalhada.
 - **O cenário de perda não foi reproduzido.** Ele exigiria derrubar o `order-service` entre gravar o pedido e publicar o evento.
 - **O efeito no `stock-service` não foi verificado.** A mensagem duplicada também é publicada de novo e o estoque pode ser reservado duas vezes.
 - **O baseline difere ligeiramente da V1 original:** o listener usa ack manual e não tem `@Transactional`, para que a gravação já esteja commitada quando o atraso começa.
