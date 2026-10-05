@@ -1,0 +1,6 @@
+execucao,espera_ms,atraso_ack_ms,session_timeout_ms,pedido_id,qtd_pagamentos,status_final,duplicado
+1,0,400,6000,b5278c20-6a74-44e9-99b7-60c9def6162f,2,CONCLUIDO,sim
+2,0,400,6000,5a4c98be-6aca-43bf-85b6-476a0a79b078,2,CONCLUIDO,sim
+3,0,400,6000,be2f9363-ac39-4fde-9b73-1cbd8fa039b3,1,CONCLUIDO,nao
+4,0,400,6000,216c53fc-2e28-4810-b44d-e0e908321823,2,CONCLUIDO,sim
+5,0,400,6000,428e4a06-2a25-4af3-a650-d38d96a3edae,1,CONCLUIDO,nao
