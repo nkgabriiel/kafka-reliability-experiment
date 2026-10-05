@@ -11,9 +11,10 @@ import br.com.gabriel.pedidoeventos.payment_service.pagamento.StatusPagamento;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -23,13 +24,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PedidoCriadoListener {
 
+    @Value("${app.demo.atraso-ack-ms:0}")
+    private long atrasoAckMs;
+
     private final PagamentoRepository pagamentoRepository;
     private final PagamentoMockService pagamentoMockService;
     private final PagamentoEventoProducer pagamentoEventoProducer;
 
     @KafkaListener(topics = "${app.topico.pedidos-criados}", groupId = "${spring.kafka.consumer.group-id}")
-    @Transactional
-    public void ouvir(PedidoCriadoEvent evento) {
+    public void ouvir(PedidoCriadoEvent evento, Acknowledgment ack) {
         MDC.put("pedidoId", evento.pedidoId().toString());
         try {
             log.info("Processando pagamento, valor={}", evento.valorTotal());
@@ -51,6 +54,17 @@ public class PedidoCriadoListener {
                     evento.itens().stream().map(item -> new ItemReservaEvento(item.produtoId(), item.quantidade())).toList(),
                     Instant.now()
             ));
+
+            // atraso configurável para alargar a janela antes do ack; 0 = comportamento natural
+            if (atrasoAckMs > 0) {
+                try {
+                    Thread.sleep(atrasoAckMs);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            ack.acknowledge();
         } finally {
             MDC.remove("pedidoId");
         }
