@@ -9,18 +9,31 @@ set -euo pipefail
 ESPERA_MS=${1:-50}
 ORDER_SERVICE_URL=${ORDER_SERVICE_URL:-http://localhost:8080}
 
-PRODUTO_ID=$(docker exec postgres psql -q -U tcc -d tcc_pedidos -t -A -c \
-  "INSERT INTO estoque.estoque (id, produto_id, nome_produto, quantidade_disponivel) VALUES (gen_random_uuid(), gen_random_uuid(), 'Produto Falha', 100) RETURNING produto_id;")
-echo "Produto semeado: $PRODUTO_ID"
+seed_e_criar() {
+  local nome="$1"
+  local produto_id
+  produto_id=$(docker exec postgres psql -q -U tcc -d tcc_pedidos -t -A -c \
+    "INSERT INTO estoque.estoque (id, produto_id, nome_produto, quantidade_disponivel) VALUES (gen_random_uuid(), gen_random_uuid(), '$nome', 100) RETURNING produto_id;")
+  local resposta
+  resposta=$(curl -s -X POST "$ORDER_SERVICE_URL/pedidos" \
+    -H "Content-Type: application/json" \
+    -d "{\"itens\":[{\"produtoId\":\"$produto_id\",\"quantidade\":1,\"precoUnitario\":10.00}]}")
+  echo "$resposta" | grep -o '"id":"[^"]*"' | cut -d'"' -f4
+}
 
-RESPOSTA=$(curl -s -X POST "$ORDER_SERVICE_URL/pedidos" \
-  -H "Content-Type: application/json" \
-  -d "{\"itens\":[{\"produtoId\":\"$PRODUTO_ID\",\"quantidade\":1,\"precoUnitario\":10.00}]}")
-PEDIDO_ID=$(echo "$RESPOSTA" | grep -o '"id":"[^"]*"' | cut -d'"' -f4)
+# Aquece o payment-service (pool de conexão, Hibernate, producer Kafka) com um
+# pedido descartável, pra não deixar esse custo de "primeira mensagem" competir
+# com a janela de tempo que estamos tentando medir no pedido de teste real.
+echo "Aquecendo payment-service com um pedido de warm-up..."
+seed_e_criar "Produto Warmup" > /dev/null
+sleep 3
+echo "Warm-up concluído."
+
+PEDIDO_ID=$(seed_e_criar "Produto Falha")
 echo "Pedido criado: $PEDIDO_ID"
 
 echo "Aguardando ${ESPERA_MS}ms antes de matar o payment-service..."
-python3 -c "import time; time.sleep($ESPERA_MS/1000)" 2>/dev/null || sleep 1
+sleep "$(awk "BEGIN {print $ESPERA_MS/1000}")"
 
 echo "Matando payment-service..."
 docker kill payment-service
@@ -28,7 +41,25 @@ docker kill payment-service
 sleep 2
 echo "Reiniciando payment-service..."
 docker start payment-service
-sleep 3
+
+# O grupo consumidor do Kafka só libera o rebalanceamento pro novo consumidor
+# depois que o session timeout do consumidor "morto" expira (isso pode levar
+# perto de 45s) -- por isso esperamos em ciclos, em vez de um sleep fixo curto.
+echo "Aguardando o consumer group reequilibrar e reprocessar (pode levar até ~45-60s)..."
+MAX_ESPERA=60
+INTERVALO=3
+decorrido=0
+QTD=1
+while [ "$decorrido" -lt "$MAX_ESPERA" ]; do
+  sleep "$INTERVALO"
+  decorrido=$((decorrido + INTERVALO))
+  QTD=$(docker exec postgres psql -q -U tcc -d tcc_pedidos -t -A -c \
+    "SELECT COUNT(*) FROM pagamento.pagamento WHERE pedido_id = '$PEDIDO_ID';")
+  echo "  [${decorrido}s] pagamentos registrados até agora: $QTD"
+  if [ "$QTD" -gt 1 ]; then
+    break
+  fi
+done
 
 echo ""
 echo "=== Verificação ==="
