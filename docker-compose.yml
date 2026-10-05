@@ -66,6 +66,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc_pedidos?currentSchema=pagamento
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       APP_DEMO_ATRASO_ACK_MS: ${ATRASO_ACK_MS:-0}
+      APP_KAFKA_SESSION_TIMEOUT_MS: ${SESSION_TIMEOUT_MS:-45000}
+      APP_KAFKA_HEARTBEAT_MS: ${HEARTBEAT_MS:-3000}
     depends_on:
       kafka:
         condition: service_healthy
