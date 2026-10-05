@@ -46,7 +46,8 @@ docker start payment-service
 # depois que o session timeout do consumidor "morto" expira (isso pode levar
 # perto de 45s) -- por isso esperamos em ciclos, em vez de um sleep fixo curto.
 echo "Aguardando o consumer group reequilibrar e reprocessar (pode levar até ~45-60s)..."
-MAX_ESPERA=60
+SESSION_TIMEOUT_MS=$(docker exec payment-service printenv APP_KAFKA_SESSION_TIMEOUT_MS || echo "45000")
+MAX_ESPERA=$((SESSION_TIMEOUT_MS / 1000 + 20))
 INTERVALO=3
 decorrido=0
 QTD=1

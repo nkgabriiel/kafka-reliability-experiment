@@ -6,7 +6,12 @@
 # Fase 10 vai processar uma auditoria completa de correlation ID).
 #
 # Uso: ./varrer-falha.sh [repeticoes_por_valor] [valores_ms...]
-# Ex.:  ./varrer-falha.sh 3 0 2 5 10 20 30 50
+# Ex.:  ./varrer-falha.sh 5 0 1 2 3 5 8 10 15 20
+#
+# O CSV é gravado em results/<VERSAO>/varredura-atraso<N>ms-<data>.csv (VERSAO=v1
+# por padrão). O atraso do ack e o session timeout são lidos do container em
+# execução e gravados em colunas, então cada arquivo descreve a própria
+# configuração. A espera máxima pela reentrega é session.timeout + 20s.
 
 set -euo pipefail
 
@@ -20,8 +25,19 @@ else
 fi
 
 ORDER_SERVICE_URL=${ORDER_SERVICE_URL:-http://localhost:8080}
-mkdir -p results
-CSV="results/fase3-varredura-$(date +%Y%m%d-%H%M%S).csv"
+VERSAO=${VERSAO:-v1}
+
+ATRASO_ACK_MS=$(docker exec payment-service printenv APP_DEMO_ATRASO_ACK_MS || echo "?")
+SESSION_TIMEOUT_MS=$(docker exec payment-service printenv APP_KAFKA_SESSION_TIMEOUT_MS || echo "45000")
+MAX_ESPERA=$((SESSION_TIMEOUT_MS / 1000 + 20))
+INTERVALO=2
+
+RESULTS_DIR="results/$VERSAO"
+mkdir -p "$RESULTS_DIR"
+CSV="$RESULTS_DIR/varredura-atraso${ATRASO_ACK_MS}ms-$(date +%Y%m%d-%H%M%S).csv"
+
+echo "Configuração: atraso_ack=${ATRASO_ACK_MS}ms, session_timeout=${SESSION_TIMEOUT_MS}ms, espera máxima=${MAX_ESPERA}s"
+echo "CSV: $CSV"
 
 seed_e_criar() {
   local nome="$1"
@@ -35,13 +51,15 @@ seed_e_criar() {
   echo "$resposta" | grep -o '"id":"[^"]*"' | cut -d'"' -f4
 }
 
-echo "execucao,espera_ms,pedido_id,qtd_pagamentos,status_final,duplicado" > "$CSV"
+echo "execucao,espera_ms,atraso_ack_ms,session_timeout_ms,pedido_id,qtd_pagamentos,status_final,duplicado" > "$CSV"
 
+total=$(( ${#VALORES[@]} * REPETICOES ))
+duplicadas=0
 execucao=0
 for espera_ms in "${VALORES[@]}"; do
   for ((r = 1; r <= REPETICOES; r++)); do
     execucao=$((execucao + 1))
-    echo "=== Execução $execucao (espera=${espera_ms}ms, repetição $r/$REPETICOES) ==="
+    echo "=== Execução $execucao/$total (espera=${espera_ms}ms, repetição $r/$REPETICOES) ==="
 
     # payment-service acabou de reiniciar (ou está iniciando agora); aquece antes
     # do pedido que vamos medir, senão o custo de "primeira mensagem" (pool de
@@ -56,13 +74,13 @@ for espera_ms in "${VALORES[@]}"; do
     docker kill payment-service > /dev/null 2>&1
     docker start payment-service > /dev/null 2>&1
 
-    # o consumer group só libera o rebalanceamento depois do session timeout do
-    # consumidor "morto" expirar -- pode levar até uns 45-60s.
+    # o consumer group só reentrega depois que o session timeout do consumidor
+    # "morto" expira; consulta em ciclos e para assim que detectar duplicação.
     decorrido=0
     qtd_pagamentos=1
-    while [ "$decorrido" -lt 60 ]; do
-      sleep 3
-      decorrido=$((decorrido + 3))
+    while [ "$decorrido" -lt "$MAX_ESPERA" ]; do
+      sleep "$INTERVALO"
+      decorrido=$((decorrido + INTERVALO))
       qtd_pagamentos=$(docker exec postgres psql -q -U tcc -d tcc_pedidos -t -A -c \
         "SELECT COUNT(*) FROM pagamento.pagamento WHERE pedido_id = '$pedido_id';")
       if [ "$qtd_pagamentos" -gt 1 ]; then
@@ -75,15 +93,14 @@ for espera_ms in "${VALORES[@]}"; do
     duplicado="nao"
     if [ "$qtd_pagamentos" -gt 1 ]; then
       duplicado="sim"
+      duplicadas=$((duplicadas + 1))
     fi
 
-    echo "$execucao,$espera_ms,$pedido_id,$qtd_pagamentos,$status_final,$duplicado" >> "$CSV"
-    echo "  -> pagamentos=$qtd_pagamentos, status=$status_final, duplicado=$duplicado"
+    echo "$execucao,$espera_ms,$ATRASO_ACK_MS,$SESSION_TIMEOUT_MS,$pedido_id,$qtd_pagamentos,$status_final,$duplicado" >> "$CSV"
+    echo "  -> pagamentos=$qtd_pagamentos, status=$status_final, duplicado=$duplicado (${decorrido}s)"
   done
 done
 
 echo ""
 echo "Resultados salvos em: $CSV"
-echo ""
-echo "Execuções com duplicação:"
-grep ",sim$" "$CSV" || echo "  nenhuma duplicação capturada nessa rodada"
+echo "Execuções com duplicação: $duplicadas de $total"
