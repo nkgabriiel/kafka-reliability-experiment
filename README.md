@@ -154,7 +154,7 @@ Na Versão 1, uma queda do consumidor entre o processamento e o commit do offset
 - **A taxa natural de duplicação não foi medida** (ver a seção anterior). Os resultados provam o mecanismo e a dependência do tamanho da janela, não a frequência da falha em produção.
 - **Amostra pequena:** 5 execuções por tamanho de janela (3 por espera no resultado 1). A transição entre 200 ms e 800 ms não foi detalhada.
 - **O cenário de perda não foi reproduzido.** Ele exigiria derrubar o `order-service` entre gravar o pedido e publicar o evento.
-- **O efeito no `stock-service` não foi verificado.** A mensagem duplicada também é publicada de novo e o estoque pode ser reservado duas vezes.
+- **O efeito no `stock-service` não foi medido nas rodadas de falha desta fase.** A mensagem duplicada também é publicada de novo e o estoque pode ser reservado duas vezes; esse efeito em cascata foi observado depois, no replay da Fase 5 (ver abaixo).
 - **O baseline difere ligeiramente da V1 original:** o listener usa ack manual e não tem `@Transactional`, para que a gravação já esteja commitada quando o atraso começa.
 
 ## Fase 4 — Versão 2: producer idempotente
@@ -214,3 +214,71 @@ A V2 elimina a duplicação na escrita do broker: com um ack perdido e retry, o 
 - O teste roda contra um Kafka próprio (`apache/kafka:3.8.0`) com o cliente `kafka-clients` na versão do Spring Boot do projeto.
 - A falha injetada perde os acks de uma única mensagem; não cobre outros modos de falha (queda de broker, partição de rede), previstos para a Fase 9.
 - Amostra de 5 execuções por tamanho de janela, como na Fase 3.
+
+## Fase 5 — Versão 3: idempotência de consumer
+
+**Objetivo:** impedir que a reentrega de uma mensagem repita o efeito de negócio, tratando a duplicação demonstrada na Fase 3.
+
+### Implementação
+
+Cada serviço consumidor (`payment-service`, `stock-service`, `order-service`) ganhou uma tabela `eventos_processados` no seu schema, com o `eventId` como chave. Ao receber um evento, o consumer registra o `eventId` **na mesma transação local** que aplica o efeito de negócio:
+
+- o registro usa `INSERT ... ON CONFLICT DO NOTHING` e verifica quantas linhas foram inseridas (1 = evento novo, 0 = já processado), o que é atômico mesmo com entregas concorrentes;
+- o método de registro exige uma transação já aberta (`Propagation.MANDATORY`), para que ninguém o use fora dela;
+- se o evento já foi processado, o consumer registra um aviso ("descartando sem reprocessar"), confirma a mensagem e **não publica nada**.
+
+Detalhes por serviço:
+
+- `payment-service`: o registro e a gravação do `Pagamento` ficam num `PagamentoService` transacional. O listener continua publicando o evento seguinte, aplicando o atraso de demo e confirmando o offset depois do commit.
+- `stock-service`: `EstoqueService.processarReserva` valida todos os itens (somando quantidades repetidas de um mesmo produto) antes de decrementar qualquer um, e **devolve** o resultado (`RESERVADO`, `INDISPONIVEL` ou `DUPLICADO`) em vez de lançar exceção. Uma exceção desfaria também o registro do evento.
+- `order-service`: o registro entra no início dos dois métodos que tratam eventos (pagamento recusado e estoque processado).
+
+### Resultado 1: o cenário de falha da Fase 3
+
+Mesmo cenário (`kill-payment-service` em várias janelas) com a V3, 5 execuções, espera de 0 ms, janela de 2000 ms e session timeout de 6 s. Dados brutos: [`results/v3/varredura-atraso2000ms-20261012-022251.csv`](results/v3/varredura-atraso2000ms-20261012-022251.csv).
+
+| Verificação | Resultado |
+|---|---|
+| Pagamentos duplicados | **0 de 5** |
+| Pedidos reentregues ao `payment-service` (processados 2 vezes pelo consumer) | 5 de 5 |
+| Avisos "já processado, descartando" | 5 |
+| Reservas de estoque por pedido | exatamente 1 em cada um |
+| Status final | 5 × `CONCLUIDO` |
+
+Os avisos de descarte e as 5 reentregas mostram que o `kill` caiu na janela e que o 0 de duplicações não é um resultado vazio: a mensagem foi reentregue e o consumer a descartou.
+
+**Por que a janela é de 2000 ms e não de 800 ms.** Uma primeira rodada com 800 ms (a janela usada nas fases anteriores) também deu 0 de 5, mas sem nenhuma reentrega: nesse dia o container só morria cerca de 950 ms depois do processamento (o `docker kill` levou ~640 ms para chegar ao processo, depois de ~300 ms até ser disparado), então o `ack` já tinha sido dado. Esse resultado foi descartado por ser vazio. Isso reforça a limitação já registrada: a latência do `docker kill` varia entre dias, e a janela precisa ser maior que ela. O sinal de que o teste foi válido é a presença de reentregas descartadas.
+
+### Resultado 2: replay de mensagens (offset reset)
+
+`integration-tests/.../IdempotenciaConsumerIntegrationTest.java` (`cd integration-tests && ./mvnw test -Dtest=IdempotenciaConsumerIntegrationTest`):
+
+1. sobe a stack inteira pelo `docker-compose` e processa um pedido (estoque de 10, pedido de 2);
+2. para os três serviços e usa `kafka-consumer-groups.sh --reset-offsets --to-earliest` em cada consumer group;
+3. sobe os serviços de novo, que releem todas as mensagens do início, e espera os descartes nos logs (1 no payment, 1 no stock, 2 no order);
+4. confere que pagamento, estoque, status do pedido e o conteúdo das tabelas `eventos_processados` não mudaram.
+
+O mesmo replay, feito à mão numa stack isolada da `v2-producer-idempotente` (sem deduplicação), serviu de controle:
+
+| | Antes do replay | Depois do replay (V2) | Depois do replay (V3) |
+|---|---|---|---|
+| Pagamentos do pedido | 1 | **2** | 1 |
+| Estoque (10 menos 2 do pedido) | 8 | **4** | 8 |
+| Status do pedido | `CONCLUIDO` | `CONCLUIDO` | `CONCLUIDO` |
+
+Na V2 o replay duplicou o pagamento e o estoque foi reservado **3 vezes** (de 10 foi a 4): a mensagem de pagamento original reentregue reservou o estoque de novo, e o segundo pagamento gerou um novo evento que reservou mais uma vez. O pedido segue `CONCLUIDO`, ou seja, a falha é silenciosa. Na V3 nada muda. O teste passou em **5 de 5 execuções consecutivas** depois da correção descrita abaixo.
+
+### Problema encontrado: corrida na criação dos tópicos
+
+Ao validar o teste de replay em ambiente limpo, ele falhava de forma intermitente (2 vezes em 4 rodadas). O motivo era uma corrida de inicialização presente desde a V1: se o `payment-service` subia antes do `order-service`, ele assinava o tópico `pedidos.criados` ainda inexistente, e o broker o criava automaticamente com **1 partição** (padrão). O `order-service` aumentava depois para 3, mas o consumer só enxergava as partições novas no próximo refresh de metadata (até 5 minutos), e pedidos que caíam nas partições 1 ou 2 ficavam `PENDENTE`. O ambiente de desenvolvimento nunca mostrou o problema porque os tópicos já existiam com 3 partições. A correção foi cada serviço declarar também os tópicos que **consome**, de modo que quem subir primeiro crie o tópico já com 3 partições.
+
+### Conclusão
+
+A V3 elimina a duplicação de efeito no consumer: com reentrega por falha do serviço e por replay de offsets, os eventos repetidos são reconhecidos pelo `eventId` e descartados, e pagamento, estoque e status do pedido ficam inalterados. Isso responde ao resultado de controle da Fase 3.
+
+### Limitações
+
+- **A V3 troca duplicação por uma possível perda numa janela.** O registro do evento e o efeito de negócio commitam juntos, mas a publicação do evento seguinte acontece depois. Se o serviço cair **depois do commit e antes de publicar**, a reentrega será descartada pelo dedupe e o evento seguinte **nunca será publicado**, deixando o pedido preso. Nos experimentos o `kill` cai depois da publicação, então eles mostram a correção e não essa janela. Resolver isso é o objetivo do outbox transacional (Fase 6).
+- A tabela `eventos_processados` cresce indefinidamente; não há política de retenção.
+- O teste de falha usa uma janela amplificada (2000 ms) e 5 execuções; a taxa natural continua sem ser mensurável com `docker kill` externo (ver a Fase 3).
+- O teste de replay depende dos avisos nos logs dos serviços para saber que o replay foi processado.
