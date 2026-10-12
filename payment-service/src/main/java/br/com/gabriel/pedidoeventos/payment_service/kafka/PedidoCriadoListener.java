@@ -1,7 +1,5 @@
 package br.com.gabriel.pedidoeventos.payment_service.kafka;
 
-import br.com.gabriel.pedidoeventos.payment_service.evento.ItemReservaEvento;
-import br.com.gabriel.pedidoeventos.payment_service.evento.PagamentoProcessadoEvent;
 import br.com.gabriel.pedidoeventos.payment_service.evento.PedidoCriadoEvent;
 import br.com.gabriel.pedidoeventos.payment_service.pagamento.Pagamento;
 import br.com.gabriel.pedidoeventos.payment_service.pagamento.PagamentoService;
@@ -13,9 +11,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -26,7 +22,6 @@ public class PedidoCriadoListener {
     private long atrasoAckMs;
 
     private final PagamentoService pagamentoService;
-    private final PagamentoEventoProducer pagamentoEventoProducer;
 
     @KafkaListener(topics = "${app.topico.pedidos-criados}", groupId = "${spring.kafka.consumer.group-id}")
     public void ouvir(PedidoCriadoEvent evento, Acknowledgment ack) {
@@ -41,17 +36,8 @@ public class PedidoCriadoListener {
                 return;
             }
 
-            Pagamento pagamento = processado.get();
-            log.info("Pagamento processado: status={}, publicando em pagamentos.processados", pagamento.getStatus());
-
-            pagamentoEventoProducer.publicarPagamentoProcessado(new PagamentoProcessadoEvent(
-                    UUID.randomUUID(),
-                    evento.pedidoId(),
-                    pagamento.getStatus(),
-                    pagamento.getMotivoRecusa(),
-                    evento.itens().stream().map(item -> new ItemReservaEvento(item.produtoId(), item.quantidade())).toList(),
-                    Instant.now()
-            ));
+            log.info("Pagamento processado: status={}, evento gravado na outbox (pagamentos.processados)",
+                    processado.get().getStatus());
 
             // atraso configurável para alargar a janela antes do ack; 0 = comportamento natural
             if (atrasoAckMs > 0) {

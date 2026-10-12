@@ -1,13 +1,18 @@
 package br.com.gabriel.pedidoeventos.payment_service.pagamento;
 
+import br.com.gabriel.pedidoeventos.payment_service.evento.ItemReservaEvento;
+import br.com.gabriel.pedidoeventos.payment_service.evento.PagamentoProcessadoEvent;
 import br.com.gabriel.pedidoeventos.payment_service.evento.PedidoCriadoEvent;
 import br.com.gabriel.pedidoeventos.payment_service.idempotencia.DeduplicadorEventos;
+import br.com.gabriel.pedidoeventos.payment_service.outbox.OutboxWriter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -16,8 +21,15 @@ public class PagamentoService {
     private final PagamentoRepository pagamentoRepository;
     private final PagamentoMockService pagamentoMockService;
     private final DeduplicadorEventos deduplicador;
+    private final OutboxWriter outboxWriter;
 
-    /** Grava o pagamento, ou devolve vazio se o evento já tinha sido processado. */
+    @Value("${app.topico.pagamentos-processados}")
+    private String topicoPagamentosProcessados;
+
+    /**
+     * Grava o pagamento, o registro do evento recebido e o evento a publicar (outbox) na mesma
+     * transação. Devolve vazio se o evento já tinha sido processado.
+     */
     @Transactional
     public Optional<Pagamento> processar(PedidoCriadoEvent evento) {
         if (!deduplicador.registrarSeNovo(evento.eventId())) {
@@ -27,8 +39,19 @@ public class PagamentoService {
         ResultadoPagamento resultado = pagamentoMockService.processar(evento.valorTotal());
         StatusPagamento status = resultado.sucesso() ? StatusPagamento.APROVADO : StatusPagamento.RECUSADO;
 
-        Pagamento pagamento = new Pagamento(
-                evento.pedidoId(), evento.valorTotal(), status, resultado.motivoRecusa(), Instant.now());
-        return Optional.of(pagamentoRepository.save(pagamento));
+        Pagamento pagamento = pagamentoRepository.save(new Pagamento(
+                evento.pedidoId(), evento.valorTotal(), status, resultado.motivoRecusa(), Instant.now()));
+
+        PagamentoProcessadoEvent saida = new PagamentoProcessadoEvent(
+                UUID.randomUUID(),
+                evento.pedidoId(),
+                pagamento.getStatus(),
+                pagamento.getMotivoRecusa(),
+                evento.itens().stream().map(item -> new ItemReservaEvento(item.produtoId(), item.quantidade())).toList(),
+                Instant.now()
+        );
+        outboxWriter.registrar(topicoPagamentosProcessados, evento.pedidoId().toString(), saida.eventId(), saida);
+
+        return Optional.of(pagamento);
     }
 }
