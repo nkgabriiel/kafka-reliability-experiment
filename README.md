@@ -27,7 +27,7 @@ Cada versão é submetida à mesma matriz de cenários de falha injetada (queda 
 
 ## Stack
 
-Java 21, Spring Boot 3.x, PostgreSQL, Apache Kafka (modo KRaft), Docker Compose, Testcontainers, Toxiproxy, k6.
+Java 21, Spring Boot 4.1, PostgreSQL, Apache Kafka (modo KRaft), Docker Compose, Testcontainers, Toxiproxy, k6.
 
 ## Estrutura do repositório
 
@@ -278,7 +278,59 @@ A V3 elimina a duplicação de efeito no consumer: com reentrega por falha do se
 
 ### Limitações
 
-- **A V3 troca duplicação por uma possível perda numa janela.** O registro do evento e o efeito de negócio commitam juntos, mas a publicação do evento seguinte acontece depois. Se o serviço cair **depois do commit e antes de publicar**, a reentrega será descartada pelo dedupe e o evento seguinte **nunca será publicado**, deixando o pedido preso. Nos experimentos o `kill` cai depois da publicação, então eles mostram a correção e não essa janela. Resolver isso é o objetivo do outbox transacional (Fase 6).
+- **A V3 troca duplicação por uma possível perda numa janela.** O registro do evento e o efeito de negócio commitam juntos, mas a publicação do evento seguinte acontece depois. Se o serviço cair **depois do commit e antes de publicar**, a reentrega será descartada pelo dedupe e o evento seguinte **nunca será publicado**, deixando o pedido preso. Nos experimentos o `kill` cai depois da publicação, então eles mostram a correção e não essa janela. Resolver isso foi o objetivo do outbox transacional (Fase 6, abaixo).
 - A tabela `eventos_processados` cresce indefinidamente; não há política de retenção.
 - O teste de falha usa uma janela amplificada (2000 ms) e 5 execuções; a taxa natural continua sem ser mensurável com `docker kill` externo (ver a Fase 3).
 - O teste de replay depende dos avisos nos logs dos serviços para saber que o replay foi processado.
+
+## Fase 6 — Versão 4: transactional outbox
+
+**Objetivo:** fechar a janela de perda da V3, em que o serviço grava no banco, cai e nunca publica o evento seguinte.
+
+### Implementação
+
+Cada serviço que publica (`order-service`, `payment-service`, `stock-service`) ganhou uma tabela `outbox_events` no seu schema. Em vez de chamar o Kafka dentro do fluxo, o serviço **grava o evento a publicar na outbox, na mesma transação** que altera o estado de negócio:
+
+- `OutboxWriter.registrar(...)` exige uma transação aberta (`Propagation.MANDATORY`), como o dedupe da V3. O `id` da linha é o próprio `eventId` do evento.
+- `OutboxPublisher` é um poller (`@Scheduled`, a cada 500 ms) que lê os pendentes mais antigos, reconstrói o evento, publica no Kafka, **espera a confirmação do broker** e só então grava `enviado_em`. Se um envio falha, o lote para ali e o próximo ciclo tenta de novo, para não publicar fora de ordem.
+- A publicação é **at-least-once**: se o serviço cair depois do envio e antes de marcar `enviado_em`, o evento sai de novo. Quem absorve a repetição é o dedupe por `eventId` dos consumers (V3). As duas técnicas se complementam.
+
+Por serviço:
+
+- `order-service`: `criarPedido` grava o pedido e `pedidos.criados` na outbox. Isso também corrige um defeito antigo: antes, o `send` rodava dentro da transação, **antes do commit**, então um rollback deixaria sair um evento de um pedido que não existiu.
+- `payment-service`: `PagamentoService.processar` grava o registro do `eventId` recebido, o `Pagamento` e o `pagamentos.processados` na mesma transação. O listener só faz o atraso de demo e o `ack`.
+- `stock-service`: `EstoqueService.processarReserva` grava o dedupe, a reserva e o `estoque.processado` (reservado ou indisponível) na mesma transação.
+
+### Resultado 1: o teste do critério da fase
+
+`integration-tests/.../OutboxIntegrationTest.java` (`cd integration-tests && ./mvnw test -Dtest=OutboxIntegrationTest`) reproduz a janela de perda da V3 no `payment-service`:
+
+1. o poller do `payment-service` é segurado por 45 s após cada subida (`PAYMENT_OUTBOX_ATRASO_INICIAL_MS`) e o `ack` da mensagem de entrada é atrasado em 30 s, de modo que o `kill` cai **depois do commit, antes do `ack` e antes da publicação**;
+2. cria um pedido, espera a linha aparecer na outbox e dá `docker kill` no serviço;
+3. confere o estado deixado pela queda: 1 pagamento gravado, 1 evento pendente na outbox (`enviado_em` nulo), pedido ainda `PENDENTE`;
+4. reinicia o serviço e espera o pedido chegar a `CONCLUIDO`.
+
+Ao final o teste afirma que a mensagem de entrada foi reentregue e **descartada pelo dedupe**, que há exatamente 1 pagamento, que o estoque foi reservado uma vez (10 para 8) e que o evento da outbox foi marcado como enviado. Passou em **3 de 3 execuções**. Na V3 esse mesmo estado (commit feito, evento não publicado, reentrega descartada) deixava o pedido `PENDENTE` para sempre; aqui ele conclui.
+
+### Resultado 2: o cenário de falha da V3, sem regressão
+
+Mesmo cenário da Fase 5 (`kill-payment-service`, janela de 2000 ms, session timeout de 6 s, 5 execuções) com `VERSAO=v4`. Dados brutos: [`results/v4/varredura-atraso2000ms-20261012-035300.csv`](results/v4/varredura-atraso2000ms-20261012-035300.csv).
+
+| Verificação | Resultado |
+|---|---|
+| Pagamentos duplicados | **0 de 5** |
+| Pedidos reentregues ao `payment-service` | 5 de 5 |
+| Avisos "já processado, descartando" | 5 |
+| Status final | 5 × `CONCLUIDO` |
+| Eventos pendentes nas 3 outboxes ao final | 0 |
+
+### Conclusão
+
+Com a V3 mais a V4, as duas pontas do problema ficam cobertas: a reentrega não repete o efeito (dedupe por `eventId`) e uma queda depois do commit não perde o evento seguinte (outbox). O critério da fase se confirma para o `payment-service`: o estado "salvei no banco, mas não publiquei" sobrevive a um restart sem perda.
+
+### Limitações
+
+- A janela de perda foi exercitada só no `payment-service`. `order-service` e `stock-service` usam o mesmo mecanismo (mesmas classes), e o fluxo feliz e o caso de estoque insuficiente foram validados, mas não houve `kill` na janela deles.
+- O teste usa uma configuração de teste (poller segurado por 45 s) para tornar a janela determinística; não mede a probabilidade natural de a queda cair ali.
+- O poller assume uma única instância de cada serviço. Com várias, seria preciso `SELECT ... FOR UPDATE SKIP LOCKED` para não publicarem o mesmo evento; o dedupe dos consumers absorveria a repetição, mas com desperdício.
+- A publicação passa a ter latência de até o intervalo do poller (500 ms) e `outbox_events` cresce indefinidamente, sem política de limpeza. Não medi o custo de latência.
