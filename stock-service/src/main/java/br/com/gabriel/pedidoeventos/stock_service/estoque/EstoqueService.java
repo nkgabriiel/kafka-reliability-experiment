@@ -1,11 +1,16 @@
 package br.com.gabriel.pedidoeventos.stock_service.estoque;
 
+import br.com.gabriel.pedidoeventos.stock_service.evento.EstoqueProcessadoEvent;
 import br.com.gabriel.pedidoeventos.stock_service.evento.ItemReservaEvento;
+import br.com.gabriel.pedidoeventos.stock_service.evento.StatusProcessamentoFinal;
 import br.com.gabriel.pedidoeventos.stock_service.idempotencia.DeduplicadorEventos;
+import br.com.gabriel.pedidoeventos.stock_service.outbox.OutboxWriter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,18 +24,36 @@ public class EstoqueService {
 
     private final EstoqueRepository estoqueRepository;
     private final DeduplicadorEventos deduplicador;
+    private final OutboxWriter outboxWriter;
+
+    @Value("${app.topico.estoque-processado}")
+    private String topicoEstoqueProcessado;
 
     /**
-     * Reserva o estoque de todos os itens ou de nenhum. Não lança exceção quando falta estoque:
-     * a falta é um resultado de negócio, e uma exceção desfaria também o registro do evento
-     * como processado.
+     * Reserva o estoque de todos os itens ou de nenhum e grava na outbox o evento com o resultado,
+     * tudo na mesma transação do registro do evento recebido. Não lança exceção quando falta
+     * estoque: a falta é um resultado de negócio, e uma exceção desfaria também o registro do
+     * evento como processado.
      */
     @Transactional
-    public ResultadoReserva processarReserva(UUID eventId, List<ItemReservaEvento> itens) {
+    public ResultadoReserva processarReserva(UUID eventId, UUID pedidoId, List<ItemReservaEvento> itens) {
         if (!deduplicador.registrarSeNovo(eventId)) {
             return ResultadoReserva.duplicado();
         }
 
+        ResultadoReserva resultado = reservar(itens);
+
+        StatusProcessamentoFinal status = resultado.status() == ResultadoReserva.Status.RESERVADO
+                ? StatusProcessamentoFinal.ESTOQUE_RESERVADO
+                : StatusProcessamentoFinal.ESTOQUE_INDISPONIVEL;
+        EstoqueProcessadoEvent saida = new EstoqueProcessadoEvent(
+                UUID.randomUUID(), pedidoId, status, resultado.motivo(), Instant.now());
+        outboxWriter.registrar(topicoEstoqueProcessado, pedidoId.toString(), saida.eventId(), saida);
+
+        return resultado;
+    }
+
+    private ResultadoReserva reservar(List<ItemReservaEvento> itens) {
         Map<UUID, Integer> solicitado = new LinkedHashMap<>();
         for (ItemReservaEvento item : itens) {
             solicitado.merge(item.produtoId(), item.quantidade(), Integer::sum);

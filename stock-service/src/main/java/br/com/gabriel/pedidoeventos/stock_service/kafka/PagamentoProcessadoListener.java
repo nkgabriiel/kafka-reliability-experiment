@@ -2,18 +2,13 @@ package br.com.gabriel.pedidoeventos.stock_service.kafka;
 
 import br.com.gabriel.pedidoeventos.stock_service.estoque.EstoqueService;
 import br.com.gabriel.pedidoeventos.stock_service.estoque.ResultadoReserva;
-import br.com.gabriel.pedidoeventos.stock_service.evento.EstoqueProcessadoEvent;
 import br.com.gabriel.pedidoeventos.stock_service.evento.PagamentoProcessadoEvent;
 import br.com.gabriel.pedidoeventos.stock_service.evento.StatusPagamento;
-import br.com.gabriel.pedidoeventos.stock_service.evento.StatusProcessamentoFinal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -21,7 +16,6 @@ import java.util.UUID;
 public class PagamentoProcessadoListener {
 
     private final EstoqueService estoqueService;
-    private final EstoqueEventoProducer estoqueEventoProducer;
 
     @KafkaListener(topics = "${app.topico.pagamentos-processados}", groupId = "${spring.kafka.consumer.group-id}")
     public void ouvir(PagamentoProcessadoEvent evento) {
@@ -34,25 +28,16 @@ public class PagamentoProcessadoListener {
                 return;
             }
 
-            ResultadoReserva resultado = estoqueService.processarReserva(evento.eventId(), evento.itens());
+            ResultadoReserva resultado = estoqueService.processarReserva(
+                    evento.eventId(), evento.pedidoId(), evento.itens());
             switch (resultado.status()) {
                 case DUPLICADO -> log.warn("Evento {} já processado, descartando sem reprocessar", evento.eventId());
-                case RESERVADO -> {
-                    log.info("Estoque reservado com sucesso, publicando em estoque.processado");
-                    publicar(evento.pedidoId(), StatusProcessamentoFinal.ESTOQUE_RESERVADO, null);
-                }
-                case INDISPONIVEL -> {
-                    log.info("Estoque insuficiente: {}", resultado.motivo());
-                    publicar(evento.pedidoId(), StatusProcessamentoFinal.ESTOQUE_INDISPONIVEL, resultado.motivo());
-                }
+                case RESERVADO -> log.info("Estoque reservado com sucesso, evento gravado na outbox (estoque.processado)");
+                case INDISPONIVEL -> log.info("Estoque insuficiente: {}, evento gravado na outbox (estoque.processado)",
+                        resultado.motivo());
             }
         } finally {
             MDC.remove("pedidoId");
         }
-    }
-
-    private void publicar(UUID pedidoId, StatusProcessamentoFinal status, String motivo) {
-        estoqueEventoProducer.publicarEstoqueProcessado(
-                new EstoqueProcessadoEvent(UUID.randomUUID(), pedidoId, status, motivo, Instant.now()));
     }
 }

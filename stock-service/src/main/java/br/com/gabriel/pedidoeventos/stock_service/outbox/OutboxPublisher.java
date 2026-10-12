@@ -1,0 +1,57 @@
+package br.com.gabriel.pedidoeventos.stock_service.outbox;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.JacksonUtils;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Varre a outbox e publica no Kafka os eventos ainda não enviados. A garantia é at-least-once:
+ * se o serviço cair depois do envio e antes de marcar como enviado, o evento é publicado de novo
+ * no próximo ciclo, e o dedupe por eventId dos consumers descarta a repetição.
+ */
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class OutboxPublisher {
+
+    private static final ObjectMapper MAPPER = JacksonUtils.enhancedObjectMapper();
+    private static final long TIMEOUT_CONFIRMACAO_SEGUNDOS = 10;
+
+    private final OutboxEventRepository repository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Scheduled(fixedDelayString = "${app.outbox.intervalo-ms:500}",
+            initialDelayString = "${app.outbox.atraso-inicial-ms:0}")
+    @Transactional
+    public void publicarPendentes() {
+        List<OutboxEvent> pendentes = repository.findTop50ByEnviadoEmIsNullOrderByCriadoEmAsc();
+        for (OutboxEvent outbox : pendentes) {
+            try {
+                Object evento = MAPPER.readValue(outbox.getPayload(), Class.forName(outbox.getTipo()));
+                // espera a confirmação do broker antes de marcar como enviado
+                kafkaTemplate.send(outbox.getTopico(), outbox.getChave(), evento)
+                        .get(TIMEOUT_CONFIRMACAO_SEGUNDOS, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            } catch (Exception e) {
+                // para o lote aqui para não publicar fora de ordem; o próximo ciclo tenta de novo
+                log.warn("Falha ao publicar evento {} da outbox, tentando no próximo ciclo: {}",
+                        outbox.getId(), e.toString());
+                return;
+            }
+            outbox.setEnviadoEm(Instant.now());
+            log.info("Evento {} publicado em {} a partir da outbox", outbox.getId(), outbox.getTopico());
+        }
+    }
+}
