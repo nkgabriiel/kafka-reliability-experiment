@@ -26,6 +26,9 @@ public class PagamentoService {
     @Value("${app.topico.pagamentos-processados}")
     private String topicoPagamentosProcessados;
 
+    @Value("${app.demo.produto-envenenado:}")
+    private String produtoEnvenenado;
+
     /**
      * Grava o pagamento, o registro do evento recebido e o evento a publicar (outbox) na mesma
      * transação. Devolve vazio se o evento já tinha sido processado.
@@ -34,6 +37,13 @@ public class PagamentoService {
     public Optional<Pagamento> processar(PedidoCriadoEvent evento) {
         if (!deduplicador.registrarSeNovo(evento.eventId())) {
             return Optional.empty();
+        }
+
+        // falha persistente simulada (poison message): lança depois do dedupe, então a transação
+        // inteira, inclusive o registro do eventId, é desfeita e cada tentativa recomeça limpa
+        if (!produtoEnvenenado.isBlank()
+                && evento.itens().stream().anyMatch(item -> item.produtoId().toString().equals(produtoEnvenenado))) {
+            throw new IllegalStateException("Falha simulada: pedido contém o produto envenenado " + produtoEnvenenado);
         }
 
         ResultadoPagamento resultado = pagamentoMockService.processar(evento.valorTotal());

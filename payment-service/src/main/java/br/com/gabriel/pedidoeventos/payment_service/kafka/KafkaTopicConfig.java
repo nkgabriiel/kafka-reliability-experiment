@@ -20,4 +20,10 @@ public class KafkaTopicConfig {
     public NewTopic pedidosCriadosTopic(@Value("${app.topico.pedidos-criados}") String nome) {
         return TopicBuilder.name(nome).partitions(3).replicas(1).build();
     }
+
+    // Destino das mensagens de pedidos.criados que esgotaram as tentativas de reprocessamento.
+    @Bean
+    public NewTopic pedidosCriadosDlqTopic(@Value("${app.topico.pedidos-criados}") String nome) {
+        return TopicBuilder.name(nome + ".dlq").partitions(1).replicas(1).build();
+    }
 }
