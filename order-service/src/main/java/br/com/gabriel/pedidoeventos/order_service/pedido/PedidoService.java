@@ -6,12 +6,13 @@ import br.com.gabriel.pedidoeventos.order_service.evento.PagamentoProcessadoEven
 import br.com.gabriel.pedidoeventos.order_service.evento.PedidoCriadoEvent;
 import br.com.gabriel.pedidoeventos.order_service.evento.StatusPagamento;
 import br.com.gabriel.pedidoeventos.order_service.idempotencia.DeduplicadorEventos;
-import br.com.gabriel.pedidoeventos.order_service.kafka.PedidoEventoProducer;
+import br.com.gabriel.pedidoeventos.order_service.outbox.OutboxWriter;
 import br.com.gabriel.pedidoeventos.order_service.pedido.dto.PedidoRequest;
 import br.com.gabriel.pedidoeventos.order_service.pedido.dto.PedidoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +28,11 @@ public class PedidoService {
     private static final String MDC_PEDIDO_ID = "pedidoId";
 
     private final PedidoRepository pedidoRepository;
-    private final PedidoEventoProducer pedidoEventoProducer;
+    private final OutboxWriter outboxWriter;
     private final DeduplicadorEventos deduplicador;
+
+    @Value("${app.topico.pedidos-criados}")
+    private String topicoPedidosCriados;
 
     @Transactional
     public Pedido criarPedido(PedidoRequest request) {
@@ -44,8 +48,9 @@ public class PedidoService {
             pedido.calcularValorTotal();
             pedidoRepository.save(pedido);
 
-            log.info("Pedido persistido como PENDENTE, publicando evento em pedidos.criados");
-            pedidoEventoProducer.publicarPedidoCriado(paraEvento(pedido));
+            log.info("Pedido persistido como PENDENTE, gravando evento na outbox (pedidos.criados)");
+            PedidoCriadoEvent evento = paraEvento(pedido);
+            outboxWriter.registrar(topicoPedidosCriados, pedido.getId().toString(), evento.eventId(), evento);
 
             return pedido;
         } finally {
