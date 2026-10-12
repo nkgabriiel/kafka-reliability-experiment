@@ -156,3 +156,61 @@ Na Versão 1, uma queda do consumidor entre o processamento e o commit do offset
 - **O cenário de perda não foi reproduzido.** Ele exigiria derrubar o `order-service` entre gravar o pedido e publicar o evento.
 - **O efeito no `stock-service` não foi verificado.** A mensagem duplicada também é publicada de novo e o estoque pode ser reservado duas vezes.
 - **O baseline difere ligeiramente da V1 original:** o listener usa ack manual e não tem `@Transactional`, para que a gravação já esteja commitada quando o atraso começa.
+
+## Fase 4 — Versão 2: producer idempotente
+
+**Objetivo:** eliminar a duplicação na **escrita do broker** causada por retries do producer, e confirmar que a duplicação de **efeito de negócio** no consumer (resultado da Fase 3) continua existindo nesta versão.
+
+### Configuração
+
+Nos três serviços que publicam (`order-service`, `payment-service`, `stock-service`), o `application.properties` passou de `enable.idempotence=false` (propositalmente desligado na V1) para:
+
+```properties
+spring.kafka.producer.acks=all
+spring.kafka.producer.properties.enable.idempotence=true
+spring.kafka.producer.properties.max.in.flight.requests.per.connection=5
+```
+
+Com isso o producer recebe um *producer id* e numera cada mensagem por partição. Se um retry reenviar uma mensagem que o broker já gravou, o broker reconhece o número de sequência repetido e descarta o duplicado. Nos logs de cada serviço, a configuração efetiva aparece como `enable.idempotence = true`, `acks = -1` (equivale a `all`) e `max.in.flight.requests.per.connection = 5`.
+
+### Teste: o retry não duplica no broker
+
+`integration-tests/.../ProducerIdempotenteIntegrationTest.java` (`cd integration-tests && ./mvnw test -Dtest=ProducerIdempotenteIntegrationTest`):
+
+1. sobe um Kafka (`apache/kafka:3.8.0`) e um Toxiproxy na mesma rede, com o endereço anunciado pelo Kafka apontando para o proxy, para que todo o tráfego do producer passe por ele;
+2. envia uma mensagem de aquecimento (cria o tópico e a sessão do producer);
+3. injeta no proxy um *timeout* no sentido broker → producer, que engole os acks, e envia a mensagem de teste: o request **chega** ao broker e é gravado, mas o producer não recebe a confirmação, estoura `request.timeout.ms` (2 s) e reenvia;
+4. remove a falha e conta os registros do tópico pelos offsets (início e fim da partição).
+
+| Producer | Registros no tópico (1 aquecimento + 1 teste) | Interpretação |
+|---|---|---|
+| `enable.idempotence=true` | **2** | o retry foi deduplicado pelo broker |
+| `enable.idempotence=false` (controle) | **3** | o retry foi gravado de novo |
+
+O teste de controle prova que a falha de rede injetada realmente provoca duplicação, ou seja, que o resultado com idempotência é significativo. O resultado foi o mesmo (2 e 3) nas 3 execuções consecutivas em que as contagens foram registradas.
+
+### Resultado: a duplicação de efeito no consumer continua
+
+A mesma varredura de tamanho de janela da Fase 3 (`VERSAO=v2 failure-injection/varrer-janela.sh 5 0 50 100 200 400 800`: espera de 0 ms, 5 repetições por janela, session timeout de 6 s), agora com o producer idempotente. Dados brutos em [`results/v2/`](results/v2/).
+
+| Janela (atraso do ack) | V1: com duplicação | V2: com duplicação |
+|---|---|---|
+| 0 ms (natural) | 0 de 5 | 0 de 5 |
+| 50 ms | 0 de 5 | 0 de 5 |
+| 100 ms | 0 de 5 | 0 de 5 |
+| 200 ms | 0 de 5 | 0 de 5 |
+| 400 ms | 3 de 5 | 3 de 5 |
+| 800 ms | 5 de 5 | 5 de 5 |
+
+O comportamento é o mesmo da V1, e isso é o esperado: a duplicação demonstrada na Fase 3 não vem de retry do producer, e sim de **reprocessamento no consumer** (o serviço cai depois de gravar o pagamento e antes de confirmar o offset, e o Kafka reentrega a mensagem). O producer idempotente não atua nesse caminho. As mesmas limitações da Fase 3 valem aqui, em especial a de que a taxa natural não é mensurável com `docker kill` externo.
+
+### Conclusão
+
+A V2 elimina a duplicação na escrita do broker: com um ack perdido e retry, o tópico fica com um único registro, contra dois sem idempotência. A duplicação de efeito de negócio no consumer permanece, e só será tratada na Fase 5 (idempotência de consumer).
+
+### Limitações
+
+- O teste de deduplicação usa um producer Kafka puro, configurado como o dos serviços (`acks=all`, `enable.idempotence=true`, `max.in.flight=5`), e não o `KafkaTemplate` do Spring dentro dos serviços. A configuração efetiva dos serviços foi conferida nos logs.
+- O teste roda contra um Kafka próprio (`apache/kafka:3.8.0`) com o cliente `kafka-clients` na versão do Spring Boot do projeto.
+- A falha injetada perde os acks de uma única mensagem; não cobre outros modos de falha (queda de broker, partição de rede), previstos para a Fase 9.
+- Amostra de 5 execuções por tamanho de janela, como na Fase 3.
