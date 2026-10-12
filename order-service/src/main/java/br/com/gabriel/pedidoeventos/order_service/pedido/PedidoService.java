@@ -5,6 +5,7 @@ import br.com.gabriel.pedidoeventos.order_service.evento.ItemPedidoEvento;
 import br.com.gabriel.pedidoeventos.order_service.evento.PagamentoProcessadoEvent;
 import br.com.gabriel.pedidoeventos.order_service.evento.PedidoCriadoEvent;
 import br.com.gabriel.pedidoeventos.order_service.evento.StatusPagamento;
+import br.com.gabriel.pedidoeventos.order_service.idempotencia.DeduplicadorEventos;
 import br.com.gabriel.pedidoeventos.order_service.kafka.PedidoEventoProducer;
 import br.com.gabriel.pedidoeventos.order_service.pedido.dto.PedidoRequest;
 import br.com.gabriel.pedidoeventos.order_service.pedido.dto.PedidoResponse;
@@ -27,6 +28,7 @@ public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
     private final PedidoEventoProducer pedidoEventoProducer;
+    private final DeduplicadorEventos deduplicador;
 
     @Transactional
     public Pedido criarPedido(PedidoRequest request) {
@@ -60,6 +62,10 @@ public class PedidoService {
 
     @Transactional
     public void tratarPagamentoRecusado(PagamentoProcessadoEvent evento) {
+        if (!deduplicador.registrarSeNovo(evento.eventId())) {
+            log.warn("Evento {} já processado, descartando sem reprocessar", evento.eventId());
+            return;
+        }
         if (evento.status() != StatusPagamento.RECUSADO) {
             return;
         }
@@ -72,6 +78,10 @@ public class PedidoService {
 
     @Transactional
     public void atualizarStatusFinal(EstoqueProcessadoEvent evento) {
+        if (!deduplicador.registrarSeNovo(evento.eventId())) {
+            log.warn("Evento {} já processado, descartando sem reprocessar", evento.eventId());
+            return;
+        }
         Pedido pedido = pedidoRepository.findById(evento.pedidoId())
                 .orElseThrow(() -> new NoSuchElementException("Pedido %s não encontrado".formatted(evento.pedidoId())));
 
