@@ -334,3 +334,51 @@ Com a V3 mais a V4, as duas pontas do problema ficam cobertas: a reentrega não 
 - O teste usa uma configuração de teste (poller segurado por 45 s) para tornar a janela determinística; não mede a probabilidade natural de a queda cair ali.
 - O poller assume uma única instância de cada serviço. Com várias, seria preciso `SELECT ... FOR UPDATE SKIP LOCKED` para não publicarem o mesmo evento; o dedupe dos consumers absorveria a repetição, mas com desperdício.
 - A publicação passa a ter latência de até o intervalo do poller (500 ms) e `outbox_events` cresce indefinidamente, sem política de limpeza. Não medi o custo de latência.
+
+## Fase 7 — Versão 5: retry com backoff exponencial e dead-letter queue
+
+**Objetivo:** impedir que uma mensagem que falha sempre (poison message) trave o consumo ou se perca: tentar de novo com espera crescente e, esgotadas as tentativas, isolá-la numa DLQ.
+
+### Implementação
+
+Cada consumer (`payment-service`, `stock-service`, `order-service`) ganhou um `DefaultErrorHandler` do Spring Kafka (`ErroConsumoConfig`), sem biblioteca extra:
+
+- **Retry bloqueante** com backoff exponencial e jitter: 3 retentativas depois da entrega original (4 tentativas no total), intervalo inicial de 500 ms, multiplicador 2, teto de 10 s e jitter de 200 ms. Tudo configurável por `app.retry.*`.
+- **DLQ** por tópico consumido (`<tópico>.dlq`), via `DeadLetterPublishingRecoverer`: `pedidos.criados.dlq`, `pagamentos.processados.dlq` e `estoque.processado.dlq`. `stock-service` e `order-service` consomem `pagamentos.processados` e compartilham a DLQ desse tópico; o grupo de origem fica no cabeçalho `kafka_dlt-original-consumer-group`.
+- `setCommitRecovered(true)`: o offset da mensagem enviada à DLQ é confirmado pelo handler, necessário porque o `payment-service` usa `ack` manual.
+- **Interação com a V3:** uma exceção desfaz a transação inteira, inclusive o registro do `eventId`. Cada tentativa recomeça limpa e a mensagem que falha não deixa efeito parcial (conferido: sem pagamento, sem evento na outbox e sem `eventId` registrado).
+- **Poison message simulada:** o `payment-service` lança exceção, depois do dedupe, para qualquer pedido que contenha o `produtoId` configurado em `PRODUTO_ENVENENADO` (vazio = desligado).
+
+### Resultado 1: a poison message é isolada
+
+`integration-tests/.../RetryDlqIntegrationTest.java` (`cd integration-tests && ./mvnw test -Dtest=RetryDlqIntegrationTest`). Um pedido com o produto envenenado é enviado e, em seguida, 12 pedidos normais. Em **3 de 3 execuções**:
+
+- o envenenado foi tentado 4 vezes e a DLQ `pedidos.criados.dlq` ficou com exatamente 1 mensagem;
+- ele permaneceu `PENDENTE`, sem pagamento e sem evento na outbox;
+- todos os pedidos normais concluíram, cada um com exatamente 1 pagamento.
+
+`stock-service` e `order-service` foram validados injetando no Kafka mensagens que falham no processamento (um `estoque.processado` de pedido inexistente e um `pagamentos.processados` com `itens` nulo): ambos fizeram 4 tentativas e enviaram à DLQ, com o grupo de origem no cabeçalho. Essa validação foi manual, não está no teste automatizado.
+
+### Resultado 2: o retry bloqueante atrasa os demais pedidos
+
+O critério do roadmap diz que o throughput dos demais pedidos não deve ser afetado. **Isso não se confirmou integralmente.** O teste mede o tempo, da criação até `CONCLUIDO`, de 12 pedidos normais numa rodada de referência (sem envenenado) e de outros 12 enviados logo depois do envenenado:
+
+| Execução | Referência (mediana / máx.) | Com veneno na frente (mediana / máx.) |
+|---|---|---|
+| 1 | 1924 / 2768 ms | 4883 / 4901 ms |
+| 2 | 2186 / 2304 ms | 5827 / 5927 ms |
+| 3 | 2313 / 3200 ms | 4964 / 5057 ms |
+
+Os pedidos normais atrasam cerca de 3 s, o tempo total do backoff (0,5 + 1 + 2 s, com jitter). Nenhum se perde nem fica preso. A causa é que o listener tem uma única thread para as 3 partições e o backoff dorme nessa thread, então a espera vale para o consumer inteiro e não só para a partição do envenenado. Quantos pedidos são pegos varia com o momento em que chegam ao consumer (12, 7 e 10 de 12 acima do limite de mediana de referência + 2 s); a medida estável é a latência máxima. Os valores vêm da saída do teste (linhas `[METRICA]`), sem CSV.
+
+### Conclusão
+
+A V5 isola a poison message: ela é tentada com backoff, esgota as tentativas e vai para a DLQ sem deixar efeito, e o consumo dos demais pedidos continua. O custo do retry bloqueante é um atraso, limitado ao backoff total, nos pedidos que chegam durante as tentativas.
+
+### Limitações
+
+- **A DLQ não é tratada.** A mensagem fica na DLQ e o pedido fica `PENDENTE` para sempre; nada o cancela nem compensa. Deixado de propósito como extensão futura (V5b), por exigir compensação (Saga) quando a falha ocorre depois do pagamento aprovado.
+- **O retry bloqueante atrasa os demais pedidos** (Resultado 2). Reduções possíveis, não testadas: `concurrency` do listener igual ao número de partições (uma thread por partição), ou retry não bloqueante (`@RetryableTopic`), que elimina o atraso mas perde a ordem.
+- **Mensagem ilegível não passa pelo retry.** Os consumers usam `JsonDeserializer` direto; um JSON inválido trava o consumo da partição em loop, em vez de ir para a DLQ. Seria necessário `ErrorHandlingDeserializer`. A poison message testada falha no processamento, não na leitura.
+- A poison message é simulada por configuração (`PRODUTO_ENVENENADO`), só no `payment-service`; a validação no `stock-service` e no `order-service` foi manual.
+- Todas as exceções são retentadas, inclusive as que nunca se resolveriam (como um pedido inexistente); não há classificação entre erros transitórios e permanentes.
