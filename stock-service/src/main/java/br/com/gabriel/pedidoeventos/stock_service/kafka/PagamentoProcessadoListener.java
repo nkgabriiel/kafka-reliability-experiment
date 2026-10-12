@@ -1,7 +1,7 @@
 package br.com.gabriel.pedidoeventos.stock_service.kafka;
 
-import br.com.gabriel.pedidoeventos.stock_service.estoque.EstoqueInsuficienteException;
 import br.com.gabriel.pedidoeventos.stock_service.estoque.EstoqueService;
+import br.com.gabriel.pedidoeventos.stock_service.estoque.ResultadoReserva;
 import br.com.gabriel.pedidoeventos.stock_service.evento.EstoqueProcessadoEvent;
 import br.com.gabriel.pedidoeventos.stock_service.evento.PagamentoProcessadoEvent;
 import br.com.gabriel.pedidoeventos.stock_service.evento.StatusPagamento;
@@ -34,13 +34,17 @@ public class PagamentoProcessadoListener {
                 return;
             }
 
-            try {
-                estoqueService.reservarEstoque(evento.itens());
-                log.info("Estoque reservado com sucesso, publicando em estoque.processado");
-                publicar(evento.pedidoId(), StatusProcessamentoFinal.ESTOQUE_RESERVADO, null);
-            } catch (EstoqueInsuficienteException ex) {
-                log.info("Estoque insuficiente: {}", ex.getMessage());
-                publicar(evento.pedidoId(), StatusProcessamentoFinal.ESTOQUE_INDISPONIVEL, ex.getMessage());
+            ResultadoReserva resultado = estoqueService.processarReserva(evento.eventId(), evento.itens());
+            switch (resultado.status()) {
+                case DUPLICADO -> log.warn("Evento {} já processado, descartando sem reprocessar", evento.eventId());
+                case RESERVADO -> {
+                    log.info("Estoque reservado com sucesso, publicando em estoque.processado");
+                    publicar(evento.pedidoId(), StatusProcessamentoFinal.ESTOQUE_RESERVADO, null);
+                }
+                case INDISPONIVEL -> {
+                    log.info("Estoque insuficiente: {}", resultado.motivo());
+                    publicar(evento.pedidoId(), StatusProcessamentoFinal.ESTOQUE_INDISPONIVEL, resultado.motivo());
+                }
             }
         } finally {
             MDC.remove("pedidoId");
