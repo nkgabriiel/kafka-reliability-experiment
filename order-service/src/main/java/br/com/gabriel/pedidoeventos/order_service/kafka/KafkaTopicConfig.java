@@ -25,4 +25,16 @@ public class KafkaTopicConfig {
     public NewTopic estoqueProcessadoTopic(@Value("${app.topico.estoque-processado}") String nome) {
         return TopicBuilder.name(nome).partitions(3).replicas(1).build();
     }
+
+    // Destinos das mensagens que esgotaram as tentativas. pagamentos.processados.dlq é compartilhado
+    // com o stock-service; o grupo de origem fica no cabeçalho kafka_dlt-original-consumer-group.
+    @Bean
+    public NewTopic pagamentosProcessadosDlqTopic(@Value("${app.topico.pagamentos-processados}") String nome) {
+        return TopicBuilder.name(nome + ".dlq").partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic estoqueProcessadoDlqTopic(@Value("${app.topico.estoque-processado}") String nome) {
+        return TopicBuilder.name(nome + ".dlq").partitions(1).replicas(1).build();
+    }
 }
