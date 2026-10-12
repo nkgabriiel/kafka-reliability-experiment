@@ -13,4 +13,16 @@ public class KafkaTopicConfig {
     public NewTopic pedidosCriadosTopic(@Value("${app.topico.pedidos-criados}") String nome) {
         return TopicBuilder.name(nome).partitions(3).replicas(1).build();
     }
+
+    // Tópicos que este serviço consome: declarados aqui também para que, na subida, quem chegar
+    // primeiro crie o tópico já com 3 partições (senão o broker o cria com 1 ao primeiro subscribe).
+    @Bean
+    public NewTopic pagamentosProcessadosTopic(@Value("${app.topico.pagamentos-processados}") String nome) {
+        return TopicBuilder.name(nome).partitions(3).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic estoqueProcessadoTopic(@Value("${app.topico.estoque-processado}") String nome) {
+        return TopicBuilder.name(nome).partitions(3).replicas(1).build();
+    }
 }
