@@ -4,7 +4,7 @@ import br.com.gabriel.pedidoeventos.payment_service.evento.ItemReservaEvento;
 import br.com.gabriel.pedidoeventos.payment_service.evento.PagamentoProcessadoEvent;
 import br.com.gabriel.pedidoeventos.payment_service.evento.PedidoCriadoEvent;
 import br.com.gabriel.pedidoeventos.payment_service.idempotencia.DeduplicadorEventos;
-import br.com.gabriel.pedidoeventos.payment_service.outbox.OutboxWriter;
+import br.com.gabriel.pedidoeventos.payment_service.kafka.PagamentoEventoProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,20 +21,17 @@ public class PagamentoService {
     private final PagamentoRepository pagamentoRepository;
     private final PagamentoMockService pagamentoMockService;
     private final DeduplicadorEventos deduplicador;
-    private final OutboxWriter outboxWriter;
-
-    @Value("${app.topico.pagamentos-processados}")
-    private String topicoPagamentosProcessados;
+    private final PagamentoEventoProducer pagamentoEventoProducer;
 
     @Value("${app.demo.produto-envenenado:}")
     private String produtoEnvenenado;
 
     /**
-     * Grava o pagamento, o registro do evento recebido e o evento a publicar (outbox) na mesma
+     * Grava o pagamento e o registro do evento recebido (e, com a outbox ligada, o evento a publicar) na mesma
      * transação. Devolve vazio se o evento já tinha sido processado.
      */
     @Transactional
-    public Optional<Pagamento> processar(PedidoCriadoEvent evento) {
+    public Optional<ProcessamentoPagamento> processar(PedidoCriadoEvent evento) {
         if (!deduplicador.registrarSeNovo(evento.eventId())) {
             return Optional.empty();
         }
@@ -60,8 +57,8 @@ public class PagamentoService {
                 evento.itens().stream().map(item -> new ItemReservaEvento(item.produtoId(), item.quantidade())).toList(),
                 Instant.now()
         );
-        outboxWriter.registrar(topicoPagamentosProcessados, evento.pedidoId().toString(), saida.eventId(), saida);
+        pagamentoEventoProducer.registrarNaTransacao(saida);
 
-        return Optional.of(pagamento);
+        return Optional.of(new ProcessamentoPagamento(pagamento, saida));
     }
 }

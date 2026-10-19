@@ -1,8 +1,8 @@
 package br.com.gabriel.pedidoeventos.payment_service.kafka;
 
 import br.com.gabriel.pedidoeventos.payment_service.evento.PedidoCriadoEvent;
-import br.com.gabriel.pedidoeventos.payment_service.pagamento.Pagamento;
 import br.com.gabriel.pedidoeventos.payment_service.pagamento.PagamentoService;
+import br.com.gabriel.pedidoeventos.payment_service.pagamento.ProcessamentoPagamento;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -22,6 +22,7 @@ public class PedidoCriadoListener {
     private long atrasoAckMs;
 
     private final PagamentoService pagamentoService;
+    private final PagamentoEventoProducer pagamentoEventoProducer;
 
     @KafkaListener(topics = "${app.topico.pedidos-criados}", groupId = "${spring.kafka.consumer.group-id}")
     public void ouvir(PedidoCriadoEvent evento, Acknowledgment ack) {
@@ -29,15 +30,17 @@ public class PedidoCriadoListener {
         try {
             log.info("Processando pagamento, valor={}", evento.valorTotal());
 
-            Optional<Pagamento> processado = pagamentoService.processar(evento);
+            Optional<ProcessamentoPagamento> processado = pagamentoService.processar(evento);
             if (processado.isEmpty()) {
                 log.warn("Evento {} já processado, descartando sem reprocessar", evento.eventId());
                 ack.acknowledge();
                 return;
             }
 
-            log.info("Pagamento processado: status={}, evento gravado na outbox (pagamentos.processados)",
-                    processado.get().getStatus());
+            log.info("Pagamento processado: status={}", processado.get().pagamento().getStatus());
+
+            // sem outbox (v1 a v3) o evento é enviado aqui, depois do commit; com outbox, o poller publica
+            pagamentoEventoProducer.publicarAposCommit(processado.get().evento());
 
             // atraso configurável para alargar a janela antes do ack; 0 = comportamento natural
             if (atrasoAckMs > 0) {

@@ -4,9 +4,8 @@ import br.com.gabriel.pedidoeventos.stock_service.evento.EstoqueProcessadoEvent;
 import br.com.gabriel.pedidoeventos.stock_service.evento.ItemReservaEvento;
 import br.com.gabriel.pedidoeventos.stock_service.evento.StatusProcessamentoFinal;
 import br.com.gabriel.pedidoeventos.stock_service.idempotencia.DeduplicadorEventos;
-import br.com.gabriel.pedidoeventos.stock_service.outbox.OutboxWriter;
+import br.com.gabriel.pedidoeventos.stock_service.kafka.EstoqueEventoProducer;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +23,11 @@ public class EstoqueService {
 
     private final EstoqueRepository estoqueRepository;
     private final DeduplicadorEventos deduplicador;
-    private final OutboxWriter outboxWriter;
-
-    @Value("${app.topico.estoque-processado}")
-    private String topicoEstoqueProcessado;
+    private final EstoqueEventoProducer estoqueEventoProducer;
 
     /**
-     * Reserva o estoque de todos os itens ou de nenhum e grava na outbox o evento com o resultado,
+     * Reserva o estoque de todos os itens ou de nenhum e, com a outbox ligada, grava o evento do
+     * resultado,
      * tudo na mesma transação do registro do evento recebido. Não lança exceção quando falta
      * estoque: a falta é um resultado de negócio, e uma exceção desfaria também o registro do
      * evento como processado.
@@ -48,9 +45,9 @@ public class EstoqueService {
                 : StatusProcessamentoFinal.ESTOQUE_INDISPONIVEL;
         EstoqueProcessadoEvent saida = new EstoqueProcessadoEvent(
                 UUID.randomUUID(), pedidoId, status, resultado.motivo(), Instant.now());
-        outboxWriter.registrar(topicoEstoqueProcessado, pedidoId.toString(), saida.eventId(), saida);
+        estoqueEventoProducer.registrarNaTransacao(saida);
 
-        return resultado;
+        return resultado.comEvento(saida);
     }
 
     private ResultadoReserva reservar(List<ItemReservaEvento> itens) {

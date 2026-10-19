@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class PagamentoProcessadoListener {
 
     private final EstoqueService estoqueService;
+    private final EstoqueEventoProducer estoqueEventoProducer;
 
     @KafkaListener(topics = "${app.topico.pagamentos-processados}", groupId = "${spring.kafka.consumer.group-id}")
     public void ouvir(PagamentoProcessadoEvent evento) {
@@ -32,9 +33,14 @@ public class PagamentoProcessadoListener {
                     evento.eventId(), evento.pedidoId(), evento.itens());
             switch (resultado.status()) {
                 case DUPLICADO -> log.warn("Evento {} já processado, descartando sem reprocessar", evento.eventId());
-                case RESERVADO -> log.info("Estoque reservado com sucesso, evento gravado na outbox (estoque.processado)");
-                case INDISPONIVEL -> log.info("Estoque insuficiente: {}, evento gravado na outbox (estoque.processado)",
-                        resultado.motivo());
+                case RESERVADO -> {
+                    log.info("Estoque reservado com sucesso");
+                    estoqueEventoProducer.publicarAposCommit(resultado.evento());
+                }
+                case INDISPONIVEL -> {
+                    log.info("Estoque insuficiente: {}", resultado.motivo());
+                    estoqueEventoProducer.publicarAposCommit(resultado.evento());
+                }
             }
         } finally {
             MDC.remove("pedidoId");
