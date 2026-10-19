@@ -25,7 +25,8 @@ else
 fi
 
 ORDER_SERVICE_URL=${ORDER_SERVICE_URL:-http://localhost:8080}
-VERSAO=${VERSAO:-v1}
+# a versão vem do ambiente ou, se não informada, da que está rodando nos containers
+VERSAO=${VERSAO:-$(docker exec order-service printenv APP_VERSAO 2>/dev/null || echo v1)}
 
 ATRASO_ACK_MS=$(docker exec payment-service printenv APP_DEMO_ATRASO_ACK_MS || echo "?")
 SESSION_TIMEOUT_MS=$(docker exec payment-service printenv APP_KAFKA_SESSION_TIMEOUT_MS || echo "45000")
