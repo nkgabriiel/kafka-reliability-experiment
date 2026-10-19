@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,10 @@ public class PagamentoService {
     private final PagamentoMockService pagamentoMockService;
     private final DeduplicadorEventos deduplicador;
     private final PagamentoEventoProducer pagamentoEventoProducer;
+
+    // falha aleatória simulada: percentual (0 a 100) das chamadas que lançam exceção; 0 = desligado
+    @Value("${app.demo.taxa-falha:0}")
+    private double taxaFalhaPercentual;
 
     @Value("${app.demo.produto-envenenado:}")
     private String produtoEnvenenado;
@@ -41,6 +46,11 @@ public class PagamentoService {
         if (!produtoEnvenenado.isBlank()
                 && evento.itens().stream().anyMatch(item -> item.produtoId().toString().equals(produtoEnvenenado))) {
             throw new IllegalStateException("Falha simulada: pedido contém o produto envenenado " + produtoEnvenenado);
+        }
+
+        // falha transitória simulada (FAILURE_RATE): cada chamada sorteia de novo, então uma nova tentativa pode passar
+        if (taxaFalhaPercentual > 0 && ThreadLocalRandom.current().nextDouble() * 100 < taxaFalhaPercentual) {
+            throw new IllegalStateException("Falha aleatória simulada (FAILURE_RATE=" + taxaFalhaPercentual + "%)");
         }
 
         ResultadoPagamento resultado = pagamentoMockService.processar(evento.valorTotal());
