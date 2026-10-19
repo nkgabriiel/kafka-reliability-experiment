@@ -22,6 +22,9 @@ public class PagamentoEventoProducer {
     @Value("${app.topico.pagamentos-processados}")
     private String topico;
 
+    @Value("${app.demo.atraso-publicacao-ms:0}")
+    private long atrasoPublicacaoMs;
+
     @Value("${app.protecao.outbox:false}")
     private boolean outboxAtivo;
 
@@ -35,7 +38,19 @@ public class PagamentoEventoProducer {
     /** Chamado pelo listener depois do commit. Com outbox, não faz nada (o poller publica). */
     public void publicarAposCommit(PagamentoProcessadoEvent evento) {
         if (!outboxAtivo) {
+            dormir(atrasoPublicacaoMs);
             kafkaTemplate.send(topico, evento.pedidoId().toString(), evento);
+        }
+    }
+
+    /** Alarga a janela entre o commit e a publicação, para os experimentos; 0 = comportamento natural. */
+    private static void dormir(long ms) {
+        if (ms > 0) {
+            try {
+                Thread.sleep(ms);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

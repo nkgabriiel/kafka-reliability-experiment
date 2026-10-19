@@ -50,6 +50,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc_pedidos?currentSchema=pedido
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       APP_VERSAO: ${VERSAO:-v5}
+      APP_DEMO_ATRASO_PUBLICACAO_MS: ${ATRASO_PUBLICACAO_ORDER_MS:-0}
     depends_on:
       kafka:
         condition: service_healthy
@@ -67,10 +68,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc_pedidos?currentSchema=pagamento
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       APP_VERSAO: ${VERSAO:-v5}
+      APP_DEMO_ATRASO_PUBLICACAO_MS: ${ATRASO_PUBLICACAO_PAYMENT_MS:-0}
       APP_DEMO_ATRASO_ACK_MS: ${ATRASO_ACK_MS:-0}
       APP_KAFKA_SESSION_TIMEOUT_MS: ${SESSION_TIMEOUT_MS:-45000}
       APP_KAFKA_HEARTBEAT_MS: ${HEARTBEAT_MS:-3000}
-      APP_OUTBOX_ATRASO_INICIAL_MS: ${PAYMENT_OUTBOX_ATRASO_INICIAL_MS:-0}
       APP_DEMO_PRODUTO_ENVENENADO: ${PRODUTO_ENVENENADO:-}
     depends_on:
       kafka:
@@ -89,6 +90,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc_pedidos?currentSchema=estoque
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       APP_VERSAO: ${VERSAO:-v5}
+      APP_DEMO_ATRASO_PUBLICACAO_MS: ${ATRASO_PUBLICACAO_STOCK_MS:-0}
     depends_on:
       kafka:
         condition: service_healthy

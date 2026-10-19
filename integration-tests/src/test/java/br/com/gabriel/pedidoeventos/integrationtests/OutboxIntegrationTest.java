@@ -28,8 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Fase 6 (Versão 4): transactional outbox.
  *
  * Reproduz a janela de perda da V3: o payment-service grava o pagamento e cai depois do commit e
- * antes de publicar o evento seguinte. O poller da outbox do payment-service é segurado por 45 s
- * depois de cada subida, e o ack da mensagem de entrada é atrasado em 30 s, de modo que o kill cai
+ * antes de publicar o evento seguinte. O evento do payment-service só é publicado 45 s depois de gravado
+ * (ATRASO_PUBLICACAO_PAYMENT_MS), e o ack da mensagem de entrada é atrasado em 30 s, de modo que o kill cai
  * depois do commit, antes do ack e antes da publicação. Ao reiniciar, a mensagem é reentregue e
  * descartada pelo dedupe (V3), e o evento que ficou na outbox tem de ser publicado (V4).
  */
@@ -40,7 +40,7 @@ class OutboxIntegrationTest {
             .withEnv("ATRASO_ACK_MS", "30000")
             .withEnv("SESSION_TIMEOUT_MS", "6000")
             .withEnv("HEARTBEAT_MS", "1000")
-            .withEnv("PAYMENT_OUTBOX_ATRASO_INICIAL_MS", "45000")
+            .withEnv("ATRASO_PUBLICACAO_PAYMENT_MS", "45000")
             .withExposedService("order-service", 8080, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(3)))
             .withExposedService("postgres", 5432, Wait.forListeningPort());
 
@@ -68,12 +68,6 @@ class OutboxIntegrationTest {
                         && ocorrencias("stock-service", "partitions assigned") >= 1
                         && ocorrencias("order-service", "partitions assigned") >= 2);
 
-        // reinicia o payment-service para a contagem dos 45 s do poller começar agora, com folga
-        // para criar o pedido e matar o serviço antes de a primeira varredura rodar
-        parar("payment-service");
-        iniciar("payment-service");
-        aguardar("payment-service pronto de novo", Duration.ofSeconds(120),
-                () -> ocorrencias("payment-service", "partitions assigned") >= 2);
 
         UUID produtoId = UUID.randomUUID();
         executar("INSERT INTO estoque.estoque (id, produto_id, nome_produto, quantidade_disponivel) "
@@ -117,10 +111,6 @@ class OutboxIntegrationTest {
                 .orElseThrow(() -> new IllegalStateException("container não encontrado: " + servico));
     }
 
-    private static void parar(String servico) {
-        ContainerState c = container(servico);
-        c.getDockerClient().stopContainerCmd(c.getContainerId()).exec();
-    }
 
     private static void matar(String servico) {
         ContainerState c = container(servico);

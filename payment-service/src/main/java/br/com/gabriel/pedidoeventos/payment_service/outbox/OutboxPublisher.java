@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.JacksonUtils;
@@ -32,12 +33,18 @@ public class OutboxPublisher {
     private final OutboxEventRepository repository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Scheduled(fixedDelayString = "${app.outbox.intervalo-ms:500}",
-            initialDelayString = "${app.outbox.atraso-inicial-ms:0}")
+    @Value("${app.demo.atraso-publicacao-ms:0}")
+    private long atrasoPublicacaoMs;
+
+    @Scheduled(fixedDelayString = "${app.outbox.intervalo-ms:500}")
     @Transactional
     public void publicarPendentes() {
         List<OutboxEvent> pendentes = repository.findTop50ByEnviadoEmIsNullOrderByCriadoEmAsc();
         for (OutboxEvent outbox : pendentes) {
+            // para experimentos: o evento só fica elegível depois da idade configurada (os pendentes vêm do mais antigo)
+            if (atrasoPublicacaoMs > 0 && outbox.getCriadoEm().plusMillis(atrasoPublicacaoMs).isAfter(Instant.now())) {
+                break;
+            }
             try {
                 Object evento = MAPPER.readValue(outbox.getPayload(), Class.forName(outbox.getTipo()));
                 // espera a confirmação do broker antes de marcar como enviado

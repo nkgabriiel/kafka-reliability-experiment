@@ -305,7 +305,7 @@ Por serviço:
 
 `integration-tests/.../OutboxIntegrationTest.java` (`cd integration-tests && ./mvnw test -Dtest=OutboxIntegrationTest`) reproduz a janela de perda da V3 no `payment-service`:
 
-1. o poller do `payment-service` é segurado por 45 s após cada subida (`PAYMENT_OUTBOX_ATRASO_INICIAL_MS`) e o `ack` da mensagem de entrada é atrasado em 30 s, de modo que o `kill` cai **depois do commit, antes do `ack` e antes da publicação**;
+1. o evento do `payment-service` só é publicado 45 s depois de gravado (`ATRASO_PUBLICACAO_PAYMENT_MS`) e o `ack` da mensagem de entrada é atrasado em 30 s, de modo que o `kill` cai **depois do commit, antes do `ack` e antes da publicação**;
 2. cria um pedido, espera a linha aparecer na outbox e dá `docker kill` no serviço;
 3. confere o estado deixado pela queda: 1 pagamento gravado, 1 evento pendente na outbox (`enviado_em` nulo), pedido ainda `PENDENTE`;
 4. reinicia o serviço e espera o pedido chegar a `CONCLUIDO`.
@@ -331,7 +331,7 @@ Com a V3 mais a V4, as duas pontas do problema ficam cobertas: a reentrega não 
 ### Limitações
 
 - A janela de perda foi exercitada só no `payment-service`. `order-service` e `stock-service` usam o mesmo mecanismo (mesmas classes), e o fluxo feliz e o caso de estoque insuficiente foram validados, mas não houve `kill` na janela deles.
-- O teste usa uma configuração de teste (poller segurado por 45 s) para tornar a janela determinística; não mede a probabilidade natural de a queda cair ali.
+- O teste usa uma configuração de teste (atraso de publicação de 45 s) para tornar a janela determinística; não mede a probabilidade natural de a queda cair ali.
 - O poller assume uma única instância de cada serviço. Com várias, seria preciso `SELECT ... FOR UPDATE SKIP LOCKED` para não publicarem o mesmo evento; o dedupe dos consumers absorveria a repetição, mas com desperdício.
 - A publicação passa a ter latência de até o intervalo do poller (500 ms) e `outbox_events` cresce indefinidamente, sem política de limpeza. Não medi o custo de latência.
 

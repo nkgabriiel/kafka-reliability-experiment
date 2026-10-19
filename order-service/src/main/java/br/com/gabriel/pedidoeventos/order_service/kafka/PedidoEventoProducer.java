@@ -22,6 +22,9 @@ public class PedidoEventoProducer {
     @Value("${app.topico.pedidos-criados}")
     private String topico;
 
+    @Value("${app.demo.atraso-publicacao-ms:0}")
+    private long atrasoPublicacaoMs;
+
     @Value("${app.protecao.outbox:false}")
     private boolean outboxAtivo;
 
@@ -32,6 +35,18 @@ public class PedidoEventoProducer {
             outboxWriter.registrar(topico, chave, evento.eventId(), evento);
         } else {
             kafkaTemplate.send(topico, chave, evento);
+            dormir(atrasoPublicacaoMs);
+        }
+    }
+
+    /** Alarga a janela entre o envio e o commit, para os experimentos; 0 = comportamento natural. */
+    private static void dormir(long ms) {
+        if (ms > 0) {
+            try {
+                Thread.sleep(ms);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }
