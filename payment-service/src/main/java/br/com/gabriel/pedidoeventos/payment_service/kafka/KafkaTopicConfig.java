@@ -2,6 +2,7 @@ package br.com.gabriel.pedidoeventos.payment_service.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
@@ -23,6 +24,7 @@ public class KafkaTopicConfig {
 
     // Destino das mensagens de pedidos.criados que esgotaram as tentativas de reprocessamento.
     @Bean
+    @ConditionalOnProperty(name = "app.protecao.retry-dlq", havingValue = "true")
     public NewTopic pedidosCriadosDlqTopic(@Value("${app.topico.pedidos-criados}") String nome) {
         return TopicBuilder.name(nome + ".dlq").partitions(1).replicas(1).build();
     }

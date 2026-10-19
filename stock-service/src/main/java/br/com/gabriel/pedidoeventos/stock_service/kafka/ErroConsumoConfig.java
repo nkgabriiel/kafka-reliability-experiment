@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,6 +20,7 @@ import org.springframework.util.backoff.ExponentialBackOff;
  */
 @Slf4j
 @Configuration
+@ConditionalOnProperty(name = "app.protecao.retry-dlq", havingValue = "true")
 public class ErroConsumoConfig {
 
     @Bean
