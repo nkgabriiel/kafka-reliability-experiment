@@ -1,0 +1,59 @@
+{
+  "perfil": "rapido",
+  "versoes": [
+    "v1",
+    "v2",
+    "v3",
+    "v4",
+    "v5"
+  ],
+  "cenarios": {
+    "kill_ack": {
+      "descricao": "queda do pagamento na janela do ack (gravou, ainda não confirmou)",
+      "env": {
+        "ATRASO_ACK_MS": "2000"
+      },
+      "pedidos": 20,
+      "taxa": 2,
+      "kill_em": 5.0,
+      "espera_max": 35
+    },
+    "kill_publicacao": {
+      "descricao": "queda do pagamento entre o commit e a publicação",
+      "env": {
+        "ATRASO_PUBLICACAO_PAYMENT_MS": "2000"
+      },
+      "pedidos": 20,
+      "taxa": 2,
+      "kill_em": 5.0,
+      "espera_max": 35
+    },
+    "poison": {
+      "descricao": "um pedido que falha sempre (poison message) no meio de pedidos normais",
+      "env": {
+        "PRODUTO_ENVENENADO": "99999999-9999-9999-9999-999999999999"
+      },
+      "pedidos": 30,
+      "taxa": 5,
+      "veneno_indice": 5,
+      "espera_max": 25
+    },
+    "falha_transitoria": {
+      "descricao": "50% das chamadas do pagamento falham de forma aleatória",
+      "env": {
+        "FAILURE_RATE": "50"
+      },
+      "pedidos": 40,
+      "taxa": 5,
+      "espera_max": 30
+    }
+  },
+  "repeticoes": 3,
+  "ambiente_base": {
+    "SESSION_TIMEOUT_MS": "6000",
+    "HEARTBEAT_MS": "1000",
+    "LISTENER_CONCURRENCY": "3"
+  },
+  "estoque_inicial": 1000,
+  "espera_pos_kill_s": 22
+}
