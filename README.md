@@ -104,6 +104,8 @@ Os ganchos de falha são iguais em todas as versões e se controlam por variáve
 
 As seções das Fases 3 a 7, abaixo, foram escritas quando cada versão ainda era uma tag. Seus números seguem valendo como **validação do mecanismo de cada versão**. A comparação entre versões está na seção da bateria única, no fim.
 
+**Os dados das Fases 3 a 7 não são comparáveis entre versões.** Cada fase usou o protocolo que servia para validar a técnica daquele momento. Na V1 e na V2 varreu-se o tamanho da janela (0 a 800 ms) para descobrir a partir de quando a falha aparece (0 de 5 até 200 ms, 3 de 5 com 400 ms, 5 de 5 com 800 ms). Na V3 e na V4, como o `docker kill` demorou mais naquele dia (cerca de 0,95 s), usou-se uma janela única de 2000 ms. Por isso as pastas `results/v1` a `results/v4` não têm os mesmos tempos, e as V0, V5 e V6 nem aparecem nelas. A comparação padronizada, com a mesma janela (2000 ms), a mesma carga e as mesmas métricas para todas as versões, é a da bateria única (`results/bateria/`). A varredura de janela da V1 e da V2 tem outro papel: é a evidência de que a janela precisa ser ampliada, já que a duplicação só aparece quando a janela supera o tempo que o `docker kill` leva para chegar.
+
 ## Fase 3 — Resultado de controle (Versão 1: baseline sem proteção)
 
 **Objetivo:** reproduzir, de forma controlada, a duplicação de efeito de negócio quando um consumidor cai no meio do processamento. Esse é o "resultado de controle" que justifica as proteções das próximas versões.
