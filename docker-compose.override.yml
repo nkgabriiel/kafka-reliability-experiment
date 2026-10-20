@@ -13,3 +13,6 @@ services:
 
   stock-service:
     container_name: stock-service
+
+  monolito-pedidos:
+    container_name: monolito-pedidos
