@@ -3,6 +3,7 @@
 
 Saídas, na mesma pasta do CSV:
     1_mapa_de_calor.png   a visão geral: % de pedidos com problema, por versão e cenário
+    1b_mapa_de_calor_estrito.png   a mesma visão, contando o que foi para a DLQ como não concluído
     2_detalhe_por_cenario.png   o que é o problema em cada caso (duplicado, perdido, perdido mas preservado na DLQ)
     3_custo_latencia.png  o custo: latência p95 por versão e cenário
     4_disponibilidade.png  quantos pedidos o sistema rejeitou na criação (o custo de disponibilidade)
@@ -72,7 +73,8 @@ def agregar(linhas):
         dup = pct(lambda r: float(r["duplicados"]))
         sem_rastro = pct(lambda r: max(0.0, float(r["perdidos"]) - float(r["dlq"])))
         preservados = pct(lambda r: min(float(r["perdidos"]), float(r["dlq"])))
-        problema = [d + s for d, s in zip(dup, sem_rastro)]
+        problema = [d + s_ for d, s_ in zip(dup, sem_rastro)]
+        estrito = pct(lambda r: float(r["duplicados"]) + float(r["perdidos"]))
         lat = [numero(r["lat_p95_s"]) for r in rs if numero(r["lat_p95_s"]) is not None]
         resumo[chave] = dict(
             reps=len(rs), pedidos=statistics.mean(float(r["pedidos"]) for r in rs),
@@ -83,6 +85,8 @@ def agregar(linhas):
             dup=statistics.mean(dup), sem_rastro=statistics.mean(sem_rastro),
             preservados=statistics.mean(preservados), problema=statistics.mean(problema),
             problema_min=min(problema), problema_max=max(problema),
+            estrito=statistics.mean(estrito),
+            reps_problema=sum(1 for x in problema if x > 0), reps_estrito=sum(1 for x in estrito if x > 0),
             lat_p95=statistics.mean(lat) if lat else None,
             rejeitados=statistics.mean(
                 100.0 * float(r.get("criacao_falhou") or 0)
@@ -107,9 +111,12 @@ def cenarios_presentes(resumo):
     return [c for c in CENARIOS if any(k[0] == c for k in resumo)]
 
 
-def mapa_de_calor(resumo, saida, nreps):
+def mapa_de_calor(resumo, saida, nreps, chave="problema", chave_reps="reps_problema",
+                  arquivo="1_mapa_de_calor.png", titulo="Pedidos com problema em cada versão, sob o mesmo teste",
+                  subtitulo="Duplicados ou perdidos sem rastro, em % dos pedidos (média das repetições). Quanto mais claro, melhor.",
+                  nota="Pedido perdido que ficou na DLQ não conta como problema (foi preservado). A V0 não duplica nem perde, mas rejeita pedidos na queda (figura 4)."):
     vs, cs = versoes_presentes(resumo), cenarios_presentes(resumo)
-    matriz = [[resumo.get((c, v), {}).get("problema") for v in vs] for c in cs]
+    matriz = [[resumo.get((c, v), {}).get(chave) for v in vs] for c in cs]
     topo = max([x for linha in matriz for x in linha if x is not None] + [1.0])
     largura = max(11.5, 1.9 * len(vs) + 3.4)
     altura = 0.95 * len(cs) + 2.3
@@ -127,8 +134,12 @@ def mapa_de_calor(resumo, saida, nreps):
             cor = SEQUENCIAL(valor / topo)
             ax.add_patch(plt.Rectangle((j, len(cs) - 1 - i), 1, 1, facecolor=cor, edgecolor=SUPERFICIE, linewidth=3))
             claro = (0.299 * cor[0] + 0.587 * cor[1] + 0.114 * cor[2]) > 0.55
-            ax.text(j + 0.5, len(cs) - 1 - i + 0.5, f"{valor:.0f}%" if valor >= 9.5 else f"{valor:.1f}%",
-                    ha="center", va="center", fontsize=14, fontweight="bold", color=TINTA if claro else "#ffffff")
+            tinta = TINTA if claro else "#ffffff"
+            ax.text(j + 0.5, len(cs) - 1 - i + 0.57, f"{valor:.0f}%" if valor >= 9.5 else f"{valor:.1f}%",
+                    ha="center", va="center", fontsize=14, fontweight="bold", color=tinta)
+            r = resumo[(cs[i], vs[j])]
+            ax.text(j + 0.5, len(cs) - 1 - i + 0.2, f"falhou em {r[chave_reps]} de {r['reps']} rep.",
+                    ha="center", va="center", fontsize=7.5, color=tinta)
     ax.set_xlim(0, len(vs))
     ax.set_ylim(0, len(cs))
     ax.set_xticks([j + 0.5 for j in range(len(vs))], [NOME_VERSAO[v] for v in vs], fontsize=9)
@@ -137,14 +148,12 @@ def mapa_de_calor(resumo, saida, nreps):
     ax.tick_params(length=0)
     for lado in ax.spines.values():
         lado.set_visible(False)
-    fig.suptitle("Pedidos com problema em cada versão, sob o mesmo teste", x=0.02, ha="left",
+    fig.suptitle(titulo, x=0.02, ha="left",
                  fontsize=15, fontweight="bold", y=1 - 0.1 / altura)
-    fig.text(0.02, 1 - 0.62 / altura, "Duplicados ou perdidos sem rastro, em % dos pedidos (média das repetições). "
-             "Quanto mais claro, melhor.", fontsize=10, color=TINTA_2)
-    fig.text(0.02, 0.16 / altura, f"{nreps} repetições por célula. Pedido perdido que ficou na DLQ não conta como problema "
-             "(foi preservado); veja o detalhe na figura 2.", fontsize=8.5, color=TINTA_2)
+    fig.text(0.02, 1 - 0.62 / altura, subtitulo, fontsize=10, color=TINTA_2)
+    fig.text(0.02, 0.16 / altura, f"Até {nreps} repetições por célula. {nota}", fontsize=8.5, color=TINTA_2)
     fig.subplots_adjust(top=1 - 1.75 / altura, bottom=0.6 / altura, left=2.7 / largura, right=0.98)
-    fig.savefig(saida / "1_mapa_de_calor.png", dpi=160)
+    fig.savefig(saida / arquivo, dpi=160)
     plt.close(fig)
 
 
@@ -210,7 +219,7 @@ def barras_simples(resumo, saida, chave, titulo, rotulo_y, arquivo, formato):
 
 def tabela(resumo, saida):
     cabecalho = ["cenario", "versao", "reps", "pedidos", "duplicados", "perdidos", "dlq", "estoque_extra",
-                 "problema_pct", "rejeitados_pct", "lat_p95_s"]
+                 "problema_pct", "reps_com_problema", "rejeitados_pct", "lat_p95_s"]
     linhas = []
     for c in cenarios_presentes(resumo):
         for v in versoes_presentes(resumo):
@@ -218,7 +227,7 @@ def tabela(resumo, saida):
             if r:
                 linhas.append([c, v, r["reps"], f"{r['pedidos']:.0f}", f"{r['duplicados']:.1f}", f"{r['perdidos']:.1f}",
                                f"{r['dlq']:.1f}", f"{r['estoque_extra']:.1f}", f"{r['problema']:.1f}",
-                               f"{r['rejeitados']:.1f}", f"{r['lat_p95']:.1f}" if r["lat_p95"] is not None else ""])
+                               f"{r['reps_problema']}/{r['reps']}", f"{r['rejeitados']:.1f}", f"{r['lat_p95']:.1f}" if r["lat_p95"] is not None else ""])
     with open(saida / "tabela_resumo.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(cabecalho)
@@ -249,6 +258,11 @@ def main():
     nreps = max(r["reps"] for r in resumo.values())
     estilo()
     mapa_de_calor(resumo, saida, nreps)
+    mapa_de_calor(resumo, saida, nreps, chave="estrito", chave_reps="reps_estrito",
+                  arquivo="1b_mapa_de_calor_estrito.png",
+                  titulo="Pedidos que não concluíram corretamente, contando a DLQ como não concluído",
+                  subtitulo="Duplicados ou perdidos (inclusive os preservados na DLQ), em % dos pedidos. Quanto mais claro, melhor.",
+                  nota="Esta leitura é mais dura que a figura 1: a DLQ guarda a mensagem, mas o pedido continua sem concluir.")
     detalhe(resumo, saida)
     barras_simples(resumo, saida, "lat_p95", "Custo: tempo para o pedido concluir (latência p95)", "segundos",
                    "3_custo_latencia.png", "{:.1f} s")
