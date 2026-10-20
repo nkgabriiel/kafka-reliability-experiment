@@ -1,0 +1,262 @@
+#!/usr/bin/env python3
+"""Gera a tabela-resumo e os gráficos a partir do CSV da bateria (benchmark/bateria.py).
+
+Saídas, na mesma pasta do CSV:
+    1_mapa_de_calor.png   a visão geral: % de pedidos com problema, por versão e cenário
+    2_detalhe_por_cenario.png   o que é o problema em cada caso (duplicado, perdido, perdido mas preservado na DLQ)
+    3_custo_latencia.png  o custo: latência p95 por versão e cenário
+    4_disponibilidade.png  quantos pedidos o sistema rejeitou na criação (o custo de disponibilidade)
+    tabela_resumo.csv / tabela_resumo.md   os números por trás dos gráficos
+
+Requer matplotlib (pip install matplotlib). Uso:
+    py benchmark/grafico.py                       # usa o CSV mais recente em results/bateria/
+    py benchmark/grafico.py results/bateria/rapido-20261020-031500/bateria.csv
+"""
+import argparse
+import csv
+import statistics
+import sys
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.patches import Patch
+
+RAIZ = Path(__file__).resolve().parent.parent
+
+VERSOES = ["v0", "v1", "v2", "v3", "v4", "v5", "v6"]
+NOME_VERSAO = {"v0": "V0\nmonólito\n(controle)", "v1": "V1\nsem proteção", "v2": "V2\n+ producer\nidempotente",
+               "v3": "V3\n+ dedupe\nno consumer", "v4": "V4\n+ outbox", "v5": "V5\n+ retry e DLQ",
+               "v6": "V6\n+ transações\nKafka"}
+CENARIOS = ["kill_ack", "kill_publicacao", "poison", "falha_transitoria", "queda_broker", "queda_banco",
+            "restart_consumer", "latencia_rede", "particao_rede", "particao_banco"]
+NOME_CENARIO = {"kill_ack": "Queda do pagamento\nna janela do ack",
+                "kill_publicacao": "Queda entre o commit\ne a publicação",
+                "poison": "Poison message\n(falha sempre)",
+                "falha_transitoria": "Falha transitória\n(50% das chamadas)",
+                "queda_broker": "Queda do broker\nKafka (8 s)",
+                "queda_banco": "Queda do banco\nPostgreSQL (8 s)",
+                "restart_consumer": "Restart do consumer\n(rebalanceamento)",
+                "latencia_rede": "Latência de rede\n(Kafka, 1,5 s)",
+                "particao_rede": "Partição de rede\n(Kafka, 15 s)",
+                "particao_banco": "Partição de rede\n(PostgreSQL, 8 s)"}
+
+# Cores: superfície e tinta neutras; categorias nos slots 1 a 3 da paleta validada (azul, laranja, verde-água)
+SUPERFICIE, TINTA, TINTA_2, GRADE = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
+COR_DUPLICADO, COR_PERDIDO, COR_DLQ = "#2a78d6", "#eb6834", "#1baf7a"
+COR_LATENCIA = "#2a78d6"
+SEQUENCIAL = LinearSegmentedColormap.from_list("problema", ["#fdf1ea", "#f4a47f", "#eb6834", "#a8400f", "#5b230a"])
+
+
+def carregar(caminho):
+    with open(caminho, encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def numero(valor):
+    return float(valor) if valor not in ("", None) else None
+
+
+def agregar(linhas):
+    """Média (e faixa min-max) das repetições de cada (cenário, versão), em % dos pedidos."""
+    grupos = {}
+    for r in linhas:
+        grupos.setdefault((r["cenario"], r["versao"]), []).append(r)
+    resumo = {}
+    for chave, rs in grupos.items():
+        def pct(f):
+            return [100.0 * f(r) / float(r["pedidos"]) for r in rs]
+        dup = pct(lambda r: float(r["duplicados"]))
+        sem_rastro = pct(lambda r: max(0.0, float(r["perdidos"]) - float(r["dlq"])))
+        preservados = pct(lambda r: min(float(r["perdidos"]), float(r["dlq"])))
+        problema = [d + s for d, s in zip(dup, sem_rastro)]
+        lat = [numero(r["lat_p95_s"]) for r in rs if numero(r["lat_p95_s"]) is not None]
+        resumo[chave] = dict(
+            reps=len(rs), pedidos=statistics.mean(float(r["pedidos"]) for r in rs),
+            duplicados=statistics.mean(float(r["duplicados"]) for r in rs),
+            perdidos=statistics.mean(float(r["perdidos"]) for r in rs),
+            dlq=statistics.mean(float(r["dlq"]) for r in rs),
+            estoque_extra=statistics.mean(float(r["estoque_extra"]) for r in rs),
+            dup=statistics.mean(dup), sem_rastro=statistics.mean(sem_rastro),
+            preservados=statistics.mean(preservados), problema=statistics.mean(problema),
+            problema_min=min(problema), problema_max=max(problema),
+            lat_p95=statistics.mean(lat) if lat else None,
+            rejeitados=statistics.mean(
+                100.0 * float(r.get("criacao_falhou") or 0)
+                / (float(r["pedidos"]) + float(r.get("criacao_falhou") or 0)) for r in rs),
+        )
+    return resumo
+
+
+def estilo():
+    plt.rcParams.update({
+        "figure.facecolor": SUPERFICIE, "axes.facecolor": SUPERFICIE, "savefig.facecolor": SUPERFICIE,
+        "text.color": TINTA, "axes.labelcolor": TINTA_2, "xtick.color": TINTA_2, "ytick.color": TINTA_2,
+        "axes.edgecolor": GRADE, "font.size": 10, "axes.spines.top": False, "axes.spines.right": False,
+    })
+
+
+def versoes_presentes(resumo):
+    return [v for v in VERSOES if any(k[1] == v for k in resumo)]
+
+
+def cenarios_presentes(resumo):
+    return [c for c in CENARIOS if any(k[0] == c for k in resumo)]
+
+
+def mapa_de_calor(resumo, saida, nreps):
+    vs, cs = versoes_presentes(resumo), cenarios_presentes(resumo)
+    matriz = [[resumo.get((c, v), {}).get("problema") for v in vs] for c in cs]
+    topo = max([x for linha in matriz for x in linha if x is not None] + [1.0])
+    largura = max(11.5, 1.9 * len(vs) + 3.4)
+    altura = 0.95 * len(cs) + 2.3
+    fig, ax = plt.subplots(figsize=(largura, altura))
+    for i, c in enumerate(cs):
+        for j, v in enumerate(vs):
+            valor = matriz[i][j]
+            if valor is None:
+                if v == "v0":     # o monólito não tem Kafka: esses cenários não se aplicam a ele
+                    ax.add_patch(plt.Rectangle((j, len(cs) - 1 - i), 1, 1, facecolor="#ecebe7",
+                                               edgecolor=SUPERFICIE, linewidth=3))
+                    ax.text(j + 0.5, len(cs) - 1 - i + 0.5, "n/a", ha="center", va="center", fontsize=12,
+                            color=TINTA_2)
+                continue
+            cor = SEQUENCIAL(valor / topo)
+            ax.add_patch(plt.Rectangle((j, len(cs) - 1 - i), 1, 1, facecolor=cor, edgecolor=SUPERFICIE, linewidth=3))
+            claro = (0.299 * cor[0] + 0.587 * cor[1] + 0.114 * cor[2]) > 0.55
+            ax.text(j + 0.5, len(cs) - 1 - i + 0.5, f"{valor:.0f}%" if valor >= 9.5 else f"{valor:.1f}%",
+                    ha="center", va="center", fontsize=14, fontweight="bold", color=TINTA if claro else "#ffffff")
+    ax.set_xlim(0, len(vs))
+    ax.set_ylim(0, len(cs))
+    ax.set_xticks([j + 0.5 for j in range(len(vs))], [NOME_VERSAO[v] for v in vs], fontsize=9)
+    ax.set_yticks([len(cs) - 1 - i + 0.5 for i in range(len(cs))], [NOME_CENARIO[c] for c in cs], fontsize=9.5)
+    ax.xaxis.tick_top()
+    ax.tick_params(length=0)
+    for lado in ax.spines.values():
+        lado.set_visible(False)
+    fig.suptitle("Pedidos com problema em cada versão, sob o mesmo teste", x=0.02, ha="left",
+                 fontsize=15, fontweight="bold", y=1 - 0.1 / altura)
+    fig.text(0.02, 1 - 0.62 / altura, "Duplicados ou perdidos sem rastro, em % dos pedidos (média das repetições). "
+             "Quanto mais claro, melhor.", fontsize=10, color=TINTA_2)
+    fig.text(0.02, 0.16 / altura, f"{nreps} repetições por célula. Pedido perdido que ficou na DLQ não conta como problema "
+             "(foi preservado); veja o detalhe na figura 2.", fontsize=8.5, color=TINTA_2)
+    fig.subplots_adjust(top=1 - 1.75 / altura, bottom=0.6 / altura, left=2.7 / largura, right=0.98)
+    fig.savefig(saida / "1_mapa_de_calor.png", dpi=160)
+    plt.close(fig)
+
+
+def detalhe(resumo, saida):
+    vs, cs = versoes_presentes(resumo), cenarios_presentes(resumo)
+    colunas = 2 if len(cs) > 1 else 1
+    linhas = (len(cs) + 1) // 2
+    fig, eixos = plt.subplots(linhas, colunas, figsize=(6.6 * colunas, 3.9 * linhas), squeeze=False)
+    for ax in eixos.flat[len(cs):]:
+        ax.set_visible(False)
+    for ax, c in zip(eixos.flat, cs):
+        base = [0.0] * len(vs)
+        for chave, cor in (("dup", COR_DUPLICADO), ("sem_rastro", COR_PERDIDO), ("preservados", COR_DLQ)):
+            altura = [resumo.get((c, v), {}).get(chave, 0.0) for v in vs]
+            ax.bar(range(len(vs)), altura, bottom=base, width=0.52, color=cor, edgecolor=SUPERFICIE, linewidth=1.6)
+            base = [b + h for b, h in zip(base, altura)]
+        for i, total in enumerate(base):
+            texto = "n/a" if (c, vs[i]) not in resumo else (f"{total:.1f}%" if total else "0%")
+            ax.text(i, total + 0.02 * max(max(base), 1), texto, ha="center", va="bottom", fontsize=9,
+                    color=TINTA_2 if texto == "n/a" else TINTA)
+        ax.set_xticks(range(len(vs)), [NOME_VERSAO[v] for v in vs], fontsize=7)
+        ax.set_ylim(0, max(max(base), 1) * 1.25)
+        ax.set_ylabel("% dos pedidos")
+        ax.set_title(NOME_CENARIO[c].replace("\n", " "), loc="left", fontsize=11, fontweight="bold")
+        ax.yaxis.grid(True, color=GRADE, linewidth=0.8)
+        ax.set_axisbelow(True)
+    fig.legend(handles=[Patch(color=COR_DUPLICADO, label="duplicados (mais de 1 pagamento)"),
+                        Patch(color=COR_PERDIDO, label="perdidos sem rastro (nunca concluem)"),
+                        Patch(color=COR_DLQ, label="perdidos, mas preservados na DLQ")],
+               loc="lower center", ncol=3, frameon=False, fontsize=9.5)
+    fig.suptitle("O que acontece com os pedidos afetados", x=0.02, ha="left", fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=(0, 0.06, 1, 0.95))
+    fig.savefig(saida / "2_detalhe_por_cenario.png", dpi=160)
+    plt.close(fig)
+
+
+def barras_simples(resumo, saida, chave, titulo, rotulo_y, arquivo, formato):
+    """Uma barra por versão, um painel por cenário (formas de uma série só: sem legenda, o título diz o que é)."""
+    vs, cs = versoes_presentes(resumo), cenarios_presentes(resumo)
+    colunas = 2 if len(cs) > 1 else 1
+    linhas = (len(cs) + 1) // 2
+    fig, eixos = plt.subplots(linhas, colunas, figsize=(6.6 * colunas, 3.6 * linhas), squeeze=False)
+    for ax in eixos.flat[len(cs):]:
+        ax.set_visible(False)
+    for ax, c in zip(eixos.flat, cs):
+        valores = [resumo.get((c, v), {}).get(chave) or 0.0 for v in vs]
+        ax.bar(range(len(vs)), valores, width=0.52, color=COR_LATENCIA)
+        for i, valor in enumerate(valores):
+            texto = "n/a" if (c, vs[i]) not in resumo else formato.format(valor)
+            ax.text(i, valor + 0.02 * max(max(valores), 1), texto, ha="center", va="bottom", fontsize=9,
+                    color=TINTA_2 if texto == "n/a" else TINTA)
+        ax.set_xticks(range(len(vs)), [NOME_VERSAO[v] for v in vs], fontsize=7)
+        ax.set_ylim(0, max(max(valores), 1) * 1.25)
+        ax.set_ylabel(rotulo_y)
+        ax.set_title(NOME_CENARIO[c].replace("\n", " "), loc="left", fontsize=11, fontweight="bold")
+        ax.yaxis.grid(True, color=GRADE, linewidth=0.8)
+        ax.set_axisbelow(True)
+    fig.suptitle(titulo, x=0.02, ha="left", fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.savefig(saida / arquivo, dpi=160)
+    plt.close(fig)
+
+
+def tabela(resumo, saida):
+    cabecalho = ["cenario", "versao", "reps", "pedidos", "duplicados", "perdidos", "dlq", "estoque_extra",
+                 "problema_pct", "rejeitados_pct", "lat_p95_s"]
+    linhas = []
+    for c in cenarios_presentes(resumo):
+        for v in versoes_presentes(resumo):
+            r = resumo.get((c, v))
+            if r:
+                linhas.append([c, v, r["reps"], f"{r['pedidos']:.0f}", f"{r['duplicados']:.1f}", f"{r['perdidos']:.1f}",
+                               f"{r['dlq']:.1f}", f"{r['estoque_extra']:.1f}", f"{r['problema']:.1f}",
+                               f"{r['rejeitados']:.1f}", f"{r['lat_p95']:.1f}" if r["lat_p95"] is not None else ""])
+    with open(saida / "tabela_resumo.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(cabecalho)
+        w.writerows(linhas)
+    md = ["| " + " | ".join(cabecalho) + " |", "|" + "---|" * len(cabecalho)]
+    md += ["| " + " | ".join(str(x) for x in linha) + " |" for linha in linhas]
+    (saida / "tabela_resumo.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    print("\n".join(md))
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8")
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("csv", nargs="*", help="um ou mais CSVs da bateria (juntados); padrão: o mais recente em results/bateria/")
+    ap.add_argument("--saida", help="pasta de saída (padrão: a pasta do primeiro CSV)")
+    a = ap.parse_args()
+    if a.csv:
+        caminhos = [Path(c) for c in a.csv]
+    else:
+        candidatos = sorted((RAIZ / "results" / "bateria").glob("*/bateria.csv"), key=lambda p: p.stat().st_mtime)
+        if not candidatos:
+            sys.exit("nenhum bateria.csv encontrado em results/bateria/")
+        caminhos = [candidatos[-1]]
+    linhas = [r for c in caminhos for r in carregar(c)]
+    resumo = agregar(linhas)
+    saida = Path(a.saida) if a.saida else caminhos[0].parent
+    saida.mkdir(parents=True, exist_ok=True)
+    nreps = max(r["reps"] for r in resumo.values())
+    estilo()
+    mapa_de_calor(resumo, saida, nreps)
+    detalhe(resumo, saida)
+    barras_simples(resumo, saida, "lat_p95", "Custo: tempo para o pedido concluir (latência p95)", "segundos",
+                   "3_custo_latencia.png", "{:.1f} s")
+    barras_simples(resumo, saida, "rejeitados", "Disponibilidade: pedidos rejeitados na criação (% das tentativas)",
+                   "% das tentativas", "4_disponibilidade.png", "{:.0f}%")
+    tabela(resumo, saida)
+    print(f"\ngráficos e tabela gravados em {saida}")
+
+
+if __name__ == "__main__":
+    main()
