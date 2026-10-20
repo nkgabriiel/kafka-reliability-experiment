@@ -33,20 +33,25 @@ Java 21, Spring Boot 4.1, PostgreSQL, Apache Kafka (modo KRaft), Docker Compose,
 
 ```
 .
-├── docker-compose.yml       # Kafka (KRaft) + PostgreSQL
-├── docker/postgres/         # script de inicialização (schemas)
-├── monolito-pedidos/        # versão 0 (baseline monolítico)
+├── docker-compose.yml           # Kafka (KRaft) + PostgreSQL + os três serviços (+ monólito, no profile v0)
+├── docker-compose.override.yml  # nomes fixos dos containers
+├── docker-compose.toxiproxy.yml # camada de falha de rede (Toxiproxy), usada pela bateria
+├── docker/postgres/             # script de inicialização (schemas)
+├── monolito-pedidos/            # versão 0 (baseline monolítico)
 ├── order-service/
 ├── payment-service/
 ├── stock-service/
-├── failure-injection/       # scripts de falha e carga
-└── results/                 # dados coletados dos experimentos
+├── integration-tests/           # testes de integração (Testcontainers)
+├── benchmark/                   # bateria única de experimentos e script do gráfico
+├── failure-injection/           # scripts avulsos de falha (Fases 3 e 4)
+└── results/                     # dados coletados dos experimentos
 ```
 
 ## Subindo o ambiente
 
 ```bash
-docker-compose up -d
+docker compose up -d --build              # sobe a versão padrão (v5)
+VERSAO=v3 docker compose up -d --build    # sobe outra versão (v1 a v6)
 ```
 
 Isso sobe:
@@ -60,6 +65,44 @@ docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:90
 docker exec postgres psql -U tcc -d tcc_pedidos -c "\dn"
 ```
 
+
+## Versões como configuração
+
+A partir da Fase 9, as versões **V1 a V6 são o mesmo código**, e cada uma é uma configuração que liga ou desliga proteções. Foi o que tornou possível rodar **exatamente o mesmo teste** em todas. A versão é escolhida pela variável `VERSAO` (padrão `v5`) e cada proteção é um *profile* do Spring, em `application-<proteção>.properties`:
+
+| Versão | Profiles ligados | Proteção adicionada |
+|---|---|---|
+| v1 | (nenhum) | baseline sem proteção |
+| v2 | `producer-idempotente` | producer idempotente |
+| v3 | + `dedupe` | idempotência de consumer |
+| v4 | + `outbox` | transactional outbox |
+| v5 | + `retry-dlq` | retry com backoff e DLQ |
+| v6 | + `transacoes` | transações Kafka (read-process-write) |
+
+A **V0** (monólito) continua sendo outro programa (`monolito-pedidos/`), no profile `v0` do compose, com a API na porta 8090.
+
+Os ganchos de falha são iguais em todas as versões e se controlam por variáveis de ambiente do compose:
+
+| Variável | Efeito |
+|---|---|
+| `ATRASO_ACK_MS` | espera antes de confirmar (`ack`) a mensagem de entrada no `payment-service` |
+| `ATRASO_PUBLICACAO_{ORDER,PAYMENT,STOCK}_MS` | alarga a janela entre o passo de banco e a publicação (espera antes do envio, nas V1 a V3; idade mínima do evento na outbox, na V4 em diante) |
+| `PRODUTO_ENVENENADO` | `produtoId` que faz o processamento falhar sempre (poison message) |
+| `FAILURE_RATE` | percentual (0 a 100) das chamadas do pagamento que falham de forma aleatória |
+| `SESSION_TIMEOUT_MS`, `HEARTBEAT_MS` | tempos do consumer group (reentrega mais rápida nos testes) |
+| `LISTENER_CONCURRENCY` | threads do consumer do pagamento (a bateria usa 3, uma por partição) |
+| `KAFKA_BOOTSTRAP`, `DB_HOSTPORT` | passam o tráfego pelo Toxiproxy (cenários de rede) |
+
+**Como sabemos que a configuração equivale à versão original.** Cada proteção foi conferida com um teste diferencial, trocando só `VERSAO`:
+
+| Teste | Resultado |
+|---|---|
+| Replay de offsets | v2: 2 pagamentos e estoque tirado 3 vezes; v3: 1 e 1 |
+| Queda entre gravar e publicar | v2: 2 pagamentos; v3: pedido `PENDENTE` para sempre; v4: `CONCLUIDO` com 1 pagamento |
+| Mensagem envenenada | v4: 10 tentativas e a mensagem some; v5: 4 tentativas e vai para a DLQ |
+| Suíte de integração (6 testes) | passa na configuração padrão (v5) |
+
+As seções das Fases 3 a 7, abaixo, foram escritas quando cada versão ainda era uma tag. Seus números seguem valendo como **validação do mecanismo de cada versão**. A comparação entre versões está na seção da bateria única, no fim.
 
 ## Fase 3 — Resultado de controle (Versão 1: baseline sem proteção)
 
@@ -278,7 +321,7 @@ A V3 elimina a duplicação de efeito no consumer: com reentrega por falha do se
 
 ### Limitações
 
-- **A V3 troca duplicação por uma possível perda numa janela.** O registro do evento e o efeito de negócio commitam juntos, mas a publicação do evento seguinte acontece depois. Se o serviço cair **depois do commit e antes de publicar**, a reentrega será descartada pelo dedupe e o evento seguinte **nunca será publicado**, deixando o pedido preso. Nos experimentos o `kill` cai depois da publicação, então eles mostram a correção e não essa janela. Resolver isso foi o objetivo do outbox transacional (Fase 6, abaixo).
+- **A V3 troca duplicação por uma possível perda numa janela.** O registro do evento e o efeito de negócio commitam juntos, mas a publicação do evento seguinte acontece depois. Se o serviço cair **depois do commit e antes de publicar**, a reentrega será descartada pelo dedupe e o evento seguinte **nunca será publicado**, deixando o pedido preso. Nos experimentos desta fase o `kill` cai depois da publicação, então eles mostram a correção e não essa janela. A perda foi **reproduzida depois**, com o gancho de atraso de publicação (ver a bateria única). Resolvê-la foi o objetivo do outbox transacional (Fase 6, abaixo).
 - A tabela `eventos_processados` cresce indefinidamente; não há política de retenção.
 - O teste de falha usa uma janela amplificada (2000 ms) e 5 execuções; a taxa natural continua sem ser mensurável com `docker kill` externo (ver a Fase 3).
 - O teste de replay depende dos avisos nos logs dos serviços para saber que o replay foi processado.
@@ -382,3 +425,112 @@ A V5 isola a poison message: ela é tentada com backoff, esgota as tentativas e 
 - **Mensagem ilegível não passa pelo retry.** Os consumers usam `JsonDeserializer` direto; um JSON inválido trava o consumo da partição em loop, em vez de ir para a DLQ. Seria necessário `ErrorHandlingDeserializer`. A poison message testada falha no processamento, não na leitura.
 - A poison message é simulada por configuração (`PRODUTO_ENVENENADO`), só no `payment-service`; a validação no `stock-service` e no `order-service` foi manual.
 - Todas as exceções são retentadas, inclusive as que nunca se resolveriam (como um pedido inexistente); não há classificação entre erros transitórios e permanentes.
+
+## Fase 8 — Versão 6: transações Kafka (read-process-write)
+
+**Objetivo:** fazer "consumir a mensagem" e "publicar o resultado" valerem como **um ato só**, com transações Kafka (exactly-once dentro do Kafka).
+
+### Implementação
+
+O profile `transacoes` (acima de `retry-dlq`) muda o `payment-service` e o `stock-service`:
+
+- `spring.kafka.producer.transaction-id-prefix` liga o producer transacional (um prefixo por serviço);
+- os consumers leem com `isolation.level=read_committed` (o `order-service` também, pois consome eventos produzidos em transação);
+- o container do listener abre uma transação Kafka por mensagem, e o offset consumido é confirmado **junto** com o evento enviado (`ack-mode=record`);
+- o evento de saída passa a ser enviado **dentro** dessa transação, no lugar da outbox (a chave `app.protecao.outbox` fica desligada nesses dois serviços); o `order-service` continua usando a outbox, porque não há offset consumido para atrelar;
+- o `JpaTransactionManager` é declarado explicitamente como principal, para o `@Transactional` do banco continuar usando o JPA, e não o gerenciador do Kafka.
+
+O retry e a DLQ da V5 continuam funcionando em modo transacional (conferido: 4 tentativas e 1 mensagem na DLQ).
+
+### Resultado
+
+Medido pela bateria única (ver a seção seguinte), 3 repetições por cenário:
+
+| Cenário | V4 | V5 | V6 |
+|---|---|---|---|
+| Queda na janela do ack (de 20 pedidos) | 0 perdidos | 0 perdidos | **3,0 perdidos** (em 3 de 3 repetições) |
+| Queda entre gravar e publicar (de 20) | 0 perdidos | 0 perdidos | **2,7 perdidos** (em 3 de 3 repetições) |
+| Mensagem envenenada | some | na DLQ | na DLQ |
+| Falha passageira 50% | 0 | 3,7 na DLQ | 4,0 na DLQ |
+
+**A V6 literal piora em relação à V4 e à V5 nos cenários de queda.** O motivo é que o serviço faz **duas transações separadas**: a do banco (pagamento e registro do evento recebido) commita primeiro, e a do Kafka (evento de saída e offset) commita depois. Se a queda cai entre as duas, o banco já diz "feito" e o Kafka desfaz a publicação. Na reentrega, o dedupe descarta a mensagem e o evento de saída nunca existiu, então o pedido fica `PENDENTE`. Sem o dedupe, a reentrega reprocessaria e duplicaria o pagamento (como na V2). **Banco e Kafka não commitam juntos**, e é exatamente para isso que existe a outbox.
+
+### Conclusão
+
+O exactly-once do Kafka garante atomicidade **dentro do Kafka** (entre o offset e o evento produzido), o que serve a pipelines Kafka para Kafka. Quando há um banco de dados no caminho, o efeito no banco fica fora da garantia, e quem protege é a outbox. As duas técnicas se complementam. O critério do roadmap ("crash no meio do read-process-write não produz estado inconsistente entre entrada e saída") se cumpre entre o offset e o evento no Kafka, mas **não** entre o banco e o Kafka.
+
+### Limitações
+
+- Não foi implementada a variante "V6 + outbox", que voltaria a 0% nos cenários de queda (mas as transações deixariam de acrescentar algo).
+- O resultado depende de o serviço gravar em banco; um pipeline sem banco não teria esse problema.
+
+## Fases 9 e 10 — Bateria única de experimentos
+
+**Objetivo:** comparar as sete versões com **a mesma carga, as mesmas falhas e as mesmas métricas**, e mostrar o resultado de forma visual.
+
+### Como funciona
+
+`benchmark/bateria.py` (só biblioteca padrão do Python) roda, para cada versão e cada cenário: recria os serviços com a versão e os ganchos do cenário, cria pedidos em taxa fixa, injeta a falha no meio da carga, espera a recuperação e **lê o resultado de fora do sistema** (banco e API). Cada repetição vira uma linha do CSV. As imagens são construídas uma vez (o código é o mesmo para todas as versões).
+
+```bash
+py benchmark/bateria.py                                   # perfil rápido, V1 a V5
+py benchmark/bateria.py --versoes v0 v6                   # monólito e V6
+py benchmark/bateria.py --perfil completo --repeticoes 10 # todos os cenários
+py benchmark/grafico.py csv1 csv2 --saida pasta           # gráficos e tabela (requer matplotlib)
+```
+
+**Cenários** (ambiente comum: session timeout de 6 s, 3 threads no consumer do pagamento):
+
+| Cenário | Falha injetada | Carga |
+|---|---|---|
+| `kill_ack` | `docker kill` do pagamento aos 5 s, com `ATRASO_ACK_MS=2000` | 20 pedidos, 2/s |
+| `kill_publicacao` | `docker kill` do pagamento aos 5 s, com `ATRASO_PUBLICACAO_PAYMENT_MS=2000` | 20 pedidos, 2/s |
+| `poison` | um pedido (o 6º) com o produto envenenado | 30 pedidos, 5/s |
+| `falha_transitoria` | `FAILURE_RATE=50` | 40 pedidos, 5/s |
+| `queda_broker` | Kafka fora por 8 s | 30 pedidos, 3/s |
+| `queda_banco` | PostgreSQL fora por 8 s | 30 pedidos, 3/s |
+| `restart_consumer` | `docker restart` do pagamento (rebalanceamento) | 30 pedidos, 3/s |
+| `latencia_rede` | +1,5 s de latência entre os serviços e o Kafka, por 12 s (Toxiproxy) | 30 pedidos, 3/s |
+| `particao_rede` | partição de rede com o Kafka por 15 s (Toxiproxy) | 30 pedidos, 3/s |
+| `particao_banco` | partição de rede com o PostgreSQL por 8 s (Toxiproxy) | 30 pedidos, 3/s |
+
+O **perfil rápido** roda os quatro primeiros com 3 repetições; o **completo** roda todos. A V0 só participa dos cenários que fazem sentido sem Kafka, e a "queda do pagamento" vira a queda do próprio monólito.
+
+**Métricas** (por repetição): `duplicados` (pedidos com mais de 1 pagamento), `perdidos` (pedidos que não chegaram a `CONCLUIDO` nem `CANCELADO`), `estoque_extra` (estoque tirado além dos pedidos concluídos), `dlq` (pedidos desta repetição que estão em alguma DLQ), `criacao_falhou` (pedidos rejeitados na criação, que mede disponibilidade) e a latência da criação até `CONCLUIDO` (p50, p95, máxima).
+
+### Resultado (perfil rápido, 3 repetições por célula)
+
+Dados brutos em `results/bateria/rapido-*/bateria.csv`; gráficos e tabela em `results/bateria/rapido-v0-a-v6/`.
+
+![Mapa de calor](results/bateria/rapido-v0-a-v6/1_mapa_de_calor.png)
+
+Média por repetição (em **negrito**, o problema que aparece em todas as 3 repetições):
+
+| Cenário (de N pedidos) | V0 | V1 | V2 | V3 | V4 | V5 | V6 |
+|---|---|---|---|---|---|---|---|
+| Queda na janela do ack (20) | 0, mas **45% rejeitados** | **2,3 duplicados** | **3,3 duplicados** | 0 | 0 | 0 | **3,0 perdidos** |
+| Queda entre gravar e publicar (20) | 0, mas **45% rejeitados** | **3,7 duplicados** | **2,3 duplicados** | **2,7 perdidos** | 0 | 0 | **2,7 perdidos** |
+| Mensagem envenenada (30) | n/a | **1 perdida** | **1 perdida** | **1 perdida** | **1 perdida** | 1 na DLQ | 1 na DLQ |
+| Falha passageira 50% (40) | n/a | 0,3 perdidos (1 de 3 rep.) | 0 | 0 | 0 | 3,7 na DLQ | 4,0 na DLQ |
+
+Latência p95 relevante: com mensagem envenenada, V5 ~5,3 s contra ~2 s nas V1 a V4; com falha passageira, V5 ~11 s e V6 ~11,8 s contra 2 a 3,5 s. Nos cenários de queda a latência (~15 a 27 s) é dominada pelo reinício do serviço e **não** mede o custo da técnica.
+
+### Leitura dos resultados
+
+- **Cada técnica fecha a falha que ataca:** a V3 elimina a duplicação (0 contra 2 a 4 por repetição), a V4 elimina a perda entre gravar e publicar (0 contra 2,7 da V3), e a V5 isola a mensagem envenenada na DLQ em vez de perdê-la.
+- **A V3 troca duplicação por perda**, e a V4 corrige isso. É o resultado que a Fase 5 deixava como limitação não reproduzida.
+- **A V2 parece igual à V1** no mapa: ela protege a escrita no broker (provado no teste da Fase 4, 2 registros contra 3), não o consumidor. A diferença de 12% contra 17% entre V1 e V2 é ruído (quantas mensagens estavam em voo na queda), não piora.
+- **A V6 literal perde pedidos**, pela razão explicada na Fase 8.
+- **A V0 nunca duplica nem perde**, porque tudo é uma transação só, mas rejeita pedidos quando cai: a consistência se paga em disponibilidade.
+- **Retry com poucas tentativas tem custo:** com falhas passageiras altas, a V5 (4 tentativas) manda mais pedidos para a DLQ que o tratamento padrão das V1 a V4 (10 tentativas). A DLQ preserva a mensagem, mas o pedido continua sem concluir; na leitura estrita (`1b_mapa_de_calor_estrito.png`) a V5 aparece com 9% nesse cenário.
+
+### Limitações
+
+- **N pequeno.** Três repetições mostram o padrão (cada célula informa em quantas repetições a falha apareceu), mas não sustentam diferenças pequenas nem intervalos de confiança. Os cenários aleatórios (falha passageira) e a latência são os mais sensíveis. A matriz completa (10 a 20 repetições) fica para a análise final; pela medição do perfil rápido, estima-se algo como 11 horas com 10 repetições.
+- **Janelas amplificadas.** Os ganchos de atraso existem porque o `docker kill` externo leva cerca de 0,9 s para chegar, e a janela natural é de milissegundos (0 de 5 na Fase 3). A bateria mede se a proteção **resiste à falha**, não **com que frequência** ela ocorre. A amplificação é igual em todas as versões.
+- **A métrica principal não conta a DLQ como problema** (a mensagem foi preservada). A figura estrita conta, e ambas estão nos resultados.
+- **A V0 não é comparável em tudo:** a arquitetura é síncrona, os ganchos de falha vivem nos serviços Kafka, e a latência dela é o tempo de resposta, não o tempo até concluir. As duas linhas de queda são, para ela, o mesmo teste.
+- **Repetições não independentes.** Rodam no mesmo sistema, sem reiniciar entre elas, e a primeira de cada combinação tem a JVM "fria".
+- **Os cenários extras** (queda de broker, queda de banco, restart do consumidor, latência e partição de rede) foram validados em **uma** repetição, e não medidos. Observações preliminares: a queda do broker na V1 duplicou 13 de 30 pedidos, e a latência de 1,5 s e a partição de 15 s elevaram o p95 da V5 para ~11,6 s e ~28,9 s, sem perda.
+- **Máquina única e carga pequena** (2 a 5 pedidos por segundo): vale a comparação entre versões, não os valores absolutos.
+- O gerador de carga é um script Python (não k6), e a "auditoria" é feita por consultas ao banco, não por uma tabela de observação à parte.
