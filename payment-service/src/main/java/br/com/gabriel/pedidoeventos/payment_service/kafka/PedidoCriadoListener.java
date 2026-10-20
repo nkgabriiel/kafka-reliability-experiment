@@ -9,6 +9,8 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -25,7 +27,8 @@ public class PedidoCriadoListener {
     private final PagamentoEventoProducer pagamentoEventoProducer;
 
     @KafkaListener(topics = "${app.topico.pedidos-criados}", groupId = "${spring.kafka.consumer.group-id}")
-    public void ouvir(PedidoCriadoEvent evento, Acknowledgment ack) {
+    public void ouvir(PedidoCriadoEvent evento,
+                      @Header(name = KafkaHeaders.ACKNOWLEDGMENT, required = false) Acknowledgment ack) {
         MDC.put("pedidoId", evento.pedidoId().toString());
         try {
             log.info("Processando pagamento, valor={}", evento.valorTotal());
@@ -33,7 +36,7 @@ public class PedidoCriadoListener {
             Optional<ProcessamentoPagamento> processado = pagamentoService.processar(evento);
             if (processado.isEmpty()) {
                 log.warn("Evento {} já processado, descartando sem reprocessar", evento.eventId());
-                ack.acknowledge();
+                confirmar(ack);
                 return;
             }
 
@@ -51,9 +54,16 @@ public class PedidoCriadoListener {
                 }
             }
 
-            ack.acknowledge();
+            confirmar(ack);
         } finally {
             MDC.remove("pedidoId");
+        }
+    }
+
+    /** Em modo manual (v1 a v6 sem transações) confirma o offset; com transações o container o confirma. */
+    private static void confirmar(Acknowledgment ack) {
+        if (ack != null) {
+            ack.acknowledge();
         }
     }
 }
