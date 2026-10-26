@@ -87,6 +87,8 @@ CENARIOS = {
                   toxicos=[dict(type="timeout", stream="downstream", attributes=dict(timeout=0)),
                            dict(type="timeout", stream="upstream", attributes=dict(timeout=0))])),
 }
+AQUECIMENTO = 2          # pedidos descartados antes de cada repetição (custo da primeira mensagem)
+TENTATIVAS_ERRO = 2      # quantas vezes tentar uma repetição que falha por erro de infraestrutura
 ASSENTAR = 4              # segundos extras antes de ler o resultado, para efeitos tardios aparecerem
 
 # V0 (monólito, controle): um único serviço síncrono, sem Kafka, no schema public. Só rodam os cenários que
@@ -112,7 +114,7 @@ def alvo_da_acao(versao, alvo):
 
 PERFIS = {
     "rapido": dict(cenarios=["kill_ack", "kill_publicacao", "poison", "falha_transitoria"], repeticoes=3),
-    "completo": dict(cenarios=list(CENARIOS), repeticoes=20),
+    "completo": dict(cenarios=list(CENARIOS), repeticoes=5),
 }
 
 
@@ -275,11 +277,62 @@ def tentar_criar(versao, produto):
         return None
 
 
+def aquecer(versao):
+    """Pedidos descartados antes da repetição: o custo da primeira mensagem (pool de conexões, Hibernate, producer
+    Kafka) não deve distorcer o tempo medido. Uma falha aqui é só registrada e não invalida a repetição."""
+    if AQUECIMENTO <= 0:
+        return
+    tab = tabelas(versao)
+    try:
+        produto = str(uuid.uuid4())
+        sql(f"INSERT INTO {tab['estoque']} (id, produto_id, nome_produto, quantidade_disponivel) "
+            f"VALUES (gen_random_uuid(), '{produto}', 'aquecimento', {ESTOQUE_INICIAL})")
+        ids = set()
+        for _ in range(AQUECIMENTO):
+            criado = tentar_criar(versao, produto)
+            if criado:
+                ids.add(criado[0])
+        if versao == "v0":          # o monólito responde de forma síncrona
+            return
+        fim = time.monotonic() + 20
+        while ids and time.monotonic() < fim:
+            ids = {i for i in ids if status_do_pedido(versao, i) != "CONCLUIDO"}
+            if ids:
+                time.sleep(0.5)
+    except Exception as e:  # noqa: BLE001
+        log(f"    aquecimento falhou ({e}); seguindo sem ele")
+
+
+def repeticao_segura(versao, nome, numero):
+    """Roda a repetição; se falhar por erro de infraestrutura, restaura o estado e tenta de novo. Esgotadas as
+    tentativas, devolve uma linha com o erro (que o gráfico ignora), para não perder as horas já rodadas."""
+    erro = ""
+    for tentativa in range(1, TENTATIVAS_ERRO + 1):
+        try:
+            return repeticao(versao, nome, numero)
+        except Exception as e:  # noqa: BLE001 - qualquer falha de infraestrutura deve ser contida aqui
+            erro = f"{type(e).__name__}: {e}".replace("\n", " ")[:200]
+            log(f"    repetição {numero} falhou (tentativa {tentativa}/{TENTATIVAS_ERRO}): {erro}")
+            try:
+                recriar_servicos(versao, nome)
+            except Exception as e2:  # noqa: BLE001
+                log(f"    não foi possível restaurar os serviços: {e2}")
+    return dict(versao=versao, cenario=nome, repeticao=numero, erro=erro,
+                inicio=datetime.now().isoformat(timespec="seconds"))
+
+
+def carregar_feitos(caminho):
+    """Repetições já concluídas sem erro em um CSV anterior (para --retomar)."""
+    with open(caminho, encoding="utf-8") as f:
+        return {(r["versao"], r["cenario"], int(r["repeticao"])) for r in csv.DictReader(f) if not r.get("erro")}
+
+
 def repeticao(versao, nome, numero):
     cfg = CENARIOS[nome]
     tab = tabelas(versao)
     garantir_infra()
     aguardar_prontos(versao)
+    aquecer(versao)
     produto = str(uuid.uuid4())
     sql(f"INSERT INTO {tab['estoque']} (id, produto_id, nome_produto, quantidade_disponivel) "
         f"VALUES (gen_random_uuid(), '{produto}', 'bateria', {ESTOQUE_INICIAL})")
@@ -376,7 +429,7 @@ def repeticao(versao, nome, numero):
 
 COLUNAS = ["versao", "cenario", "repeticao", "pedidos", "criacao_falhou", "concluidos", "perdidos", "duplicados",
            "pagamentos_extra", "estoque_extra", "dlq", "lat_p50_s", "lat_p95_s", "lat_max_s",
-           "tempo_total_s", "inicio"]
+           "tempo_total_s", "inicio", "erro"]
 
 
 def main():
@@ -390,41 +443,58 @@ def main():
     ap.add_argument("--saida", help="pasta de saída (padrão: results/bateria/<perfil>-<data>)")
     ap.add_argument("--sem-build", action="store_true", help="não reconstrói as imagens")
     ap.add_argument("--manter", action="store_true", help="não derruba a infraestrutura no final")
+    ap.add_argument("--retomar", action="store_true",
+                    help="continua uma rodada interrompida: exige --saida apontando para a pasta existente")
     a = ap.parse_args()
 
     perfil = PERFIS[a.perfil]
     cenarios = a.cenarios or perfil["cenarios"]
     repeticoes = a.repeticoes or perfil["repeticoes"]
+    if a.retomar and not a.saida:
+        ap.error("--retomar exige --saida com a pasta da rodada interrompida")
     saida = Path(a.saida) if a.saida else RAIZ / "results" / "bateria" / f"{a.perfil}-{datetime.now():%Y%m%d-%H%M%S}"
     saida.mkdir(parents=True, exist_ok=True)
-    (saida / "config.json").write_text(json.dumps(dict(
-        perfil=a.perfil, versoes=a.versoes, cenarios={c: CENARIOS[c] for c in cenarios},
-        repeticoes=repeticoes, ambiente_base=AMBIENTE_BASE, estoque_inicial=ESTOQUE_INICIAL), indent=2, ensure_ascii=False), encoding="utf-8")
-    log(f"saída: {saida}")
+    caminho = saida / "bateria.csv"
+    retomando = a.retomar and caminho.exists()
+    if not retomando:
+        (saida / "config.json").write_text(json.dumps(dict(
+            perfil=a.perfil, versoes=a.versoes, cenarios={c: CENARIOS[c] for c in cenarios},
+            repeticoes=repeticoes, ambiente_base=AMBIENTE_BASE, estoque_inicial=ESTOQUE_INICIAL,
+            aquecimento=AQUECIMENTO, tentativas_erro=TENTATIVAS_ERRO), indent=2, ensure_ascii=False), encoding="utf-8")
+    feitos = carregar_feitos(caminho) if retomando else set()
+    log(f"saída: {saida}" + (f" (retomando: {len(feitos)} repetições já concluídas)" if retomando else ""))
 
     if not a.sem_build:
         log("construindo imagens (uma vez; o código é o mesmo para todas as versões)")
         executar(COMPOSE + ["--profile", "v0", "build"])
     subir_infra()
 
-    caminho = saida / "bateria.csv"
-    with open(caminho, "w", newline="", encoding="utf-8") as f:
-        escritor = csv.DictWriter(f, fieldnames=COLUNAS)
-        escritor.writeheader()
+    with open(caminho, "a" if retomando else "w", newline="", encoding="utf-8") as f:
+        escritor = csv.DictWriter(f, fieldnames=COLUNAS, restval="")
+        if not retomando:
+            escritor.writeheader()
         for versao in a.versoes:
             for cenario in cenarios:
                 if versao == "v0" and cenario not in CENARIOS_V0:
                     log(f"=== v0 / {cenario}: não se aplica ao monólito (sem Kafka), pulando")
                     continue
+                faltam = [n for n in range(1, repeticoes + 1) if (versao, cenario, n) not in feitos]
+                if not faltam:
+                    log(f"=== {versao} / {cenario}: já concluído, pulando")
+                    continue
                 log(f"=== {versao} / {cenario}: {CENARIOS[cenario]['descricao']}")
                 recriar_servicos(versao, cenario)
-                for n in range(1, repeticoes + 1):
-                    linha = repeticao(versao, cenario, n)
+                for n in faltam:
+                    linha = repeticao_segura(versao, cenario, n)
                     escritor.writerow(linha)
                     f.flush()
+                    if linha.get("erro"):
+                        log(f"    rep {n}/{repeticoes}: ERRO registrado ({linha['erro']})")
+                        continue
                     log(f"    rep {n}/{repeticoes}: concluidos={linha['concluidos']}/{linha['pedidos']} "
-                        f"criacao_falhou={linha['criacao_falhou']} perdidos={linha['perdidos']} duplicados={linha['duplicados']} "
-                        f"estoque_extra={linha['estoque_extra']} dlq={linha['dlq']} p95={linha['lat_p95_s']}s")
+                        f"criacao_falhou={linha['criacao_falhou']} perdidos={linha['perdidos']} "
+                        f"duplicados={linha['duplicados']} estoque_extra={linha['estoque_extra']} "
+                        f"dlq={linha['dlq']} p95={linha['lat_p95_s']}s")
     if not a.manter:
         executar(COMPOSE + ["--profile", "v0", "down", "-v"], check=False)
     log(f"concluído: {caminho}")

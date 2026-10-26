@@ -54,7 +54,7 @@ SEQUENCIAL = LinearSegmentedColormap.from_list("problema", ["#fdf1ea", "#f4a47f"
 
 def carregar(caminho):
     with open(caminho, encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        return [r for r in csv.DictReader(f) if not r.get("erro")]
 
 
 def numero(valor):
