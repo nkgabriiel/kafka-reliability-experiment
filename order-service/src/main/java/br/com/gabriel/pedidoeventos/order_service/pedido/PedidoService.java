@@ -98,6 +98,26 @@ public class PedidoService {
         }
     }
 
+    /**
+     * V5b: o pagamento esgotou as tentativas e a mensagem foi isolada na DLQ. Leva o pedido a um estado final
+     * (CANCELADO), em vez de deixá-lo PENDENTE para sempre. Não estorna nada: nesse ponto o pagamento nunca foi
+     * aprovado. Idempotente: o mesmo evento da DLQ entregue de novo não faz nada.
+     */
+    @Transactional
+    public void cancelarPorFalhaNoProcessamento(PedidoCriadoEvent evento) {
+        if (!deduplicador.registrarSeNovo(evento.eventId())) {
+            log.warn("Evento {} da DLQ já tratado, descartando sem reprocessar", evento.eventId());
+            return;
+        }
+        pedidoRepository.findById(evento.pedidoId()).ifPresentOrElse(pedido -> {
+            if (pedido.getStatus() == StatusPedido.PENDENTE) {
+                pedido.setStatus(StatusPedido.CANCELADO);
+                pedido.setMotivoCancelamento("Falha técnica no processamento do pagamento (mensagem isolada na DLQ)");
+                log.info("Pedido cancelado: o processamento do pagamento esgotou as tentativas");
+            }
+        }, () -> log.warn("Pedido {} da DLQ não encontrado; nada a cancelar", evento.pedidoId()));
+    }
+
     private PedidoCriadoEvent paraEvento(Pedido pedido) {
         return new PedidoCriadoEvent(
                 UUID.randomUUID(),

@@ -562,6 +562,9 @@ def repeticao(versao, nome, numero):
 
     concluidos = sum(1 for i in ids if status.get(i) == "CONCLUIDO")
     perdidos = sum(1 for i in ids if status.get(i) not in ("CONCLUIDO", "CANCELADO"))
+    # nos cenários da bateria não há cancelamento de negócio (estoque sobra, pagamento abaixo do limite): todo
+    # CANCELADO é falha técnica tratada (V5b). Terminal, mas o pedido não concluiu com sucesso.
+    cancelados = sum(1 for i in ids if status.get(i) == "CANCELADO")
     duplicados = sum(1 for i in ids if pagamentos.get(i, 0) > 1)
     pagamentos_extra = sum(max(0, n - 1) for n in pagamentos.values())
     estoque_extra = max(0, (ESTOQUE_INICIAL - estoque_final) - concluidos_do_produto)
@@ -582,7 +585,7 @@ def repeticao(versao, nome, numero):
     return dict(
         versao=versao, cenario=nome, repeticao=numero, pedidos=len(ids), criacao_falhou=criacao_falhou,
         concluidos=concluidos,
-        perdidos=perdidos, duplicados=duplicados, pagamentos_extra=pagamentos_extra,
+        perdidos=perdidos, cancelados=cancelados, duplicados=duplicados, pagamentos_extra=pagamentos_extra,
         estoque_extra=estoque_extra, dlq=0 if versao == "v0" else dlq_dos_pedidos(ids),
         lat_p50_s=pct(latencias, 0.5), lat_p95_s=pct(latencias, 0.95),
         lat_max_s=round(latencias[-1], 2) if latencias else "",
@@ -595,7 +598,7 @@ def repeticao(versao, nome, numero):
 
 # ---------------------------------------------------------------- orquestração
 
-COLUNAS = ["versao", "cenario", "repeticao", "pedidos", "criacao_falhou", "concluidos", "perdidos", "duplicados",
+COLUNAS = ["versao", "cenario", "repeticao", "pedidos", "criacao_falhou", "concluidos", "perdidos", "cancelados", "duplicados",
            "pagamentos_extra", "estoque_extra", "dlq", "lat_p50_s", "lat_p95_s", "lat_max_s",
            "tempo_total_s", "falha_em_s", "recuperacao_s", "sinal_falha", "valida", "tentativas", "inicio", "erro"]
 
@@ -675,7 +678,7 @@ def main():
                         log(f"    rep {n}/{repeticoes}: ERRO registrado ({linha['erro']})")
                         continue
                     log(f"    rep {n}/{repeticoes}: concluidos={linha['concluidos']}/{linha['pedidos']} "
-                        f"criacao_falhou={linha['criacao_falhou']} perdidos={linha['perdidos']} "
+                        f"criacao_falhou={linha['criacao_falhou']} perdidos={linha['perdidos']} cancelados={linha['cancelados']} "
                         f"duplicados={linha['duplicados']} estoque_extra={linha['estoque_extra']} "
                         f"dlq={linha['dlq']} p95={linha['lat_p95_s']}s valida={linha['valida']} sinal={linha['sinal_falha']}")
     if not a.manter:
