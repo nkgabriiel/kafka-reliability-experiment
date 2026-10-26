@@ -77,7 +77,12 @@ A partir da Fase 9, as versões **V1 a V6 são o mesmo código**, e cada uma é 
 | v3 | + `dedupe` | idempotência de consumer |
 | v4 | + `outbox` | transactional outbox |
 | v5 | + `retry-dlq` | retry com backoff e DLQ |
-| v6 | + `transacoes` | transações Kafka (read-process-write) |
+| v6 | + `transacoes` | transações Kafka (read-process-write), no lugar da outbox no pagamento e no estoque |
+| v5b (variante) | v5 + `dlq-cancela` | o pedido cuja mensagem foi para a DLQ é cancelado, e não fica preso |
+| v6b (variante) | v5 + `transacoes-e-outbox` | transações Kafka somadas à outbox (a V6 cumulativa) |
+
+As **sete versões do trabalho são V0 a V6**. A V5b e a V6b são **variantes** (análise de sensibilidade): a V5b mostra o que a
+V5 ganharia ao tratar a DLQ, e a V6b é a V6 realmente cumulativa, já que a V6 do roadmap desliga a outbox no pagamento e no estoque.
 
 A **V0** (monólito) continua sendo outro programa (`monolito-pedidos/`), no profile `v0` do compose, com a API na porta 8090.
 
@@ -91,6 +96,7 @@ Os ganchos de falha são iguais em todas as versões e se controlam por variáve
 | `FAILURE_RATE` | percentual (0 a 100) das chamadas do pagamento que falham de forma aleatória |
 | `SESSION_TIMEOUT_MS`, `HEARTBEAT_MS` | tempos do consumer group (reentrega mais rápida nos testes) |
 | `LISTENER_CONCURRENCY` | threads do consumer do pagamento (a bateria usa 3, uma por partição) |
+| `RETRY_MAX_RETENTATIVAS` | retentativas do retry no pagamento (padrão 3, ou seja, 4 tentativas); só tem efeito nas versões com retry |
 | `KAFKA_BOOTSTRAP`, `DB_HOSTPORT` | passam o tráfego pelo Toxiproxy (cenários de rede) |
 
 **Como sabemos que a configuração equivale à versão original.** Cada proteção foi conferida com um teste diferencial, trocando só `VERSAO`:
@@ -428,6 +434,18 @@ A V5 isola a poison message: ela é tentada com backoff, esgota as tentativas e 
 - A poison message é simulada por configuração (`PRODUTO_ENVENENADO`), só no `payment-service`; a validação no `stock-service` e no `order-service` foi manual.
 - Todas as exceções são retentadas, inclusive as que nunca se resolveriam (como um pedido inexistente); não há classificação entre erros transitórios e permanentes.
 
+## Variante V5b — cancelar o pedido cuja mensagem foi para a DLQ
+
+**Motivo:** na V5 a mensagem que esgota as tentativas fica guardada na DLQ, mas o pedido continua `PENDENTE` para sempre. A V5b dá um estado final a esse pedido.
+
+**Implementação:** o `order-service` ganhou um consumer da `pedidos.criados.dlq` (grupo `order-service-dlq`, só ativo com o profile `dlq-cancela`) que leva o pedido a `CANCELADO` com o motivo "Falha técnica no processamento do pagamento (mensagem isolada na DLQ)". É idempotente (usa a tabela de eventos processados) e só cancela pedidos ainda `PENDENTE`. A mensagem da DLQ foi publicada pelo `payment-service`, com o nome da classe dele no cabeçalho de tipo; por isso o consumer fixa o tipo e ignora esse cabeçalho.
+
+**Como ler o resultado:** cancelar **não aumenta os pedidos concluídos**. Elimina os pedidos presos (sem estado final), mas um pedido cancelado por falha técnica continua sem concluir com sucesso. Por isso a bateria conta os `cancelados` à parte, a figura de detalhe os mostra como categoria própria e o mapa estrito os conta como não concluídos. O ganho da V5b é **estado final e visibilidade** (o cliente pode ser avisado). Aumentar os concluídos nas falhas passageiras exigiria **reprocessar** a mensagem da DLQ, o que ficou como trabalho futuro.
+
+**Validação (1 repetição por cenário, ainda não medida):** com um pedido envenenado em 30, `perdidos` (presos) foi 0 (na V5 era 1), com 1 cancelado e 1 na DLQ; com 3 envenenados em 30, 3 cancelados; com 50% de falha passageira, 2 cancelados e 2 na DLQ; na queda entre gravar e publicar, 20 de 20 concluídos, igual à V5. No banco, os pedidos cancelados tinham o motivo correto.
+
+**Limitações:** só trata a DLQ do pagamento (`pedidos.criados.dlq`). Uma falha no estoque depois do pagamento aprovado exigiria estornar o pagamento (compensação, ou Saga), que não foi implementada.
+
 ## Fase 8 — Versão 6: transações Kafka (read-process-write)
 
 **Objetivo:** fazer "consumir a mensagem" e "publicar o resultado" valerem como **um ato só**, com transações Kafka (exactly-once dentro do Kafka).
@@ -463,8 +481,14 @@ O exactly-once do Kafka garante atomicidade **dentro do Kafka** (entre o offset 
 
 ### Limitações
 
-- Não foi implementada a variante "V6 + outbox", que voltaria a 0% nos cenários de queda (mas as transações deixariam de acrescentar algo).
+- A V6 do roadmap **substitui** a outbox no pagamento e no estoque; por isso a variante **V6b** (abaixo) mantém a outbox e é a que de fato acumula as proteções.
 - O resultado depende de o serviço gravar em banco; um pipeline sem banco não teria esse problema.
+
+### Variante V6b: transações Kafka somadas à outbox
+
+O profile `transacoes-e-outbox` liga o producer transacional e a leitura `read_committed` como a V6, mas **mantém a outbox ligada**: o evento de saída continua gravado no banco, na mesma transação do efeito. Com o producer transacional, todo envio ao Kafka precisa estar dentro de uma transação; por isso o poller da outbox passou a enviar por `executeInTransaction` quando as transações estão ligadas.
+
+**Validação (1 repetição, ainda não medida):** nas duas quedas (com 3 mensagens em voo no momento da falha) a V6b concluiu **20 de 20** pedidos, sem perda e sem duplicação, ao contrário da V6; a mensagem envenenada e a falha passageira foram para a DLQ como na V5. Nenhum erro de transação nos logs, e o poller publicou os eventos normalmente. O resultado esperado, e que a medição completa vai confirmar ou não, é que a V6b **iguale a V5**: o exactly-once do Kafka só se paga quando não há um banco no caminho.
 
 ## Fases 9 e 10 — Bateria única de experimentos
 
@@ -475,10 +499,13 @@ O exactly-once do Kafka garante atomicidade **dentro do Kafka** (entre o offset 
 `benchmark/bateria.py` (só biblioteca padrão do Python) roda, para cada versão e cada cenário: recria os serviços com a versão e os ganchos do cenário, cria pedidos em taxa fixa, injeta a falha no meio da carga, espera a recuperação e **lê o resultado de fora do sistema** (banco e API). Cada repetição vira uma linha do CSV. As imagens são construídas uma vez (o código é o mesmo para todas as versões).
 
 ```bash
-py benchmark/bateria.py                                   # perfil rápido, V1 a V5
-py benchmark/bateria.py --versoes v0 v6                   # monólito e V6
-py benchmark/bateria.py --perfil completo --repeticoes 10 # todos os cenários
-py benchmark/grafico.py csv1 csv2 --saida pasta           # gráficos e tabela (requer matplotlib)
+py benchmark/bateria.py                                       # perfil rápido: V1 a V5, 3 repetições
+py benchmark/bateria.py --versoes v0 v6                       # só o monólito e a V6
+py benchmark/bateria.py --perfil completo                     # 11 cenários principais, todas as versões, n = 5
+py benchmark/bateria.py --perfil sensibilidade                # janela, taxa de falha, veneno e retry
+py benchmark/bateria.py --perfil completo --estimar           # só imprime a duração estimada
+py benchmark/bateria.py --perfil completo --saida PASTA --retomar   # continua uma rodada interrompida
+py benchmark/grafico.py csv1 csv2 --saida pasta               # gráficos e tabela (requer matplotlib)
 ```
 
 **Cenários** (ambiente comum: session timeout de 6 s, 3 threads no consumer do pagamento):
@@ -495,10 +522,27 @@ py benchmark/grafico.py csv1 csv2 --saida pasta           # gráficos e tabela (
 | `latencia_rede` | +1,5 s de latência entre os serviços e o Kafka, por 12 s (Toxiproxy) | 30 pedidos, 3/s |
 | `particao_rede` | partição de rede com o Kafka por 15 s (Toxiproxy) | 30 pedidos, 3/s |
 | `particao_banco` | partição de rede com o PostgreSQL por 8 s (Toxiproxy) | 30 pedidos, 3/s |
+| `queda_pedidos` | `docker kill` do `order-service` (a porta de entrada) aos 5 s | 20 pedidos, 2/s |
 
-O **perfil rápido** roda os quatro primeiros com 3 repetições; o **completo** roda todos. A V0 só participa dos cenários que fazem sentido sem Kafka, e a "queda do pagamento" vira a queda do próprio monólito.
+**Cenários de sensibilidade** (perfil `sensibilidade`): variam um parâmetro de um cenário principal.
 
-**Métricas** (por repetição): `duplicados` (pedidos com mais de 1 pagamento), `perdidos` (pedidos que não chegaram a `CONCLUIDO` nem `CANCELADO`), `estoque_extra` (estoque tirado além dos pedidos concluídos), `dlq` (pedidos desta repetição que estão em alguma DLQ), `criacao_falhou` (pedidos rejeitados na criação, que mede disponibilidade) e a latência da criação até `CONCLUIDO` (p50, p95, máxima).
+| Família | Cenários | O que varia |
+|---|---|---|
+| Janela do ack | `kill_ack_janela_0`, `_200`, `_400`, `_800` (e o `kill_ack`, de 2000 ms) | tamanho da janela entre gravar e confirmar |
+| Taxa de falha passageira | `falha_transitoria_5`, `_15`, `_30` (e o `falha_transitoria`, de 50%) | percentual de chamadas que falham |
+| Veneno | `poison_10` | 10% dos pedidos (3 em 30) envenenados |
+| Retry | `retry_1`, `_5`, `_9` (e o `falha_transitoria`, de 3) | número de retentativas (só nas versões com retry) |
+
+O **perfil rápido** roda os quatro primeiros cenários principais com 3 repetições; o **completo** roda os 11 principais (n = 5, como o artigo declara) e o de **sensibilidade**, as variações acima. Sem `--versoes`, os dois últimos rodam todas as versões (V0 a V6, mais V5b e V6b). A V0 só participa dos cenários que fazem sentido sem Kafka, e a "queda do pagamento" vira a queda do próprio monólito. Com n = 5 e as nove versões, a duração estimada é de **cerca de 7,8 h** no perfil completo e **4,9 h** no de sensibilidade (`--estimar` calcula para qualquer combinação).
+
+**Como a bateria garante a qualidade da medida:**
+
+- **Aquecimento:** 2 pedidos descartados antes de cada repetição, para o custo da primeira mensagem não distorcer o tempo.
+- **Instante da falha sorteado** (±1,5 s em torno do ponto base), por cenário e repetição, **igual para todas as versões** na mesma repetição (`--instante-fixo` desliga).
+- **Validade da falha:** só vale a repetição em que a falha **atingiu a janela**. Nas quedas, exige pelo menos uma mensagem em voo no instante em que o serviço morreu (medido pelo `FinishedAt` do Docker); no veneno, o pedido envenenado ser tentado mais de uma vez; na falha passageira, algum pedido precisar de nova tentativa. Repetição inválida é refeita (até 2 vezes) e, se continuar inválida, sai das médias. Nas varreduras de janela, a de 0 ms não exige mensagem em voo, porque ali o esperado é a falha errar a janela.
+- **Tolerância a erro e retomada:** uma repetição que falha por infraestrutura é refeita depois de restaurar os serviços; se persistir, é registrada com o erro e a rodada segue. `--retomar` continua uma rodada interrompida a partir do CSV.
+
+**Métricas** (por repetição): `duplicados` (pedidos com mais de 1 pagamento), `perdidos` (pedidos presos, que não chegaram a `CONCLUIDO` nem `CANCELADO`), `cancelados` (cancelados por falha técnica, o que só ocorre na V5b: nos cenários da bateria não há cancelamento de negócio), `estoque_extra` (estoque tirado além dos pedidos concluídos), `dlq` (pedidos desta repetição que estão em alguma DLQ, contados só pelas mensagens commitadas), `criacao_falhou` (pedidos rejeitados na criação, que mede disponibilidade), a latência da criação até `CONCLUIDO` (mediana, p95 e máxima) e o `recuperacao_s` (da falha até o último pedido normal concluir; vazio se algum nunca concluiu). Colunas de controle: `valida`, `sinal_falha` (a evidência de que a falha atingiu a janela), `falha_em_s`, `tentativas` e `erro`.
 
 ### Resultado (perfil rápido, 3 repetições por célula)
 
@@ -528,11 +572,12 @@ Latência p95 relevante: com mensagem envenenada, V5 ~5,3 s contra ~2 s nas V1 a
 
 ### Limitações
 
-- **N pequeno.** Três repetições mostram o padrão (cada célula informa em quantas repetições a falha apareceu), mas não sustentam diferenças pequenas nem intervalos de confiança. Os cenários aleatórios (falha passageira) e a latência são os mais sensíveis. A matriz completa (10 a 20 repetições) fica para a análise final; pela medição do perfil rápido, estima-se algo como 11 horas com 10 repetições.
+- **N pequeno.** Três repetições mostram o padrão (cada célula informa em quantas repetições a falha apareceu), mas não sustentam diferenças pequenas nem intervalos de confiança. Os cenários aleatórios (falha passageira) e a latência são os mais sensíveis. A matriz completa (n = 5, como o artigo declara) fica para a análise final.
 - **Janelas amplificadas.** Os ganchos de atraso existem porque o `docker kill` externo leva cerca de 0,9 s para chegar, e a janela natural é de milissegundos (0 de 5 na Fase 3). A bateria mede se a proteção **resiste à falha**, não **com que frequência** ela ocorre. A amplificação é igual em todas as versões.
 - **A métrica principal não conta a DLQ como problema** (a mensagem foi preservada). A figura estrita conta, e ambas estão nos resultados.
 - **A V0 não é comparável em tudo:** a arquitetura é síncrona, os ganchos de falha vivem nos serviços Kafka, e a latência dela é o tempo de resposta, não o tempo até concluir. As duas linhas de queda são, para ela, o mesmo teste.
-- **Repetições não independentes.** Rodam no mesmo sistema, sem reiniciar entre elas, e a primeira de cada combinação tem a JVM "fria".
+- **Repetições não independentes.** Rodam no mesmo sistema, sem reiniciar entre elas. O aquecimento reduz o efeito da JVM "fria", mas não o elimina.
+- **A leitura estrita conta os cancelados** como não concluídos: cancelar dá estado final, mas o pedido não conclui com sucesso. O ganho da V5b é a visibilidade, não mais sucessos.
 - **Os cenários extras** (queda de broker, queda de banco, restart do consumidor, latência e partição de rede) foram validados em **uma** repetição, e não medidos. Observações preliminares: a queda do broker na V1 duplicou 13 de 30 pedidos, e a latência de 1,5 s e a partição de 15 s elevaram o p95 da V5 para ~11,6 s e ~28,9 s, sem perda.
 - **Máquina única e carga pequena** (2 a 5 pedidos por segundo): vale a comparação entre versões, não os valores absolutos.
 - O gerador de carga é um script Python (não k6), e a "auditoria" é feita por consultas ao banco, não por uma tabela de observação à parte.
