@@ -91,6 +91,7 @@ CENARIOS = {
                            dict(type="timeout", stream="upstream", attributes=dict(timeout=0))])),
 }
 AQUECIMENTO = 2          # pedidos descartados antes de cada repetição (custo da primeira mensagem)
+VERSOES_COM_DLQ = {"v5", "v5b", "v6", "v6b"}   # só estas têm retry + DLQ (nas outras a DLQ não existe)
 TENTATIVAS_ERRO = 2      # quantas vezes tentar uma repetição que falha por erro de infraestrutura
 SEMENTE = 42             # o instante da falha é sorteado por (cenário, repetição), igual para todas as versões
 JITTER_ACAO = 1.5        # o instante da falha varia, no máximo, este tanto (s) para mais ou para menos
@@ -174,6 +175,11 @@ PRINCIPAIS = ["kill_ack", "kill_publicacao", "poison", "falha_transitoria", "que
 SENSIBILIDADE = ["kill_ack_janela_0", "kill_ack_janela_200", "kill_ack_janela_400", "kill_ack_janela_800",
                  "falha_transitoria_5", "falha_transitoria_15", "falha_transitoria_30", "poison_10",
                  "retry_1", "retry_5", "retry_9"]
+VERSOES_DO_PERFIL = {
+    "rapido": ["v1", "v2", "v3", "v4", "v5"],
+    "completo": ["v0", "v1", "v2", "v3", "v4", "v5", "v5b", "v6", "v6b"],
+    "sensibilidade": ["v0", "v1", "v2", "v3", "v4", "v5", "v5b", "v6", "v6b"],
+}
 PERFIS = {
     "rapido": dict(cenarios=["kill_ack", "kill_publicacao", "poison", "falha_transitoria"], repeticoes=3),
     "completo": dict(cenarios=PRINCIPAIS, repeticoes=5),
@@ -586,7 +592,7 @@ def repeticao(versao, nome, numero):
         versao=versao, cenario=nome, repeticao=numero, pedidos=len(ids), criacao_falhou=criacao_falhou,
         concluidos=concluidos,
         perdidos=perdidos, cancelados=cancelados, duplicados=duplicados, pagamentos_extra=pagamentos_extra,
-        estoque_extra=estoque_extra, dlq=0 if versao == "v0" else dlq_dos_pedidos(ids),
+        estoque_extra=estoque_extra, dlq=dlq_dos_pedidos(ids) if versao in VERSOES_COM_DLQ else 0,
         lat_p50_s=pct(latencias, 0.5), lat_p95_s=pct(latencias, 0.95),
         lat_max_s=round(latencias[-1], 2) if latencias else "",
         tempo_total_s=round(ultimo - inicio, 2) if ultimo else "",
@@ -608,8 +614,9 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--perfil", choices=PERFIS, default="rapido")
-    ap.add_argument("--versoes", nargs="+", default=["v1", "v2", "v3", "v4", "v5"],
-                    help="v0 (monólito) a v6")
+    ap.add_argument("--versoes", nargs="+",
+                    help="v0 (monólito) a v6, mais as variantes v5b e v6b "
+                         "(padrão: v1 a v5 no perfil rápido; todas nos perfis completo e sensibilidade)")
     ap.add_argument("--cenarios", nargs="+", choices=CENARIOS)
     ap.add_argument("--repeticoes", type=int)
     ap.add_argument("--saida", help="pasta de saída (padrão: results/bateria/<perfil>-<data>)")
@@ -622,6 +629,7 @@ def main():
     ap.add_argument("--retomar", action="store_true",
                     help="continua uma rodada interrompida: exige --saida apontando para a pasta existente")
     a = ap.parse_args()
+    a.versoes = a.versoes or VERSOES_DO_PERFIL[a.perfil]
     USAR_SORTEIO = not a.instante_fixo
     SEMENTE = a.semente
 
