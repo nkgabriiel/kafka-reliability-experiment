@@ -7,6 +7,7 @@ Saídas, na mesma pasta do CSV:
     2_detalhe_por_cenario.png   o que é o problema em cada caso (duplicado, perdido, perdido mas preservado na DLQ)
     3_custo_latencia.png  o custo: latência (mediana e máximo) por versão e cenário
     5_recuperacao.png     tempo de recuperação: da falha até o último pedido concluir
+    6_varredura_janela.png, 7_varredura_taxa_falha.png, 8_varredura_retry.png   famílias de sensibilidade
     4_disponibilidade.png  quantos pedidos o sistema rejeitou na criação (o custo de disponibilidade)
     tabela_resumo.csv / tabela_resumo.md   os números por trás dos gráficos
 
@@ -34,7 +35,7 @@ NOME_VERSAO = {"v0": "V0\nmonólito\n(controle)", "v1": "V1\nsem proteção", "v
                "v3": "V3\n+ dedupe\nno consumer", "v4": "V4\n+ outbox", "v5": "V5\n+ retry e DLQ",
                "v6": "V6\n+ transações\nKafka"}
 CENARIOS = ["kill_ack", "kill_publicacao", "poison", "falha_transitoria", "queda_broker", "queda_banco",
-            "restart_consumer", "latencia_rede", "particao_rede", "particao_banco"]
+            "restart_consumer", "latencia_rede", "particao_rede", "particao_banco", "queda_pedidos"]
 NOME_CENARIO = {"kill_ack": "Queda do pagamento\nna janela do ack",
                 "kill_publicacao": "Queda entre o commit\ne a publicação",
                 "poison": "Poison message\n(falha sempre)",
@@ -44,7 +45,24 @@ NOME_CENARIO = {"kill_ack": "Queda do pagamento\nna janela do ack",
                 "restart_consumer": "Restart do consumer\n(rebalanceamento)",
                 "latencia_rede": "Latência de rede\n(Kafka, 1,5 s)",
                 "particao_rede": "Partição de rede\n(Kafka, 15 s)",
-                "particao_banco": "Partição de rede\n(PostgreSQL, 8 s)"}
+                "particao_banco": "Partição de rede\n(PostgreSQL, 8 s)",
+                "queda_pedidos": "Queda do serviço de\npedidos (entrada)"}
+
+# Famílias de sensibilidade: uma curva por versão (eixo x categórico, escala não proporcional)
+FAMILIAS = [
+    dict(arquivo="6_varredura_janela.png", titulo="Pedidos com problema conforme o tamanho da janela do ack",
+         rotulo_x="janela do ack (ms; escala não proporcional)", metrica="problema", rotulo_y="% dos pedidos",
+         pontos=[("kill_ack_janela_0", "0"), ("kill_ack_janela_200", "200"), ("kill_ack_janela_400", "400"),
+                 ("kill_ack_janela_800", "800"), ("kill_ack", "2000")]),
+    dict(arquivo="7_varredura_taxa_falha.png", titulo="Pedidos que não concluem conforme a taxa de falha passageira",
+         rotulo_x="falha por tentativa (%; escala não proporcional)", metrica="estrito",
+         rotulo_y="% dos pedidos (inclui a DLQ)",
+         pontos=[("falha_transitoria_5", "5"), ("falha_transitoria_15", "15"), ("falha_transitoria_30", "30"),
+                 ("falha_transitoria", "50")]),
+]
+RETRY = dict(arquivo="8_varredura_retry.png", versoes=["v5", "v6"],
+             pontos=[("retry_1", "1"), ("falha_transitoria", "3"), ("retry_5", "5"), ("retry_9", "9")])
+EXTRAS = ["poison_10"]
 
 # Cores: superfície e tinta neutras; categorias nos slots 1 a 3 da paleta validada (azul, laranja, verde-água)
 SUPERFICIE, TINTA, TINTA_2, GRADE = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
@@ -236,6 +254,83 @@ def barras_simples(resumo, saida, chave, titulo, rotulo_y, arquivo, formato, cha
     plt.close(fig)
 
 
+def curva_por_versao(resumo, saida, fam):
+    """Um painel por versão, com a mesma escala vertical, para comparar o formato da curva entre versões."""
+    vs = [v for v in versoes_presentes(resumo) if any((c, v) in resumo for c, _ in fam["pontos"])]
+    if not vs or sum(1 for c, _ in fam["pontos"] if any((c, v) in resumo for v in vs)) < 2:
+        return                      # uma curva precisa de pelo menos dois pontos medidos
+    ymax = max([resumo[(c, v)][fam["metrica"]] for v in vs for c, _ in fam["pontos"] if (c, v) in resumo] + [1.0]) * 1.2
+    colunas = min(4, len(vs))
+    linhas = (len(vs) + colunas - 1) // colunas
+    fig, eixos = plt.subplots(linhas, colunas, figsize=(3.6 * colunas + 0.8, 3.0 * linhas + 1.0), squeeze=False,
+                              sharey=True)
+    for ax in eixos.flat[len(vs):]:
+        ax.set_visible(False)
+    for ax, v in zip(eixos.flat, vs):
+        xs = [i for i, (c, _) in enumerate(fam["pontos"]) if (c, v) in resumo]
+        ys = [resumo[(fam["pontos"][i][0], v)][fam["metrica"]] for i in xs]
+        ax.plot(xs, ys, color=COR_LATENCIA, linewidth=2, marker="o", markersize=7, markeredgecolor=SUPERFICIE,
+                markeredgewidth=2)
+        if xs:
+            ax.text(xs[-1], ys[-1] + 0.03 * ymax, f"{ys[-1]:.1f}%", ha="center", va="bottom", fontsize=8.5)
+        ax.set_xticks(range(len(fam["pontos"])), [rot for _, rot in fam["pontos"]], fontsize=8)
+        ax.set_xlim(-0.4, len(fam["pontos"]) - 0.6)
+        ax.set_ylim(0, ymax)
+        ax.set_title(NOME_VERSAO[v].replace(chr(10), " "), fontsize=9.5, fontweight="bold", loc="left")
+        ax.yaxis.grid(True, color=GRADE, linewidth=0.8)
+        ax.set_axisbelow(True)
+    fig.supxlabel(fam["rotulo_x"], fontsize=9, color=TINTA_2)
+    fig.supylabel(fam["rotulo_y"], fontsize=9, color=TINTA_2)
+    fig.suptitle(fam["titulo"], x=0.02, ha="left", fontsize=14, fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    fig.savefig(saida / fam["arquivo"], dpi=160)
+    plt.close(fig)
+
+
+def curva_retry(resumo, saida):
+    """Quanto vai para a DLQ e quanto custa em latência, conforme o número de retentativas (só V5 e V6)."""
+    pontos = RETRY["pontos"]
+    vs = [v for v in RETRY["versoes"] if any((c, v) in resumo for c, _ in pontos)]
+    if not vs or sum(1 for c, _ in pontos if any((c, v) in resumo for v in vs)) < 2:
+        return                      # uma curva precisa de pelo menos dois pontos medidos
+    cores = {"v5": COR_DUPLICADO, "v6": COR_PERDIDO}      # slots 1 e 2 da paleta
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.5, 4.4))
+    for chave, ax, rotulo, formato in (("estrito", ax1, "% dos pedidos que foram para a DLQ", "{:.1f}%"),
+                                       ("lat_max", ax2, "latência máxima (s)", "{:.0f} s")):
+        for v in vs:
+            xs = [i for i, (c, _) in enumerate(pontos) if (c, v) in resumo and resumo[(c, v)][chave] is not None]
+            ys = [resumo[(pontos[i][0], v)][chave] for i in xs]
+            # a V6 vai tracejada e com marcador quadrado: se as duas curvas coincidirem, ambas continuam visíveis
+            ax.plot(xs, ys, color=cores[v], linewidth=2, linestyle="--" if v == "v6" else "-",
+                    marker="s" if v == "v6" else "o", markersize=7, markeredgecolor=SUPERFICIE,
+                    markeredgewidth=2, label=NOME_VERSAO[v].replace(chr(10), " "))
+            if xs:
+                ax.text(xs[-1] + 0.06, ys[-1], formato.format(ys[-1]), va="center", fontsize=8.5)
+        ax.set_xticks(range(len(pontos)), [rot for _, rot in pontos])
+        ax.set_xlim(-0.3, len(pontos) - 0.4)
+        ax.set_xlabel("retentativas do retry (escala não proporcional)", fontsize=9, color=TINTA_2)
+        ax.set_ylabel(rotulo, fontsize=9, color=TINTA_2)
+        ax.set_ylim(bottom=0)
+        ax.yaxis.grid(True, color=GRADE, linewidth=0.8)
+        ax.set_axisbelow(True)
+    ax1.legend(frameon=False, fontsize=9)
+    fig.suptitle("Retry: o que vai para a DLQ e o que custa, conforme o número de retentativas (falha de 50%)",
+                 x=0.02, ha="left", fontsize=13, fontweight="bold")
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    fig.savefig(saida / RETRY["arquivo"], dpi=160)
+    plt.close(fig)
+
+
+def todos_os_cenarios(resumo):
+    """Principais, mais os de sensibilidade, na ordem de apresentação (a tabela mostra todos)."""
+    ordem = list(CENARIOS) + [c for fam in FAMILIAS for c, _ in fam["pontos"]] + [c for c, _ in RETRY["pontos"]] + EXTRAS
+    vistos = []
+    for c in ordem:
+        if c not in vistos and any(k[0] == c for k in resumo):
+            vistos.append(c)
+    return vistos
+
+
 def fmt(valor):
     return f"{valor:.1f}" if valor is not None else ""
 
@@ -245,7 +340,7 @@ def tabela(resumo, saida):
                  "problema_pct", "reps_com_problema", "rejeitados_pct", "lat_p50_s", "lat_max_s", "recuperacao_s",
                  "reps_invalidas"]
     linhas = []
-    for c in cenarios_presentes(resumo):
+    for c in todos_os_cenarios(resumo):
         for v in versoes_presentes(resumo):
             r = resumo.get((c, v))
             if r:
@@ -295,6 +390,9 @@ def main():
                    "segundos", "5_recuperacao.png", "{:.0f} s")
     barras_simples(resumo, saida, "rejeitados", "Disponibilidade: pedidos rejeitados na criação (% das tentativas)",
                    "% das tentativas", "4_disponibilidade.png", "{:.0f}%")
+    for fam in FAMILIAS:
+        curva_por_versao(resumo, saida, fam)
+    curva_retry(resumo, saida)
     tabela(resumo, saida)
     print(f"\ngráficos e tabela gravados em {saida}")
 
