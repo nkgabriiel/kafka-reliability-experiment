@@ -107,10 +107,51 @@ JANELA_MS = {"kill_ack": 2000, "kill_publicacao": 2000}
 EXIGE_EM_VOO = {}        # cenários em_voo que NÃO exigem mensagem na janela (ex.: janela de 0 ms, onde o esperado é errar)
 ASSENTAR = 4              # segundos extras antes de ler o resultado, para efeitos tardios aparecerem
 
+# ---- cenários principais novos
+CENARIOS["queda_pedidos"] = dict(
+    descricao="queda do order-service (a porta de entrada) no meio da carga",
+    env={}, pedidos=20, taxa=2, espera_max=45, espera_pos=25,
+    acao=dict(tipo="kill", alvo="order-service", em=5.0))
+
+# ---- famílias de sensibilidade (perfil "sensibilidade")
+# janela do ack: 0 a 800 ms; a de 2000 ms é o próprio kill_ack. Com janela pequena o esperado é a falha errar a
+# janela, então a repetição não é invalidada por não haver mensagem em voo.
+for _ms in (0, 200, 400, 800):
+    CENARIOS[f"kill_ack_janela_{_ms}"] = dict(
+        descricao=f"queda do pagamento na janela do ack, com janela de {_ms} ms",
+        env={"ATRASO_ACK_MS": str(_ms)}, pedidos=20, taxa=2, espera_max=35, espera_pos=22,
+        acao=dict(tipo="kill", alvo="payment-service", em=5.0))
+    VALIDADE[f"kill_ack_janela_{_ms}"] = "em_voo"
+    JANELA_MS[f"kill_ack_janela_{_ms}"] = _ms
+    EXIGE_EM_VOO[f"kill_ack_janela_{_ms}"] = False
+
+# taxa de falha passageira: 5%, 15% e 30% (a de 50% é o próprio falha_transitoria); mais pedidos nas taxas baixas,
+# para que a falha apareça (a repetição sem nenhuma falha sorteada é inválida e refeita)
+for _taxa, _n in ((5, 80), (15, 60), (30, 40)):
+    CENARIOS[f"falha_transitoria_{_taxa}"] = dict(
+        descricao=f"{_taxa}% das chamadas do pagamento falham de forma aleatória",
+        env={"FAILURE_RATE": str(_taxa)}, pedidos=_n, taxa=5, espera_max=30)
+    VALIDADE[f"falha_transitoria_{_taxa}"] = "retentativa"
+
+# 10% de mensagens envenenadas (3 em 30)
+CENARIOS["poison_10"] = dict(
+    descricao="10% dos pedidos (3 de 30) são mensagens envenenadas",
+    env={"PRODUTO_ENVENENADO": PRODUTO_VENENO}, pedidos=30, taxa=5, veneno_indices=[5, 15, 25], espera_max=45)
+VALIDADE["poison_10"] = "veneno"
+
+# número de retentativas do retry (a de 3 é o próprio falha_transitoria); só V5 e V6 têm o retry
+for _r in (1, 5, 9):
+    CENARIOS[f"retry_{_r}"] = dict(
+        descricao=f"falha passageira de 50% com {_r} retentativa(s) no retry",
+        env={"FAILURE_RATE": "50", "RETRY_MAX_RETENTATIVAS": str(_r)}, pedidos=40, taxa=5, espera_max=70,
+        versoes=["v5", "v6"])
+    VALIDADE[f"retry_{_r}"] = "retentativa"
+
 # V0 (monólito, controle): um único serviço síncrono, sem Kafka, no schema public. Só rodam os cenários que
 # fazem sentido sem broker, e a queda do "pagamento" vira a queda do próprio monólito.
 URL_MONOLITO = "http://localhost:8090/pedidos"
-CENARIOS_V0 = ["kill_ack", "kill_publicacao", "queda_banco", "restart_consumer"]
+CENARIOS_V0 = ["kill_ack", "kill_publicacao", "queda_banco", "restart_consumer", "queda_pedidos",
+               "kill_ack_janela_0", "kill_ack_janela_200", "kill_ack_janela_400", "kill_ack_janela_800"]
 TABELAS_V0 = dict(pedido="public.pedido", pagamento="public.pagamento", estoque="public.estoque",
                   item="public.item_pedido")
 TABELAS = dict(pedido="pedido.pedido", pagamento="pagamento.pagamento", estoque="estoque.estoque",
@@ -126,12 +167,36 @@ def url_pedidos(versao):
 
 
 def alvo_da_acao(versao, alvo):
-    return "monolito-pedidos" if versao == "v0" and alvo == "payment-service" else alvo
+    return "monolito-pedidos" if versao == "v0" and alvo in ("payment-service", "order-service") else alvo
 
+PRINCIPAIS = ["kill_ack", "kill_publicacao", "poison", "falha_transitoria", "queda_broker", "queda_banco",
+              "restart_consumer", "latencia_rede", "particao_rede", "particao_banco", "queda_pedidos"]
+SENSIBILIDADE = ["kill_ack_janela_0", "kill_ack_janela_200", "kill_ack_janela_400", "kill_ack_janela_800",
+                 "falha_transitoria_5", "falha_transitoria_15", "falha_transitoria_30", "poison_10",
+                 "retry_1", "retry_5", "retry_9"]
 PERFIS = {
     "rapido": dict(cenarios=["kill_ack", "kill_publicacao", "poison", "falha_transitoria"], repeticoes=3),
-    "completo": dict(cenarios=list(CENARIOS), repeticoes=5),
+    "completo": dict(cenarios=PRINCIPAIS, repeticoes=5),
+    "sensibilidade": dict(cenarios=SENSIBILIDADE, repeticoes=5),
 }
+
+
+def estimar_horas(versoes, cenarios, repeticoes):
+    """Estimativa grosseira (calibrada com as rodadas anteriores) do tempo da bateria, em horas."""
+    total = 0.0
+    for v in versoes:
+        for c in cenarios:
+            cfg = CENARIOS[c]
+            if (v == "v0" and c not in CENARIOS_V0) or ("versoes" in cfg and v not in cfg["versoes"]):
+                continue
+            emissao = cfg["pedidos"] / cfg["taxa"]
+            if cfg.get("acao"):
+                acao = cfg["acao"]
+                por_rep = max(emissao, acao["em"] + acao.get("duracao", 5) + cfg["espera_pos"])
+            else:
+                por_rep = emissao + 8
+            total += 45 + repeticoes * (por_rep + ASSENTAR + 10)     # 45 s para recriar os serviços de cada combinação
+    return total / 3600
 
 
 def log(msg):
@@ -366,9 +431,8 @@ def avaliar_validade(versao, nome, cfg, ctx):
         em_voo = sum(1 for t, l in linhas if "Pagamento processado" in l and morte - janela <= t <= morte)
         return (em_voo >= 1 or not EXIGE_EM_VOO.get(nome, True)), em_voo
     if tipo == "veneno":
-        alvo = ctx["id_veneno"]
-        tentativas = sum(1 for _, l in linhas if "Processando pagamento" in l and alvo and alvo in l)
-        return tentativas >= 2, tentativas
+        por_veneno = [sum(1 for _, l in linhas if "Processando pagamento" in l and pid in l) for pid in ctx["ids_veneno"]]
+        return bool(por_veneno) and all(n >= 2 for n in por_veneno), sum(por_veneno)
     por_pedido = Counter()
     for _, l in linhas:
         if "Processando pagamento" in l:
@@ -433,7 +497,7 @@ def repeticao(versao, nome, numero):
     inicio = time.monotonic()
     fim_emissao = None
     taxa, total = cfg["taxa"], cfg["pedidos"]
-    veneno_indice = cfg.get("veneno_indice")
+    veneno_indices = set(cfg.get("veneno_indices", [cfg["veneno_indice"]] if "veneno_indice" in cfg else []))
     inicio_utc = datetime.now(timezone.utc)
     instante = instante_da_falha(nome, numero, acao["em"]) if acao else None
     acao_inicio_abs = None
@@ -449,7 +513,7 @@ def repeticao(versao, nome, numero):
     while True:
         agora = time.monotonic() - inicio
         while emitidos < total and agora >= emitidos / taxa:
-            veneno = veneno_indice is not None and emitidos == veneno_indice
+            veneno = emitidos in veneno_indices
             t_antes = time.monotonic()
             criado = tentar_criar(versao, PRODUTO_VENENO if veneno else produto)
             if criado is None:
@@ -510,7 +574,7 @@ def repeticao(versao, nome, numero):
         recuperacao = round(max(0.0, max(normais) - acao_inicio_abs), 2)
     valida, sinal = avaliar_validade(versao, nome, cfg, dict(
         inicio_utc=inicio_utc, acao_fim=acao_fim, t_morte=t_morte, ids=ids,
-        id_veneno=next((pid for pid, p in pedidos.items() if p["veneno"]), None)))
+        ids_veneno=[pid for pid, p in pedidos.items() if p["veneno"]]))
 
     def pct(valores, q):
         return round(valores[min(len(valores) - 1, int(q * len(valores)))], 2) if valores else ""
@@ -548,6 +612,7 @@ def main():
     ap.add_argument("--saida", help="pasta de saída (padrão: results/bateria/<perfil>-<data>)")
     ap.add_argument("--sem-build", action="store_true", help="não reconstrói as imagens")
     ap.add_argument("--manter", action="store_true", help="não derruba a infraestrutura no final")
+    ap.add_argument("--estimar", action="store_true", help="só imprime a duração estimada e sai")
     ap.add_argument("--instante-fixo", action="store_true",
                     help="não sorteia o instante da falha (usa sempre o ponto base do cenário)")
     ap.add_argument("--semente", type=int, default=SEMENTE, help="semente do sorteio do instante da falha")
@@ -560,6 +625,10 @@ def main():
     perfil = PERFIS[a.perfil]
     cenarios = a.cenarios or perfil["cenarios"]
     repeticoes = a.repeticoes or perfil["repeticoes"]
+    if a.estimar:
+        print(f"{a.perfil}: {len(cenarios)} cenários x {len(a.versoes)} versões x {repeticoes} repetições "
+              f"= cerca de {estimar_horas(a.versoes, cenarios, repeticoes):.1f} h")
+        return
     if a.retomar and not a.saida:
         ap.error("--retomar exige --saida com a pasta da rodada interrompida")
     saida = Path(a.saida) if a.saida else RAIZ / "results" / "bateria" / f"{a.perfil}-{datetime.now():%Y%m%d-%H%M%S}"
@@ -588,6 +657,9 @@ def main():
             for cenario in cenarios:
                 if versao == "v0" and cenario not in CENARIOS_V0:
                     log(f"=== v0 / {cenario}: não se aplica ao monólito (sem Kafka), pulando")
+                    continue
+                if "versoes" in CENARIOS[cenario] and versao not in CENARIOS[cenario]["versoes"]:
+                    log(f"=== {versao} / {cenario}: só vale para {CENARIOS[cenario]['versoes']}, pulando")
                     continue
                 faltam = [n for n in range(1, repeticoes + 1) if (versao, cenario, n) not in feitos]
                 if not faltam:
