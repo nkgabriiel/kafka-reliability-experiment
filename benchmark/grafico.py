@@ -30,10 +30,11 @@ from matplotlib.patches import Patch
 
 RAIZ = Path(__file__).resolve().parent.parent
 
-VERSOES = ["v0", "v1", "v2", "v3", "v4", "v5", "v6"]
+VERSOES = ["v0", "v1", "v2", "v3", "v4", "v5", "v5b", "v6", "v6b"]
 NOME_VERSAO = {"v0": "V0\nmonólito\n(controle)", "v1": "V1\nsem proteção", "v2": "V2\n+ producer\nidempotente",
-               "v3": "V3\n+ dedupe\nno consumer", "v4": "V4\n+ outbox", "v5": "V5\n+ retry e DLQ",
-               "v6": "V6\n+ transações\nKafka"}
+               "v3": "V3\n+ dedupe\nno consumer", "v4": "V4\n+ outbox", "v5": "V5\n+ retry\ne DLQ",
+               "v5b": "V5b\n(variante)\n+ cancela\no pedido", "v6": "V6\n+ transações\nKafka",
+               "v6b": "V6b\n(variante)\n+ transações\ne outbox"}
 CENARIOS = ["kill_ack", "kill_publicacao", "poison", "falha_transitoria", "queda_broker", "queda_banco",
             "restart_consumer", "latencia_rede", "particao_rede", "particao_banco", "queda_pedidos"]
 NOME_CENARIO = {"kill_ack": "Queda do pagamento\nna janela do ack",
@@ -66,7 +67,7 @@ EXTRAS = ["poison_10"]
 
 # Cores: superfície e tinta neutras; categorias nos slots 1 a 3 da paleta validada (azul, laranja, verde-água)
 SUPERFICIE, TINTA, TINTA_2, GRADE = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
-COR_DUPLICADO, COR_PERDIDO, COR_DLQ = "#2a78d6", "#eb6834", "#1baf7a"
+COR_DUPLICADO, COR_PERDIDO, COR_DLQ, COR_CANCELADO = "#2a78d6", "#eb6834", "#1baf7a", "#eda100"
 COR_LATENCIA = "#2a78d6"
 SEQUENCIAL = LinearSegmentedColormap.from_list("problema", ["#fdf1ea", "#f4a47f", "#eb6834", "#a8400f", "#5b230a"])
 
@@ -96,7 +97,8 @@ def agregar(linhas):
         sem_rastro = pct(lambda r: max(0.0, float(r["perdidos"]) - float(r["dlq"])))
         preservados = pct(lambda r: min(float(r["perdidos"]), float(r["dlq"])))
         problema = [d + s_ for d, s_ in zip(dup, sem_rastro)]
-        estrito = pct(lambda r: float(r["duplicados"]) + float(r["perdidos"]))
+        canc = pct(lambda r: float(r.get("cancelados") or 0))
+        estrito = pct(lambda r: float(r["duplicados"]) + float(r["perdidos"]) + float(r.get("cancelados") or 0))
         lat = [numero(r["lat_p95_s"]) for r in rs if numero(r["lat_p95_s"]) is not None]
         def media(coluna):
             valores = [numero(r.get(coluna)) for r in rs if numero(r.get(coluna)) is not None]
@@ -110,7 +112,8 @@ def agregar(linhas):
             dup=statistics.mean(dup), sem_rastro=statistics.mean(sem_rastro),
             preservados=statistics.mean(preservados), problema=statistics.mean(problema),
             problema_min=min(problema), problema_max=max(problema),
-            estrito=statistics.mean(estrito),
+            estrito=statistics.mean(estrito), canc=statistics.mean(canc),
+            cancelados=statistics.mean(float(r.get("cancelados") or 0) for r in rs),
             reps_problema=sum(1 for x in problema if x > 0), reps_estrito=sum(1 for x in estrito if x > 0),
             lat_p95=statistics.mean(lat) if lat else None,
             lat_p50=media("lat_p50_s"), lat_max=media("lat_max_s"), recuperacao=media("recuperacao_s"),
@@ -193,7 +196,8 @@ def detalhe(resumo, saida):
         ax.set_visible(False)
     for ax, c in zip(eixos.flat, cs):
         base = [0.0] * len(vs)
-        for chave, cor in (("dup", COR_DUPLICADO), ("sem_rastro", COR_PERDIDO), ("preservados", COR_DLQ)):
+        for chave, cor in (("dup", COR_DUPLICADO), ("sem_rastro", COR_PERDIDO), ("preservados", COR_DLQ),
+                           ("canc", COR_CANCELADO)):
             altura = [resumo.get((c, v), {}).get(chave, 0.0) for v in vs]
             ax.bar(range(len(vs)), altura, bottom=base, width=0.52, color=cor, edgecolor=SUPERFICIE, linewidth=1.6)
             base = [b + h for b, h in zip(base, altura)]
@@ -209,8 +213,9 @@ def detalhe(resumo, saida):
         ax.set_axisbelow(True)
     fig.legend(handles=[Patch(color=COR_DUPLICADO, label="duplicados (mais de 1 pagamento)"),
                         Patch(color=COR_PERDIDO, label="perdidos sem rastro (nunca concluem)"),
-                        Patch(color=COR_DLQ, label="perdidos, mas preservados na DLQ")],
-               loc="lower center", ncol=3, frameon=False, fontsize=9.5)
+                        Patch(color=COR_DLQ, label="perdidos, mas preservados na DLQ"),
+                        Patch(color=COR_CANCELADO, label="cancelados por falha técnica (V5b)")],
+               loc="lower center", ncol=4, frameon=False, fontsize=8.5)
     fig.suptitle("O que acontece com os pedidos afetados", x=0.02, ha="left", fontsize=15, fontweight="bold")
     fig.tight_layout(rect=(0, 0.06, 1, 0.95))
     fig.savefig(saida / "2_detalhe_por_cenario.png", dpi=160)
@@ -336,7 +341,7 @@ def fmt(valor):
 
 
 def tabela(resumo, saida):
-    cabecalho = ["cenario", "versao", "reps", "pedidos", "duplicados", "perdidos", "dlq", "estoque_extra",
+    cabecalho = ["cenario", "versao", "reps", "pedidos", "duplicados", "perdidos", "dlq", "cancelados", "estoque_extra",
                  "problema_pct", "reps_com_problema", "rejeitados_pct", "lat_p50_s", "lat_max_s", "recuperacao_s",
                  "reps_invalidas"]
     linhas = []
@@ -345,7 +350,7 @@ def tabela(resumo, saida):
             r = resumo.get((c, v))
             if r:
                 linhas.append([c, v, r["reps"], f"{r['pedidos']:.0f}", f"{r['duplicados']:.1f}", f"{r['perdidos']:.1f}",
-                               f"{r['dlq']:.1f}", f"{r['estoque_extra']:.1f}", f"{r['problema']:.1f}",
+                               f"{r['dlq']:.1f}", f"{r['cancelados']:.1f}", f"{r['estoque_extra']:.1f}", f"{r['problema']:.1f}",
                                f"{r['reps_problema']}/{r['reps']}", f"{r['rejeitados']:.1f}",
                                fmt(r['lat_p50']), fmt(r['lat_max']), fmt(r['recuperacao']), r['reps_invalidas']])
     with open(saida / "tabela_resumo.csv", "w", newline="", encoding="utf-8") as f:
@@ -380,9 +385,9 @@ def main():
     mapa_de_calor(resumo, saida, nreps)
     mapa_de_calor(resumo, saida, nreps, chave="estrito", chave_reps="reps_estrito",
                   arquivo="1b_mapa_de_calor_estrito.png",
-                  titulo="Pedidos que não concluíram corretamente, contando a DLQ como não concluído",
-                  subtitulo="Duplicados ou perdidos (inclusive os preservados na DLQ), em % dos pedidos. Quanto mais claro, melhor.",
-                  nota="Esta leitura é mais dura que a figura 1: a DLQ guarda a mensagem, mas o pedido continua sem concluir.")
+                  titulo="Pedidos que não concluíram com sucesso, contando a DLQ e os cancelados",
+                  subtitulo="Duplicados, perdidos (inclusive os na DLQ) ou cancelados por falha técnica, em % dos pedidos. Quanto mais claro, melhor.",
+                  nota="Leitura mais dura que a figura 1: a DLQ guarda a mensagem e o cancelamento dá estado final, mas o pedido continua sem concluir.")
     detalhe(resumo, saida)
     barras_simples(resumo, saida, "lat_p50", "Custo: tempo para o pedido concluir (mediana e máximo)", "segundos",
                    "3_custo_latencia.png", "{:.1f} s", chave_max="lat_max")
