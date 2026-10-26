@@ -13,6 +13,8 @@ import argparse
 import csv
 import json
 import os
+import random
+import re
 import statistics
 import subprocess
 import sys
@@ -21,7 +23,8 @@ import time
 import urllib.error
 import urllib.request
 import uuid
-from datetime import datetime
+from collections import Counter
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -89,6 +92,19 @@ CENARIOS = {
 }
 AQUECIMENTO = 2          # pedidos descartados antes de cada repetição (custo da primeira mensagem)
 TENTATIVAS_ERRO = 2      # quantas vezes tentar uma repetição que falha por erro de infraestrutura
+SEMENTE = 42             # o instante da falha é sorteado por (cenário, repetição), igual para todas as versões
+JITTER_ACAO = 1.5        # o instante da falha varia, no máximo, este tanto (s) para mais ou para menos
+USAR_SORTEIO = True      # --instante-fixo desliga o sorteio
+TENTATIVAS_VALIDADE = 2  # vezes extras que uma repetição inválida (a falha não atingiu a janela) é refeita
+
+# Como saber que a falha atingiu o ponto que o cenário quer exercitar (o artigo só aceita "0 duplicados" assim):
+#   em_voo      -> pelo menos 1 mensagem estava na janela (processada e ainda sem ack/publicação) quando o serviço morreu
+#   veneno      -> o pedido envenenado foi tentado mais de uma vez
+#   retentativa -> pelo menos 1 pedido precisou de nova tentativa
+#   acao        -> basta a ação de falha ter sido executada
+VALIDADE = {"kill_ack": "em_voo", "kill_publicacao": "em_voo", "poison": "veneno", "falha_transitoria": "retentativa"}
+JANELA_MS = {"kill_ack": 2000, "kill_publicacao": 2000}
+EXIGE_EM_VOO = {}        # cenários em_voo que NÃO exigem mensagem na janela (ex.: janela de 0 ms, onde o esperado é errar)
 ASSENTAR = 4              # segundos extras antes de ler o resultado, para efeitos tardios aparecerem
 
 # V0 (monólito, controle): um único serviço síncrono, sem Kafka, no schema public. Só rodam os cenários que
@@ -303,22 +319,93 @@ def aquecer(versao):
         log(f"    aquecimento falhou ({e}); seguindo sem ele")
 
 
+RE_TS = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?)Z")
+
+
+def instante_da_falha(nome, numero, base):
+    """Instante (s) em que a falha é injetada. Sorteado por (cenário, repetição), sem a versão na semente: na mesma
+    repetição, todas as versões levam a falha no mesmo ponto."""
+    if not USAR_SORTEIO:
+        return base
+    return max(1.0, base + random.Random(f"{SEMENTE}-{nome}-{numero}").uniform(-JITTER_ACAO, JITTER_ACAO))
+
+
+def finalizado_em(servico):
+    """Quando o container morreu pela última vez (State.FinishedAt), medido pelo Docker: é o instante real da queda,
+    já descontada a latência do docker kill."""
+    texto = executar(["docker", "inspect", "-f", "{{.State.FinishedAt}}", servico]).stdout.strip()
+    return datetime.fromisoformat(texto.replace("Z", "+00:00"))
+
+
+def linhas_do_pagamento(desde):
+    """(instante, linha) do log do payment-service desde `desde`; as linhas do Spring começam com o horário em UTC."""
+    r = executar(["docker", "logs", "--since", desde.isoformat(), "payment-service"], check=False)
+    linhas = []
+    for linha in (r.stdout + r.stderr).splitlines():
+        m = RE_TS.match(linha)
+        if m:
+            linhas.append((datetime.fromisoformat(m.group(1) + "+00:00"), linha))
+    return linhas
+
+
+def avaliar_validade(versao, nome, cfg, ctx):
+    """Devolve (valida, sinal). `sinal` é a evidência de que a falha atingiu a janela (ver VALIDADE)."""
+    if cfg.get("acao") and ctx["acao_fim"] is None:
+        return False, ""                        # a ação de falha nem terminou
+    if versao == "v0":
+        return True, ""                         # o monólito não tem os logs do pagamento; vale se a ação rodou
+    tipo = VALIDADE.get(nome, "acao")
+    if tipo == "acao":
+        return True, ""
+    linhas = linhas_do_pagamento(ctx["inicio_utc"] - timedelta(seconds=2))
+    if tipo == "em_voo":
+        morte = ctx["t_morte"]
+        if morte is None:
+            return False, ""
+        janela = timedelta(milliseconds=JANELA_MS[nome])
+        em_voo = sum(1 for t, l in linhas if "Pagamento processado" in l and morte - janela <= t <= morte)
+        return (em_voo >= 1 or not EXIGE_EM_VOO.get(nome, True)), em_voo
+    if tipo == "veneno":
+        alvo = ctx["id_veneno"]
+        tentativas = sum(1 for _, l in linhas if "Processando pagamento" in l and alvo and alvo in l)
+        return tentativas >= 2, tentativas
+    por_pedido = Counter()
+    for _, l in linhas:
+        if "Processando pagamento" in l:
+            for pid in ctx["ids"]:
+                if pid in l:
+                    por_pedido[pid] += 1
+                    break
+    retentados = sum(1 for n in por_pedido.values() if n >= 2)
+    return retentados >= 1, retentados
+
+
 def repeticao_segura(versao, nome, numero):
-    """Roda a repetição; se falhar por erro de infraestrutura, restaura o estado e tenta de novo. Esgotadas as
-    tentativas, devolve uma linha com o erro (que o gráfico ignora), para não perder as horas já rodadas."""
-    erro = ""
-    for tentativa in range(1, TENTATIVAS_ERRO + 1):
+    """Roda a repetição. Erro de infraestrutura: restaura o estado e tenta de novo; esgotadas as tentativas, devolve uma
+    linha com o erro (que o gráfico ignora), para não perder as horas já rodadas. Repetição inválida (a falha não
+    atingiu a janela): é refeita até TENTATIVAS_VALIDADE vezes; se continuar inválida, é registrada como tal."""
+    erros = 0
+    execucoes = 0
+    while True:
         try:
-            return repeticao(versao, nome, numero)
+            linha = repeticao(versao, nome, numero)
         except Exception as e:  # noqa: BLE001 - qualquer falha de infraestrutura deve ser contida aqui
-            erro = f"{type(e).__name__}: {e}".replace("\n", " ")[:200]
-            log(f"    repetição {numero} falhou (tentativa {tentativa}/{TENTATIVAS_ERRO}): {erro}")
+            erros += 1
+            erro = f"{type(e).__name__}: {e}".replace(chr(10), " ")[:200]
+            log(f"    repetição {numero} falhou (tentativa {erros}/{TENTATIVAS_ERRO}): {erro}")
+            if erros >= TENTATIVAS_ERRO:
+                return dict(versao=versao, cenario=nome, repeticao=numero, erro=erro,
+                            inicio=datetime.now().isoformat(timespec="seconds"))
             try:
                 recriar_servicos(versao, nome)
             except Exception as e2:  # noqa: BLE001
                 log(f"    não foi possível restaurar os serviços: {e2}")
-    return dict(versao=versao, cenario=nome, repeticao=numero, erro=erro,
-                inicio=datetime.now().isoformat(timespec="seconds"))
+            continue
+        execucoes += 1
+        linha["tentativas"] = execucoes
+        if linha.get("valida", "sim") != "nao" or execucoes > TENTATIVAS_VALIDADE:
+            return linha
+        log(f"    repetição {numero} inválida (a falha não atingiu a janela; sinal={linha.get('sinal_falha')}); refazendo")
 
 
 def carregar_feitos(caminho):
@@ -347,10 +434,16 @@ def repeticao(versao, nome, numero):
     fim_emissao = None
     taxa, total = cfg["taxa"], cfg["pedidos"]
     veneno_indice = cfg.get("veneno_indice")
+    inicio_utc = datetime.now(timezone.utc)
+    instante = instante_da_falha(nome, numero, acao["em"]) if acao else None
+    acao_inicio_abs = None
+    t_morte = None
 
     def rodar_acao():
-        nonlocal acao_fim
+        nonlocal acao_fim, t_morte
         executar_acao(dict(acao, alvo=alvo_da_acao(versao, acao["alvo"])) if "alvo" in acao else acao)
+        if acao["tipo"] in ("kill", "restart") and versao != "v0":
+            t_morte = finalizado_em(acao["alvo"])
         acao_fim = time.monotonic() - inicio
 
     while True:
@@ -369,8 +462,9 @@ def repeticao(versao, nome, numero):
             emitidos += 1
             if emitidos == total:
                 fim_emissao = agora
-        if acao and acao_inicio is None and agora >= acao["em"]:
+        if acao and acao_inicio is None and agora >= instante:
             acao_inicio = agora
+            acao_inicio_abs = time.monotonic()
             thread_acao = threading.Thread(target=rodar_acao)
             thread_acao.start()
 
@@ -409,6 +503,14 @@ def repeticao(versao, nome, numero):
     estoque_extra = max(0, (ESTOQUE_INICIAL - estoque_final) - concluidos_do_produto)
     latencias = sorted(p["concluido_em"] - p["t_post"] for p in pedidos.values() if p["concluido_em"])
     ultimo = max((p["concluido_em"] for p in pedidos.values() if p["concluido_em"]), default=None)
+    # tempo de recuperação: do início da falha até o último pedido normal concluir (vazio se algum nunca concluiu)
+    normais = [p["concluido_em"] for p in pedidos.values() if not p["veneno"]]
+    recuperacao = ""
+    if acao_inicio_abs is not None and normais and all(normais):
+        recuperacao = round(max(0.0, max(normais) - acao_inicio_abs), 2)
+    valida, sinal = avaliar_validade(versao, nome, cfg, dict(
+        inicio_utc=inicio_utc, acao_fim=acao_fim, t_morte=t_morte, ids=ids,
+        id_veneno=next((pid for pid, p in pedidos.items() if p["veneno"]), None)))
 
     def pct(valores, q):
         return round(valores[min(len(valores) - 1, int(q * len(valores)))], 2) if valores else ""
@@ -421,6 +523,8 @@ def repeticao(versao, nome, numero):
         lat_p50_s=pct(latencias, 0.5), lat_p95_s=pct(latencias, 0.95),
         lat_max_s=round(latencias[-1], 2) if latencias else "",
         tempo_total_s=round(ultimo - inicio, 2) if ultimo else "",
+        falha_em_s=round(instante, 2) if instante else "", recuperacao_s=recuperacao,
+        sinal_falha=sinal, valida="sim" if valida else "nao",
         inicio=datetime.now().isoformat(timespec="seconds"),
     )
 
@@ -429,10 +533,11 @@ def repeticao(versao, nome, numero):
 
 COLUNAS = ["versao", "cenario", "repeticao", "pedidos", "criacao_falhou", "concluidos", "perdidos", "duplicados",
            "pagamentos_extra", "estoque_extra", "dlq", "lat_p50_s", "lat_p95_s", "lat_max_s",
-           "tempo_total_s", "inicio", "erro"]
+           "tempo_total_s", "falha_em_s", "recuperacao_s", "sinal_falha", "valida", "tentativas", "inicio", "erro"]
 
 
 def main():
+    global USAR_SORTEIO, SEMENTE
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--perfil", choices=PERFIS, default="rapido")
@@ -443,9 +548,14 @@ def main():
     ap.add_argument("--saida", help="pasta de saída (padrão: results/bateria/<perfil>-<data>)")
     ap.add_argument("--sem-build", action="store_true", help="não reconstrói as imagens")
     ap.add_argument("--manter", action="store_true", help="não derruba a infraestrutura no final")
+    ap.add_argument("--instante-fixo", action="store_true",
+                    help="não sorteia o instante da falha (usa sempre o ponto base do cenário)")
+    ap.add_argument("--semente", type=int, default=SEMENTE, help="semente do sorteio do instante da falha")
     ap.add_argument("--retomar", action="store_true",
                     help="continua uma rodada interrompida: exige --saida apontando para a pasta existente")
     a = ap.parse_args()
+    USAR_SORTEIO = not a.instante_fixo
+    SEMENTE = a.semente
 
     perfil = PERFIS[a.perfil]
     cenarios = a.cenarios or perfil["cenarios"]
@@ -460,7 +570,8 @@ def main():
         (saida / "config.json").write_text(json.dumps(dict(
             perfil=a.perfil, versoes=a.versoes, cenarios={c: CENARIOS[c] for c in cenarios},
             repeticoes=repeticoes, ambiente_base=AMBIENTE_BASE, estoque_inicial=ESTOQUE_INICIAL,
-            aquecimento=AQUECIMENTO, tentativas_erro=TENTATIVAS_ERRO), indent=2, ensure_ascii=False), encoding="utf-8")
+            aquecimento=AQUECIMENTO, tentativas_erro=TENTATIVAS_ERRO, tentativas_validade=TENTATIVAS_VALIDADE,
+            sorteio_do_instante=USAR_SORTEIO, semente=SEMENTE, jitter_s=JITTER_ACAO), indent=2, ensure_ascii=False), encoding="utf-8")
     feitos = carregar_feitos(caminho) if retomando else set()
     log(f"saída: {saida}" + (f" (retomando: {len(feitos)} repetições já concluídas)" if retomando else ""))
 
@@ -494,7 +605,7 @@ def main():
                     log(f"    rep {n}/{repeticoes}: concluidos={linha['concluidos']}/{linha['pedidos']} "
                         f"criacao_falhou={linha['criacao_falhou']} perdidos={linha['perdidos']} "
                         f"duplicados={linha['duplicados']} estoque_extra={linha['estoque_extra']} "
-                        f"dlq={linha['dlq']} p95={linha['lat_p95_s']}s")
+                        f"dlq={linha['dlq']} p95={linha['lat_p95_s']}s valida={linha['valida']} sinal={linha['sinal_falha']}")
     if not a.manter:
         executar(COMPOSE + ["--profile", "v0", "down", "-v"], check=False)
     log(f"concluído: {caminho}")

@@ -5,7 +5,8 @@ Saídas, na mesma pasta do CSV:
     1_mapa_de_calor.png   a visão geral: % de pedidos com problema, por versão e cenário
     1b_mapa_de_calor_estrito.png   a mesma visão, contando o que foi para a DLQ como não concluído
     2_detalhe_por_cenario.png   o que é o problema em cada caso (duplicado, perdido, perdido mas preservado na DLQ)
-    3_custo_latencia.png  o custo: latência p95 por versão e cenário
+    3_custo_latencia.png  o custo: latência (mediana e máximo) por versão e cenário
+    5_recuperacao.png     tempo de recuperação: da falha até o último pedido concluir
     4_disponibilidade.png  quantos pedidos o sistema rejeitou na criação (o custo de disponibilidade)
     tabela_resumo.csv / tabela_resumo.md   os números por trás dos gráficos
 
@@ -67,7 +68,10 @@ def agregar(linhas):
     for r in linhas:
         grupos.setdefault((r["cenario"], r["versao"]), []).append(r)
     resumo = {}
-    for chave, rs in grupos.items():
+    for chave, todas in grupos.items():
+        rs = [r for r in todas if r.get("valida") != "nao"]   # a falha não atingiu a janela: não conta
+        if not rs:
+            continue
         def pct(f):
             return [100.0 * f(r) / float(r["pedidos"]) for r in rs]
         dup = pct(lambda r: float(r["duplicados"]))
@@ -76,6 +80,9 @@ def agregar(linhas):
         problema = [d + s_ for d, s_ in zip(dup, sem_rastro)]
         estrito = pct(lambda r: float(r["duplicados"]) + float(r["perdidos"]))
         lat = [numero(r["lat_p95_s"]) for r in rs if numero(r["lat_p95_s"]) is not None]
+        def media(coluna):
+            valores = [numero(r.get(coluna)) for r in rs if numero(r.get(coluna)) is not None]
+            return statistics.mean(valores) if valores else None
         resumo[chave] = dict(
             reps=len(rs), pedidos=statistics.mean(float(r["pedidos"]) for r in rs),
             duplicados=statistics.mean(float(r["duplicados"]) for r in rs),
@@ -88,6 +95,8 @@ def agregar(linhas):
             estrito=statistics.mean(estrito),
             reps_problema=sum(1 for x in problema if x > 0), reps_estrito=sum(1 for x in estrito if x > 0),
             lat_p95=statistics.mean(lat) if lat else None,
+            lat_p50=media("lat_p50_s"), lat_max=media("lat_max_s"), recuperacao=media("recuperacao_s"),
+            reps_invalidas=len(todas) - len(rs),
             rejeitados=statistics.mean(
                 100.0 * float(r.get("criacao_falhou") or 0)
                 / (float(r["pedidos"]) + float(r.get("criacao_falhou") or 0)) for r in rs),
@@ -190,8 +199,9 @@ def detalhe(resumo, saida):
     plt.close(fig)
 
 
-def barras_simples(resumo, saida, chave, titulo, rotulo_y, arquivo, formato):
-    """Uma barra por versão, um painel por cenário (formas de uma série só: sem legenda, o título diz o que é)."""
+def barras_simples(resumo, saida, chave, titulo, rotulo_y, arquivo, formato, chave_max=None):
+    """Uma barra por versão, um painel por cenário (formas de uma série só: sem legenda, o título diz o que é).
+    Com chave_max, o valor máximo aparece anotado abaixo do valor da barra."""
     vs, cs = versoes_presentes(resumo), cenarios_presentes(resumo)
     colunas = 2 if len(cs) > 1 else 1
     linhas = (len(cs) + 1) // 2
@@ -199,16 +209,25 @@ def barras_simples(resumo, saida, chave, titulo, rotulo_y, arquivo, formato):
     for ax in eixos.flat[len(cs):]:
         ax.set_visible(False)
     for ax, c in zip(eixos.flat, cs):
-        valores = [resumo.get((c, v), {}).get(chave) or 0.0 for v in vs]
+        brutos = [resumo.get((c, v), {}).get(chave) for v in vs]
+        valores = [b or 0.0 for b in brutos]
+        maximos = [resumo.get((c, v), {}).get(chave_max) if chave_max else None for v in vs]
         ax.bar(range(len(vs)), valores, width=0.52, color=COR_LATENCIA)
         for i, valor in enumerate(valores):
-            texto = "n/a" if (c, vs[i]) not in resumo else formato.format(valor)
-            ax.text(i, valor + 0.02 * max(max(valores), 1), texto, ha="center", va="bottom", fontsize=9,
-                    color=TINTA_2 if texto == "n/a" else TINTA)
+            if (c, vs[i]) not in resumo:
+                texto = "n/a"
+            elif brutos[i] is None:
+                texto = "sem dado"
+            else:
+                texto = formato.format(valor)
+                if maximos[i] is not None:
+                    texto += chr(10) + "(máx " + formato.format(maximos[i]) + ")"
+            ax.text(i, valor + 0.02 * max(max(valores), 1), texto, ha="center", va="bottom", fontsize=8.5,
+                    color=TINTA_2 if texto in ("n/a", "sem dado") else TINTA)
         ax.set_xticks(range(len(vs)), [NOME_VERSAO[v] for v in vs], fontsize=7)
-        ax.set_ylim(0, max(max(valores), 1) * 1.25)
+        ax.set_ylim(0, max(max(valores), 1) * (1.4 if chave_max else 1.25))
         ax.set_ylabel(rotulo_y)
-        ax.set_title(NOME_CENARIO[c].replace("\n", " "), loc="left", fontsize=11, fontweight="bold")
+        ax.set_title(NOME_CENARIO[c].replace(chr(10), " "), loc="left", fontsize=11, fontweight="bold")
         ax.yaxis.grid(True, color=GRADE, linewidth=0.8)
         ax.set_axisbelow(True)
     fig.suptitle(titulo, x=0.02, ha="left", fontsize=15, fontweight="bold")
@@ -217,9 +236,14 @@ def barras_simples(resumo, saida, chave, titulo, rotulo_y, arquivo, formato):
     plt.close(fig)
 
 
+def fmt(valor):
+    return f"{valor:.1f}" if valor is not None else ""
+
+
 def tabela(resumo, saida):
     cabecalho = ["cenario", "versao", "reps", "pedidos", "duplicados", "perdidos", "dlq", "estoque_extra",
-                 "problema_pct", "reps_com_problema", "rejeitados_pct", "lat_p95_s"]
+                 "problema_pct", "reps_com_problema", "rejeitados_pct", "lat_p50_s", "lat_max_s", "recuperacao_s",
+                 "reps_invalidas"]
     linhas = []
     for c in cenarios_presentes(resumo):
         for v in versoes_presentes(resumo):
@@ -227,7 +251,8 @@ def tabela(resumo, saida):
             if r:
                 linhas.append([c, v, r["reps"], f"{r['pedidos']:.0f}", f"{r['duplicados']:.1f}", f"{r['perdidos']:.1f}",
                                f"{r['dlq']:.1f}", f"{r['estoque_extra']:.1f}", f"{r['problema']:.1f}",
-                               f"{r['reps_problema']}/{r['reps']}", f"{r['rejeitados']:.1f}", f"{r['lat_p95']:.1f}" if r["lat_p95"] is not None else ""])
+                               f"{r['reps_problema']}/{r['reps']}", f"{r['rejeitados']:.1f}",
+                               fmt(r['lat_p50']), fmt(r['lat_max']), fmt(r['recuperacao']), r['reps_invalidas']])
     with open(saida / "tabela_resumo.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(cabecalho)
@@ -264,8 +289,10 @@ def main():
                   subtitulo="Duplicados ou perdidos (inclusive os preservados na DLQ), em % dos pedidos. Quanto mais claro, melhor.",
                   nota="Esta leitura é mais dura que a figura 1: a DLQ guarda a mensagem, mas o pedido continua sem concluir.")
     detalhe(resumo, saida)
-    barras_simples(resumo, saida, "lat_p95", "Custo: tempo para o pedido concluir (latência p95)", "segundos",
-                   "3_custo_latencia.png", "{:.1f} s")
+    barras_simples(resumo, saida, "lat_p50", "Custo: tempo para o pedido concluir (mediana e máximo)", "segundos",
+                   "3_custo_latencia.png", "{:.1f} s", chave_max="lat_max")
+    barras_simples(resumo, saida, "recuperacao", "Tempo de recuperação: da falha até o último pedido concluir",
+                   "segundos", "5_recuperacao.png", "{:.0f} s")
     barras_simples(resumo, saida, "rejeitados", "Disponibilidade: pedidos rejeitados na criação (% das tentativas)",
                    "% das tentativas", "4_disponibilidade.png", "{:.0f}%")
     tabela(resumo, saida)
