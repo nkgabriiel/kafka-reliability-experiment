@@ -36,6 +36,31 @@ public class OutboxPublisher {
     @Value("${app.demo.atraso-publicacao-ms:0}")
     private long atrasoPublicacaoMs;
 
+    // V6b: com o producer transacional ligado, todo envio ao Kafka precisa estar dentro de uma transação
+    @Value("${app.protecao.transacoes:false}")
+    private boolean transacoes;
+
+    private void enviar(OutboxEvent outbox, Object evento) throws Exception {
+        if (!transacoes) {
+            kafkaTemplate.send(outbox.getTopico(), outbox.getChave(), evento)
+                    .get(TIMEOUT_CONFIRMACAO_SEGUNDOS, TimeUnit.SECONDS);
+            return;
+        }
+        // esta transação Kafka cobre só o envio do evento; o offset da mensagem de entrada é do container do listener
+        kafkaTemplate.executeInTransaction(operacoes -> {
+            try {
+                operacoes.send(outbox.getTopico(), outbox.getChave(), evento)
+                        .get(TIMEOUT_CONFIRMACAO_SEGUNDOS, TimeUnit.SECONDS);
+                return null;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        });
+    }
+
     @Scheduled(fixedDelayString = "${app.outbox.intervalo-ms:500}")
     @Transactional
     public void publicarPendentes() {
@@ -48,8 +73,7 @@ public class OutboxPublisher {
             try {
                 Object evento = MAPPER.readValue(outbox.getPayload(), Class.forName(outbox.getTipo()));
                 // espera a confirmação do broker antes de marcar como enviado
-                kafkaTemplate.send(outbox.getTopico(), outbox.getChave(), evento)
-                        .get(TIMEOUT_CONFIRMACAO_SEGUNDOS, TimeUnit.SECONDS);
+                enviar(outbox, evento);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
