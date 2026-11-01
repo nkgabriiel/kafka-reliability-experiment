@@ -544,6 +544,31 @@ O **perfil rápido** roda os quatro primeiros cenários principais com 3 repeti�
 
 **Métricas** (por repetição): `duplicados` (pedidos com mais de 1 pagamento), `perdidos` (pedidos presos, que não chegaram a `CONCLUIDO` nem `CANCELADO`), `cancelados` (cancelados por falha técnica, o que só ocorre na V5b: nos cenários da bateria não há cancelamento de negócio), `estoque_extra` (estoque tirado além dos pedidos concluídos), `dlq` (pedidos desta repetição que estão em alguma DLQ, contados só pelas mensagens commitadas), `criacao_falhou` (pedidos rejeitados na criação, que mede disponibilidade), a latência da criação até `CONCLUIDO` (mediana, p95 e máxima) e o `recuperacao_s` (da falha até o último pedido normal concluir; vazio se algum nunca concluiu). Colunas de controle: `valida`, `sinal_falha` (a evidência de que a falha atingiu a janela), `falha_em_s`, `tentativas` e `erro`.
 
+### Etapas de verificação e matriz: um CSV por etapa
+
+`benchmark/etapas.py` roda as etapas **em sequência** (elas disputam as mesmas portas e containers, então não podem rodar em paralelo) e deixa cada uma numa pasta própria, com os dados brutos, o log e, nas etapas da bateria, os gráficos e a tabela:
+
+| Etapa | O que roda | Pasta | Duração estimada |
+|---|---|---|---|
+| `suite` | os 6 testes de integração | `results/verificacao/suite/` (`integracao.csv` e os relatórios XML) | cerca de 7 min |
+| `geral-a` | V0, V5b, V6 e V6b nos 11 cenários principais, 1 repetição | `results/verificacao/geral-a/` | cerca de 1,0 h |
+| `geral-b` | as mesmas versões nos cenários de sensibilidade, 1 repetição | `results/verificacao/geral-b/` | cerca de 0,7 h |
+| `geral-c` | infraestrutura nas V2, V3 e V4, 1 repetição | `results/verificacao/geral-c/` | cerca de 0,6 h |
+| `matriz` | os 11 cenários principais, 9 versões, n = 5 | `results/bateria/matriz-completa/` | cerca de 7,8 h |
+| `sensibilidade` | as famílias de sensibilidade, 9 versões, n = 5 | `results/bateria/matriz-sensibilidade/` | cerca de 4,9 h |
+
+```bash
+py benchmark/etapas.py --listar                    # etapas e duração estimada
+py benchmark/etapas.py --etapas verificacao        # suite + geral-a + geral-b + geral-c
+py benchmark/etapas.py --etapas matriz --retomar   # continua uma etapa interrompida
+py benchmark/resumo_testes.py                      # só converte os relatórios do Surefire em CSV
+```
+
+- **Os gráficos nunca exigem rodar de novo:** o `bateria.csv` de cada etapa é gravado repetição a repetição e tem tudo o que o `grafico.py` usa. Para refazer os visuais: `py benchmark/grafico.py CSV [CSV ...] --saida PASTA`.
+- **Dados brutos não são sobrescritos:** a bateria recusa gravar numa pasta que já tem `bateria.csv`, a menos que seja com `--retomar`.
+- **Índice de execuções:** `results/etapas.csv` registra, para cada etapa rodada, o início, o resultado, a duração, o número de linhas, de repetições inválidas e de repetições com erro, e a pasta.
+- Por padrão, a sequência **para na primeira etapa que falhar** (`--continuar-se-falhar` muda isso).
+
 ### Resultado (perfil rápido, 3 repetições por célula)
 
 Dados brutos em `results/bateria/rapido-*/bateria.csv`; gráficos e tabela em `results/bateria/rapido-v0-a-v6/`.
