@@ -645,6 +645,9 @@ def main():
     saida = Path(a.saida) if a.saida else RAIZ / "results" / "bateria" / f"{a.perfil}-{datetime.now():%Y%m%d-%H%M%S}"
     saida.mkdir(parents=True, exist_ok=True)
     caminho = saida / "bateria.csv"
+    if caminho.exists() and not a.retomar:
+        ap.error(f"{caminho} já existe e seria sobrescrito: use --retomar para continuar essa rodada "
+                 "ou escolha outra pasta em --saida (dados brutos não se apagam)")
     retomando = a.retomar and caminho.exists()
     if not retomando:
         (saida / "config.json").write_text(json.dumps(dict(
