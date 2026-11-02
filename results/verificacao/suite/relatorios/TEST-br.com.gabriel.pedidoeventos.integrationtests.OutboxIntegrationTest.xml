@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="br.com.gabriel.pedidoeventos.integrationtests.OutboxIntegrationTest" time="94.74" tests="1" errors="0" skipped="0" failures="0" flakes="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\test-classes;C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\classes;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\pc\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\pc\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\pc\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers\2.0.5\testcontainers-2.0.5.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-compress\1.28.0\commons-compress-1.28.0.jar;C:\Users\pc\.m2\repository\commons-codec\commons-codec\1.21.0\commons-codec-1.21.0.jar;C:\Users\pc\.m2\repository\commons-io\commons-io\2.20.0\commons-io-2.20.0.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-lang3\3.20.0\commons-lang3-3.20.0.jar;C:\Users\pc\.m2\repository\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;C:\Users\pc\.m2\repository\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-api\3.7.1\docker-java-api-3.7.1.jar;C:\Users\pc\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport-zerodep\3.7.1\docker-java-transport-zerodep-3.7.1.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport\3.7.1\docker-java-transport-3.7.1.jar;C:\Users\pc\.m2\repository\net\java\dev\jna\jna\5.18.1\jna-5.18.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-junit-jupiter\2.0.5\testcontainers-junit-jupiter-2.0.5.jar;C:\Users\pc\.m2\repository\org\postgresql\postgresql\42.7.13\postgresql-42.7.13.jar;C:\Users\pc\.m2\repository\org\checkerframework\checker-qual\3.55.1\checker-qual-3.55.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-toxiproxy\2.0.5\testcontainers-toxiproxy-2.0.5.jar;C:\Users\pc\.m2\repository\eu\rekawek\toxiproxy\toxiproxy-java\2.1.11\toxiproxy-java-2.1.11.jar;C:\Users\pc\.m2\repository\com\google\code\gson\gson\2.13.2\gson-2.13.2.jar;C:\Users\pc\.m2\repository\com\google\errorprone\error_prone_annotations\2.41.0\error_prone_annotations-2.41.0.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-kafka\2.0.5\testcontainers-kafka-2.0.5.jar;C:\Users\pc\.m2\repository\org\apache\kafka\kafka-clients\4.2.1\kafka-clients-4.2.1.jar;C:\Users\pc\.m2\repository\com\github\luben\zstd-jni\1.5.6-10\zstd-jni-1.5.6-10.jar;C:\Users\pc\.m2\repository\at\yawk\lz4\lz4-java\1.10.1\lz4-java-1.10.1.jar;C:\Users\pc\.m2\repository\org\xerial\snappy\snappy-java\1.1.10.7\snappy-java-1.1.10.7.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-simple\2.0.18\slf4j-simple-2.0.18.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="America/Sao_Paulo"/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="BR"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
+    <property name="sun.java.command" value="C:\Users\pc\AppData\Local\Temp\surefire17103151928276256201\surefirebooter-20261101040450016_3.jar C:\Users\pc\AppData\Local\Temp\surefire17103151928276256201 2026-11-01T04-04-49_807-jvmRun1 surefire-20261101040450016_1tmp surefire_0-20261101040450016_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\test-classes;C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\classes;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\pc\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\pc\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\pc\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers\2.0.5\testcontainers-2.0.5.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-compress\1.28.0\commons-compress-1.28.0.jar;C:\Users\pc\.m2\repository\commons-codec\commons-codec\1.21.0\commons-codec-1.21.0.jar;C:\Users\pc\.m2\repository\commons-io\commons-io\2.20.0\commons-io-2.20.0.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-lang3\3.20.0\commons-lang3-3.20.0.jar;C:\Users\pc\.m2\repository\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;C:\Users\pc\.m2\repository\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-api\3.7.1\docker-java-api-3.7.1.jar;C:\Users\pc\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport-zerodep\3.7.1\docker-java-transport-zerodep-3.7.1.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport\3.7.1\docker-java-transport-3.7.1.jar;C:\Users\pc\.m2\repository\net\java\dev\jna\jna\5.18.1\jna-5.18.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-junit-jupiter\2.0.5\testcontainers-junit-jupiter-2.0.5.jar;C:\Users\pc\.m2\repository\org\postgresql\postgresql\42.7.13\postgresql-42.7.13.jar;C:\Users\pc\.m2\repository\org\checkerframework\checker-qual\3.55.1\checker-qual-3.55.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-toxiproxy\2.0.5\testcontainers-toxiproxy-2.0.5.jar;C:\Users\pc\.m2\repository\eu\rekawek\toxiproxy\toxiproxy-java\2.1.11\toxiproxy-java-2.1.11.jar;C:\Users\pc\.m2\repository\com\google\code\gson\gson\2.13.2\gson-2.13.2.jar;C:\Users\pc\.m2\repository\com\google\errorprone\error_prone_annotations\2.41.0\error_prone_annotations-2.41.0.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-kafka\2.0.5\testcontainers-kafka-2.0.5.jar;C:\Users\pc\.m2\repository\org\apache\kafka\kafka-clients\4.2.1\kafka-clients-4.2.1.jar;C:\Users\pc\.m2\repository\com\github\luben\zstd-jni\1.5.6-10\zstd-jni-1.5.6-10.jar;C:\Users\pc\.m2\repository\at\yawk\lz4\lz4-java\1.10.1\lz4-java-1.10.1.jar;C:\Users\pc\.m2\repository\org\xerial\snappy\snappy-java\1.1.10.7\snappy-java-1.1.10.7.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-simple\2.0.18\slf4j-simple-2.0.18.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\pc"/>
+    <property name="user.language" value="pt"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2025-10-21"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-21"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\pc\AppData\Local\Temp\surefire17103151928276256201\surefirebooter-20261101040450016_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.9+7-LTS-338"/>
+    <property name="user.name" value="pc"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\pc\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\pc\AppData\Local\Temp\"/>
+    <property name="java.version" value="21.0.9"/>
+    <property name="user.dir" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-21\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Users\pc\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\pc\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Program Files\GitHub CLI;C:\Program Files\WSL;C:\Users\pc\AppData\Local\Programs\Python\Launcher;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\Users\pc\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\Java\jdk-21\bin;C:\Users\pc\develop\flutter\bin;C:\Users\pc\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\IntelliJ IDEA 2025.3.3\bin;C:\Users\pc\AppData\Local\Programs\Microsoft VS Code\bin;C:\Exercism;C:\Program Files\JetBrains\WebStorm 2026.1\bin;C:\Users\pc\AppData\Roaming\npm;C:\Users\pc\AppData\Local\Android\Sdk\emulator;C:\Users\pc\AppData\Local\Android\Sdk\cmdline-tools\latest\bin;C:\Users\pc\AppData\Local\JetBrains\Toolbox\scripts;C:\Users\pc\AppData\Local\Programs\Ollama;C:\Users\pc\AppData\Local\Programs\DockerDesktop\resources\bin;C:\Users\pc\.rokit\bin;C:\Program Files\JetBrains\PyCharm 2026.2.3\bin;C:\Users\pc\AppData\Local\Programs\Python\Python314;C:\Program Files\nodejs;C:\Program Files\Git\mingw64\bin;C:\Program Files\GitHub CLI;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21.0.9+7-LTS-338"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="killEntreCommitEPublicacao_eventoNaoSePerdeEPublicaAoReiniciar" classname="br.com.gabriel.pedidoeventos.integrationtests.OutboxIntegrationTest" time="54.775">
+    <system-err><![CDATA[[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'postgres:16-alpine', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'apache/kafka:3.8.0', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose up -d --build
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-order-service Building 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-payment-service Building 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-stock-service Building 
+[Thread-27] INFO tc.docker.exe - #1 [internal] load local bake definitions
+[Thread-27] INFO tc.docker.exe - #1 reading from stdin 1.71kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #1 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #2 [stock-service internal] load build definition from Dockerfile
+[Thread-27] INFO tc.docker.exe - #2 transferring dockerfile: 387B done
+[Thread-27] INFO tc.docker.exe - #2 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #3 [order-service internal] load build definition from Dockerfile
+[Thread-27] INFO tc.docker.exe - #3 transferring dockerfile: 387B done
+[Thread-27] INFO tc.docker.exe - #3 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #4 [payment-service internal] load build definition from Dockerfile
+[Thread-27] INFO tc.docker.exe - #4 transferring dockerfile: 387B done
+[Thread-27] INFO tc.docker.exe - #4 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #5 [payment-service internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+[Thread-27] INFO tc.docker.exe - #5 DONE 0.6s
+[Thread-27] INFO tc.docker.exe - #6 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-27] INFO tc.docker.exe - #6 DONE 0.6s
+[Thread-27] INFO tc.docker.exe - #7 [order-service internal] load .dockerignore
+[Thread-27] INFO tc.docker.exe - #7 transferring context: 2B done
+[Thread-27] INFO tc.docker.exe - #7 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #8 [stock-service internal] load .dockerignore
+[Thread-27] INFO tc.docker.exe - #8 transferring context: 2B done
+[Thread-27] INFO tc.docker.exe - #8 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #9 [payment-service internal] load .dockerignore
+[Thread-27] INFO tc.docker.exe - #9 transferring context: 2B done
+[Thread-27] INFO tc.docker.exe - #9 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #10 [stock-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #10 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #12 [order-service stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372
+[Thread-27] INFO tc.docker.exe - #12 resolve docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372 0.0s done
+[Thread-27] INFO tc.docker.exe - #12 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #13 [payment-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-27] INFO tc.docker.exe - #13 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-27] INFO tc.docker.exe - #13 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #14 [order-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #14 transferring context: 5.58kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #14 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #11 transferring context: 4.89kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #10 [stock-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #10 transferring context: 4.70kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #10 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #15 [payment-service build 3/7] COPY mvnw pom.xml ./
+[Thread-27] INFO tc.docker.exe - #15 CACHED
+[Thread-27] INFO tc.docker.exe - #16 [payment-service build 6/7] COPY src src
+[Thread-27] INFO tc.docker.exe - #16 CACHED
+[Thread-27] INFO tc.docker.exe - #17 [payment-service build 4/7] COPY .mvn .mvn
+[Thread-27] INFO tc.docker.exe - #17 CACHED
+[Thread-27] INFO tc.docker.exe - #18 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-27] INFO tc.docker.exe - #18 CACHED
+[Thread-27] INFO tc.docker.exe - #19 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-27] INFO tc.docker.exe - #19 CACHED
+[Thread-27] INFO tc.docker.exe - #20 [payment-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-27] INFO tc.docker.exe - #20 CACHED
+[Thread-27] INFO tc.docker.exe - #21 [stock-service build 6/7] COPY src src
+[Thread-27] INFO tc.docker.exe - #21 CACHED
+[Thread-27] INFO tc.docker.exe - #22 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-27] INFO tc.docker.exe - #22 CACHED
+[Thread-27] INFO tc.docker.exe - #23 [stock-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-27] INFO tc.docker.exe - #23 CACHED
+[Thread-27] INFO tc.docker.exe - #24 [stock-service build 3/7] COPY mvnw pom.xml ./
+[Thread-27] INFO tc.docker.exe - #24 CACHED
+[Thread-27] INFO tc.docker.exe - #25 [stock-service build 4/7] COPY .mvn .mvn
+[Thread-27] INFO tc.docker.exe - #25 CACHED
+[Thread-27] INFO tc.docker.exe - #26 [order-service build 6/7] COPY src src
+[Thread-27] INFO tc.docker.exe - #26 CACHED
+[Thread-27] INFO tc.docker.exe - #27 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-27] INFO tc.docker.exe - #27 CACHED
+[Thread-27] INFO tc.docker.exe - #28 [order-service build 2/7] WORKDIR /app
+[Thread-27] INFO tc.docker.exe - #28 CACHED
+[Thread-27] INFO tc.docker.exe - #29 [order-service build 3/7] COPY mvnw pom.xml ./
+[Thread-27] INFO tc.docker.exe - #29 CACHED
+[Thread-27] INFO tc.docker.exe - #30 [order-service stage-1 2/3] WORKDIR /app
+[Thread-27] INFO tc.docker.exe - #30 CACHED
+[Thread-27] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-27] INFO tc.docker.exe - #31 CACHED
+[Thread-27] INFO tc.docker.exe - #32 [order-service build 4/7] COPY .mvn .mvn
+[Thread-27] INFO tc.docker.exe - #32 CACHED
+[Thread-27] INFO tc.docker.exe - #33 [stock-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-27] INFO tc.docker.exe - #33 CACHED
+[Thread-27] INFO tc.docker.exe - #34 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-27] INFO tc.docker.exe - #34 CACHED
+[Thread-27] INFO tc.docker.exe - #35 [payment-service] exporting to image
+[Thread-27] INFO tc.docker.exe - #35 exporting layers done
+[Thread-27] INFO tc.docker.exe - #35 exporting manifest sha256:84cdbbab8122120bd189033293736f8d14b4597b1fe3f59f8792a0486b46c682 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 exporting config sha256:cc57d426aed8e7b40b8f1a168fad73af191782865bcc892d6852744636eb5973 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 exporting attestation manifest sha256:bbcd7f9877a161ac57f3948cd05d9d7ab7ae2571636f93a9f2564a7754c247a6 0.1s done
+[Thread-27] INFO tc.docker.exe - #35 exporting manifest list sha256:050d029257af6c2cdbbb10ba43b079f219f883fd72df3b468a4994da753ad726 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 naming to docker.io/library/rmjrbhtga3jl-payment-service:latest
+[Thread-27] INFO tc.docker.exe - #35 naming to docker.io/library/rmjrbhtga3jl-payment-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 unpacking to docker.io/library/rmjrbhtga3jl-payment-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 DONE 0.2s
+[Thread-27] INFO tc.docker.exe - #36 [order-service] exporting to image
+[Thread-27] INFO tc.docker.exe - #36 exporting layers done
+[Thread-27] INFO tc.docker.exe - #36 exporting manifest sha256:252bd4598fd290030ef4b860a9a63e4e6e3aff7787ef91d906bf406ed2655fca 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 exporting config sha256:a9deb264ae5bf8fe4b284d334b7f7ec1ee2444ba6917232857a479a9f7ae9955 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 exporting attestation manifest sha256:0ae444491e6c65d2ecc06598a608b4d7324944f04f0c8e27d449b6ffc462bbe4 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 exporting manifest list sha256:8ebebba7ac797e194ec8929f34491c3a5e5d82b4ee15405bc9a80b4486f11bdb 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 naming to docker.io/library/rmjrbhtga3jl-order-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 unpacking to docker.io/library/rmjrbhtga3jl-order-service:latest
+[Thread-27] INFO tc.docker.exe - #36 unpacking to docker.io/library/rmjrbhtga3jl-order-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 DONE 0.3s
+[Thread-27] INFO tc.docker.exe - #37 [stock-service] exporting to image
+[Thread-27] INFO tc.docker.exe - #37 exporting layers done
+[Thread-27] INFO tc.docker.exe - #37 exporting manifest sha256:59e6511948f182635e9880a9cd716869ae42f54b767d5fd06cfce99ad3242c11 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 exporting config sha256:4f92f88f71deea91e477e758998de8e9561df38619547119e536cabe9ba70d39 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 exporting attestation manifest sha256:b5b8b1ffb27d182566040c5a35e5bb889ea04681b6e837d4a52ec17a4fd4d3dd 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 exporting manifest list sha256:79715e7fbf6c623d41eede6d8961fc7a7991585ee1e9e6261e724dc64f65117f 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 naming to docker.io/library/rmjrbhtga3jl-stock-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 unpacking to docker.io/library/rmjrbhtga3jl-stock-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 DONE 0.3s
+[Thread-27] INFO tc.docker.exe - #38 [payment-service] resolving provenance for metadata file
+[Thread-27] INFO tc.docker.exe - #38 DONE 0.1s
+[Thread-27] INFO tc.docker.exe - #39 [order-service] resolving provenance for metadata file
+[Thread-27] INFO tc.docker.exe - #39 DONE 0.1s
+[Thread-27] INFO tc.docker.exe - #40 [stock-service] resolving provenance for metadata file
+[Thread-27] INFO tc.docker.exe - #40 DONE 0.0s
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-stock-service Built 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-order-service Built 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-payment-service Built 
+[Thread-28] INFO tc.docker.exe -  Network rmjrbhtga3jl_tcc-network Creating 
+[Thread-28] INFO tc.docker.exe -  Network rmjrbhtga3jl_tcc-network Created 
+[Thread-28] INFO tc.docker.exe -  Volume rmjrbhtga3jl_postgres_data Creating 
+[Thread-28] INFO tc.docker.exe -  Volume rmjrbhtga3jl_postgres_data Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Started 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Creating container for image: alpine/socat:1.7.4.3-r0
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 is starting: f1e72e435729589f50783ca99c1b5fbf3d649c1fea26bc51fc2d19332aed52fb
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 started in PT2.4515173S
+]]></system-err>
+  </testcase>
+</testsuite>

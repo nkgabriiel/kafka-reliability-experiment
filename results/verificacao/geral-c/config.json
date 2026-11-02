@@ -1,0 +1,167 @@
+{
+  "perfil": "completo",
+  "versoes": [
+    "v2",
+    "v3",
+    "v4"
+  ],
+  "cenarios": {
+    "queda_broker": {
+      "descricao": "queda do broker Kafka por 8 s",
+      "env": {},
+      "pedidos": 30,
+      "taxa": 3,
+      "espera_max": 70,
+      "espera_pos": 40,
+      "acao": {
+        "tipo": "parar",
+        "alvo": "kafka",
+        "em": 4.0,
+        "duracao": 8
+      }
+    },
+    "queda_banco": {
+      "descricao": "queda do PostgreSQL por 8 s",
+      "env": {},
+      "pedidos": 30,
+      "taxa": 3,
+      "espera_max": 70,
+      "espera_pos": 35,
+      "acao": {
+        "tipo": "parar",
+        "alvo": "postgres",
+        "em": 4.0,
+        "duracao": 8
+      }
+    },
+    "restart_consumer": {
+      "descricao": "restart do consumer de pagamento no meio da carga (rebalanceamento)",
+      "env": {},
+      "pedidos": 30,
+      "taxa": 3,
+      "espera_max": 45,
+      "espera_pos": 25,
+      "acao": {
+        "tipo": "restart",
+        "alvo": "payment-service",
+        "em": 5.0
+      }
+    },
+    "latencia_rede": {
+      "descricao": "latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s",
+      "env": {
+        "KAFKA_BOOTSTRAP": "toxiproxy:19092"
+      },
+      "pedidos": 30,
+      "taxa": 3,
+      "espera_max": 60,
+      "espera_pos": 25,
+      "acao": {
+        "tipo": "toxico",
+        "proxy": "kafka",
+        "em": 3.0,
+        "duracao": 12,
+        "toxicos": [
+          {
+            "type": "latency",
+            "stream": "downstream",
+            "attributes": {
+              "latency": 1500
+            }
+          }
+        ]
+      }
+    },
+    "particao_rede": {
+      "descricao": "partição de rede entre os serviços e o Kafka por 15 s",
+      "env": {
+        "KAFKA_BOOTSTRAP": "toxiproxy:19092",
+        "ATRASO_ACK_MS": "1000"
+      },
+      "pedidos": 30,
+      "taxa": 3,
+      "espera_max": 80,
+      "espera_pos": 40,
+      "acao": {
+        "tipo": "toxico",
+        "proxy": "kafka",
+        "em": 4.0,
+        "duracao": 15,
+        "toxicos": [
+          {
+            "type": "timeout",
+            "stream": "downstream",
+            "attributes": {
+              "timeout": 0
+            }
+          },
+          {
+            "type": "timeout",
+            "stream": "upstream",
+            "attributes": {
+              "timeout": 0
+            }
+          }
+        ]
+      }
+    },
+    "particao_banco": {
+      "descricao": "partição de rede entre os serviços e o PostgreSQL por 8 s",
+      "env": {
+        "DB_HOSTPORT": "toxiproxy:15432"
+      },
+      "pedidos": 30,
+      "taxa": 3,
+      "espera_max": 70,
+      "espera_pos": 35,
+      "acao": {
+        "tipo": "toxico",
+        "proxy": "postgres",
+        "em": 4.0,
+        "duracao": 8,
+        "toxicos": [
+          {
+            "type": "timeout",
+            "stream": "downstream",
+            "attributes": {
+              "timeout": 0
+            }
+          },
+          {
+            "type": "timeout",
+            "stream": "upstream",
+            "attributes": {
+              "timeout": 0
+            }
+          }
+        ]
+      }
+    },
+    "queda_pedidos": {
+      "descricao": "queda do order-service (a porta de entrada) no meio da carga",
+      "env": {},
+      "pedidos": 20,
+      "taxa": 2,
+      "espera_max": 45,
+      "espera_pos": 25,
+      "acao": {
+        "tipo": "kill",
+        "alvo": "order-service",
+        "em": 5.0
+      }
+    }
+  },
+  "repeticoes": 1,
+  "ambiente_base": {
+    "SESSION_TIMEOUT_MS": "6000",
+    "HEARTBEAT_MS": "1000",
+    "LISTENER_CONCURRENCY": "3"
+  },
+  "estoque_inicial": 1000,
+  "aquecimento": 2,
+  "tentativas_erro": 2,
+  "tentativas_validade": 2,
+  "sorteio_do_instante": true,
+  "semente": 42,
+  "jitter_s": 1.5
+}

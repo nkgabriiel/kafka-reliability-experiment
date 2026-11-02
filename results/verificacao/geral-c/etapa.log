@@ -1,0 +1,45 @@
+[05:47:10] saída: C:\Users\pc\Desktop\kafka-reliability-experiment\results\verificacao\geral-c
+[05:47:10] subindo kafka, postgres e toxiproxy
+[05:47:23] === v2 / queda_broker: queda do broker Kafka por 8 s
+[05:48:58]     rep 1/1: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=7 estoque_extra=8 dlq=0 p95=4.85s valida=sim sinal=
+[05:48:58] === v2 / queda_banco: queda do PostgreSQL por 8 s
+[05:50:21]     rep 1/1: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.56s valida=sim sinal=
+[05:50:21] === v2 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[05:51:30]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.08s valida=sim sinal=
+[05:51:30] === v2 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[05:52:49]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.27s valida=sim sinal=
+[05:52:49] === v2 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[05:54:24]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=21.68s valida=sim sinal=
+[05:54:24] === v2 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[05:55:48]     rep 1/1: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.56s valida=sim sinal=
+[05:55:48] === v2 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[05:56:58]     rep 1/1: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.27s valida=sim sinal=
+[05:56:58] === v3 / queda_broker: queda do broker Kafka por 8 s
+[05:58:37]     rep 1/1: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.36s valida=sim sinal=
+[05:58:37] === v3 / queda_banco: queda do PostgreSQL por 8 s
+[06:00:01]     rep 1/1: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.06s valida=sim sinal=
+[06:00:01] === v3 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[06:01:09]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.19s valida=sim sinal=
+[06:01:09] === v3 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[06:02:27]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.98s valida=sim sinal=
+[06:02:27] === v3 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[06:04:04]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.8s valida=sim sinal=
+[06:04:04] === v3 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[06:05:26]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.88s valida=sim sinal=
+[06:05:26] === v3 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[06:06:34]     rep 1/1: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.51s valida=sim sinal=
+[06:06:34] === v4 / queda_broker: queda do broker Kafka por 8 s
+[06:08:16]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.38s valida=sim sinal=
+[06:08:16] === v4 / queda_banco: queda do PostgreSQL por 8 s
+[06:09:42]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.41s valida=sim sinal=
+[06:09:42] === v4 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[06:10:51]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.12s valida=sim sinal=
+[06:10:51] === v4 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[06:12:11]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.41s valida=sim sinal=
+[06:12:11] === v4 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[06:13:48]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.18s valida=sim sinal=
+[06:13:48] === v4 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[06:15:13]     rep 1/1: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.96s valida=sim sinal=
+[06:15:13] === v4 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[06:16:40]     rep 1/1: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.54s valida=sim sinal=
+[06:16:43] concluído: C:\Users\pc\Desktop\kafka-reliability-experiment\results\verificacao\geral-c\bateria.csv

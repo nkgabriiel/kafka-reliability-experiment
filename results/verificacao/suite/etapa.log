@@ -1,0 +1,1468 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------< br.com.gabriel.pedidoeventos:integration-tests >-----------
+[INFO] Building integration-tests 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ integration-tests ---
+[INFO] skip non existing resourceDirectory C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ integration-tests ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ integration-tests ---
+[INFO] skip non existing resourceDirectory C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ integration-tests ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ integration-tests ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running br.com.gabriel.pedidoeventos.integrationtests.FluxoCompletoIntegrationTest
+[main] INFO org.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+[main] INFO org.testcontainers.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+[main] INFO org.testcontainers.DockerClientFactory - Testcontainers version: 2.0.5
+[main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy - Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+[main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy - Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+[main] INFO org.testcontainers.DockerClientFactory - Docker host IP address is localhost
+[main] INFO org.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 29.6.2
+  API Version: 1.55
+  Operating System: Docker Desktop (containerized)
+  Total Memory: 7892 MB
+  Labels: 
+    com.docker.desktop.address=npipe://\\.\pipe\docker_cli
+[main] INFO org.testcontainers.utility.RyukResourceReaper - Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+[main] INFO org.testcontainers.DockerClientFactory - Checking the system...
+[main] INFO org.testcontainers.DockerClientFactory - ?? Docker server version should be at least 1.6.0
+[main] INFO tc.testcontainers/ryuk:0.14.0 - Creating container for image: testcontainers/ryuk:0.14.0
+[main] INFO tc.testcontainers/ryuk:0.14.0 - Container testcontainers/ryuk:0.14.0 is starting: e86db6fa8a194cc73a0231717dddbaa92e8ab33f8f4c153efdc112d81de0dc42
+[main] INFO tc.testcontainers/ryuk:0.14.0 - Container testcontainers/ryuk:0.14.0 started in PT1.5583427S
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'postgres:16-alpine', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'apache/kafka:3.8.0', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose up -d --build
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-order-service Building 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-payment-service Building 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-stock-service Building 
+[Thread-19] INFO tc.docker.exe - #1 [internal] load local bake definitions
+[Thread-19] INFO tc.docker.exe - #1 reading from stdin 1.71kB 0.0s done
+[Thread-19] INFO tc.docker.exe - #1 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #2 [stock-service internal] load build definition from Dockerfile
+[Thread-19] INFO tc.docker.exe - #2 transferring dockerfile: 387B 0.0s done
+[Thread-19] INFO tc.docker.exe - #2 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #3 [payment-service internal] load build definition from Dockerfile
+[Thread-19] INFO tc.docker.exe - #3 transferring dockerfile: 387B 0.0s done
+[Thread-19] INFO tc.docker.exe - #3 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #4 [order-service internal] load build definition from Dockerfile
+[Thread-19] INFO tc.docker.exe - #4 transferring dockerfile: 387B 0.0s done
+[Thread-19] INFO tc.docker.exe - #4 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #5 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-19] INFO tc.docker.exe - #5 ...
+[Thread-19] INFO tc.docker.exe - #6 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
+[Thread-19] INFO tc.docker.exe - #6 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #7 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+[Thread-19] INFO tc.docker.exe - #7 DONE 1.8s
+[Thread-19] INFO tc.docker.exe - #5 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-19] INFO tc.docker.exe - #5 DONE 1.8s
+[Thread-19] INFO tc.docker.exe - #8 [payment-service internal] load .dockerignore
+[Thread-19] INFO tc.docker.exe - #8 transferring context: 2B done
+[Thread-19] INFO tc.docker.exe - #8 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #9 [order-service internal] load .dockerignore
+[Thread-19] INFO tc.docker.exe - #9 transferring context: 2B done
+[Thread-19] INFO tc.docker.exe - #9 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #10 [stock-service internal] load .dockerignore
+[Thread-19] INFO tc.docker.exe - #10 transferring context: 2B done
+[Thread-19] INFO tc.docker.exe - #10 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #12 [order-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #12 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #13 [stock-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #13 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #14 [stock-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 ...
+[Thread-19] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #11 transferring context: 56.92kB 0.1s done
+[Thread-19] INFO tc.docker.exe - #11 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #12 [order-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #12 transferring context: 61.93kB 0.1s done
+[Thread-19] INFO tc.docker.exe - #12 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #13 [stock-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #13 transferring context: 54.38kB 0.1s done
+[Thread-19] INFO tc.docker.exe - #13 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #14 [payment-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 sha256:26c02d4e330ef003c5e6b5886f4ca2f030b5749e7c6a1b4e75778d55975fd7e2 0B / 2.46kB 0.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:26c02d4e330ef003c5e6b5886f4ca2f030b5749e7c6a1b4e75778d55975fd7e2 2.46kB / 2.46kB 0.2s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:f6e84b59c2bfc6ecbf9fdb397926e6825bdb96312dc056132134ec6573b7743a 129B / 129B 0.2s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 0B / 158.62MB 0.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 0B / 21.44MB 0.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 3.15MB / 21.44MB 0.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 6.29MB / 21.44MB 0.9s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 8.39MB / 21.44MB 1.1s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 8.39MB / 158.62MB 1.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 12.58MB / 21.44MB 1.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 14.68MB / 21.44MB 2.0s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 16.78MB / 21.44MB 2.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 18.87MB / 21.44MB 2.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 16.78MB / 158.62MB 2.9s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 21.44MB / 21.44MB 2.8s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 25.17MB / 158.62MB 3.6s
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 1.4s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 1.4s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 34.60MB / 158.62MB 4.5s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 42.99MB / 158.62MB 5.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 51.38MB / 158.62MB 6.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 59.77MB / 158.62MB 6.9s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 68.16MB / 158.62MB 7.8s
+[Thread-19] INFO tc.docker.exe - #14 ...
+[Thread-19] INFO tc.docker.exe - #15 [payment-service stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372
+[Thread-19] INFO tc.docker.exe - #15 resolve docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372 0.0s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:1a4ad63dfbce5b3edc008a7e316209a58dadabff7aac0b02190eb22f74b95478 2.46kB / 2.46kB 0.4s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:11d552fe703dd0bf1eed620b058c744a402225b3aa72be3028e7a6a3df0d383e 127B / 127B 0.4s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:30414a79ff6e738ae1dda517a6cd2e295f67de87055edffed33e149fef30de9a 53.38MB / 53.38MB 5.5s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:fe426ef558f85718d259e266c713c1c4b63c669957fc5962174d90302b7379b0 16.97MB / 16.97MB 2.1s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:fe426ef558f85718d259e266c713c1c4b63c669957fc5962174d90302b7379b0 1.2s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:30414a79ff6e738ae1dda517a6cd2e295f67de87055edffed33e149fef30de9a 2.0s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:11d552fe703dd0bf1eed620b058c744a402225b3aa72be3028e7a6a3df0d383e 0.0s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:1a4ad63dfbce5b3edc008a7e316209a58dadabff7aac0b02190eb22f74b95478 0.0s done
+[Thread-19] INFO tc.docker.exe - #15 DONE 8.4s
+[Thread-19] INFO tc.docker.exe - #14 [order-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 ...
+[Thread-19] INFO tc.docker.exe - #16 [order-service stage-1 2/3] WORKDIR /app
+[Thread-19] INFO tc.docker.exe - #16 DONE 0.5s
+[Thread-19] INFO tc.docker.exe - #14 [order-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 77.59MB / 158.62MB 8.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 85.98MB / 158.62MB 9.5s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 94.37MB / 158.62MB 10.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 102.76MB / 158.62MB 10.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 111.15MB / 158.62MB 11.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 119.54MB / 158.62MB 12.4s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 128.97MB / 158.62MB 13.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 137.36MB / 158.62MB 13.8s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 146.80MB / 158.62MB 14.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 155.19MB / 158.62MB 15.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 158.62MB / 158.62MB 15.4s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 158.62MB / 158.62MB 15.4s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 2.3s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 2.3s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:f6e84b59c2bfc6ecbf9fdb397926e6825bdb96312dc056132134ec6573b7743a 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:26c02d4e330ef003c5e6b5886f4ca2f030b5749e7c6a1b4e75778d55975fd7e2 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 DONE 18.1s
+[Thread-19] INFO tc.docker.exe - #17 [stock-service build 2/7] WORKDIR /app
+[Thread-19] INFO tc.docker.exe - #17 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #18 [order-service build 3/7] COPY mvnw pom.xml ./
+[Thread-19] INFO tc.docker.exe - #18 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #19 [stock-service build 3/7] COPY mvnw pom.xml ./
+[Thread-19] INFO tc.docker.exe - #19 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #20 [payment-service build 3/7] COPY mvnw pom.xml ./
+[Thread-19] INFO tc.docker.exe - #20 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #21 [order-service build 4/7] COPY .mvn .mvn
+[Thread-19] INFO tc.docker.exe - #21 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #22 [payment-service build 4/7] COPY .mvn .mvn
+[Thread-19] INFO tc.docker.exe - #22 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #23 [stock-service build 4/7] COPY .mvn .mvn
+[Thread-19] INFO tc.docker.exe - #23 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #24 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #24 ...
+[Thread-19] INFO tc.docker.exe - #25 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #25 ...
+[Thread-19] INFO tc.docker.exe - #26 [stock-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #26 DONE 72.8s
+[Thread-19] INFO tc.docker.exe - #25 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #25 ...
+[Thread-19] INFO tc.docker.exe - #27 [stock-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #27 ...
+[Thread-19] INFO tc.docker.exe - #24 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #24 DONE 73.3s
+[Thread-19] INFO tc.docker.exe - #28 [payment-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #28 ...
+[Thread-19] INFO tc.docker.exe - #25 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #25 DONE 73.8s
+[Thread-19] INFO tc.docker.exe - #27 [stock-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #27 DONE 1.0s
+[Thread-19] INFO tc.docker.exe - #28 [payment-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #28 DONE 0.4s
+[Thread-19] INFO tc.docker.exe - #29 [order-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #29 DONE 0.2s
+[Thread-19] INFO tc.docker.exe - #30 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #30 ...
+[Thread-19] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #31 ...
+[Thread-19] INFO tc.docker.exe - #32 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #32 ...
+[Thread-19] INFO tc.docker.exe - #30 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #30 DONE 20.7s
+[Thread-19] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #31 ...
+[Thread-19] INFO tc.docker.exe - #32 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #32 DONE 20.9s
+[Thread-19] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #31 DONE 20.8s
+[Thread-19] INFO tc.docker.exe - #33 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #33 ...
+[Thread-19] INFO tc.docker.exe - #34 [stock-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #34 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #35 [payment-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #35 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #33 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #33 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #36 [order-service] exporting to image
+[Thread-19] INFO tc.docker.exe - #36 exporting layers
+[Thread-19] INFO tc.docker.exe - #36 exporting layers 4.4s done
+[Thread-19] INFO tc.docker.exe - #36 exporting manifest sha256:67228e85b1a52bc30e89b2bb039cff63d0f0df78fd5964a55fb891d0f96e7254 0.0s done
+[Thread-19] INFO tc.docker.exe - #36 exporting config sha256:e80e2696c1224c106db28766e0c38db0fe47c8fff22841754493c844b33ab4df 0.0s done
+[Thread-19] INFO tc.docker.exe - #36 exporting attestation manifest sha256:7aed576af3aa6402547792050676ed5277a4bd83f0cf1670459332b25bf0638f 0.1s done
+[Thread-19] INFO tc.docker.exe - #36 exporting manifest list sha256:e7b04eb7d5c8c05e5ada21561e9adf17396d868c0bbd0b409580b75f0ae73920 0.0s done
+[Thread-19] INFO tc.docker.exe - #36 naming to docker.io/library/7juudrybmto6-order-service:latest done
+[Thread-19] INFO tc.docker.exe - #36 unpacking to docker.io/library/7juudrybmto6-order-service:latest
+[Thread-19] INFO tc.docker.exe - #36 unpacking to docker.io/library/7juudrybmto6-order-service:latest 0.7s done
+[Thread-19] INFO tc.docker.exe - #36 DONE 5.4s
+[Thread-19] INFO tc.docker.exe - #37 [stock-service] exporting to image
+[Thread-19] INFO tc.docker.exe - #37 exporting layers 4.2s done
+[Thread-19] INFO tc.docker.exe - #37 exporting manifest sha256:1ba78b9666b45c98ae0703ff73933136760c488c15b0661c84d469339d6d2bd9 0.1s done
+[Thread-19] INFO tc.docker.exe - #37 exporting config sha256:64a4af6015a0310b18513d6d42cfa2370bcbf9461d42577a3058ca5ffe90aa83 0.1s done
+[Thread-19] INFO tc.docker.exe - #37 exporting attestation manifest sha256:71169f987fdb7646a5a6f19841d1186019899f0feec9e8282e1cc149219a8340 0.1s done
+[Thread-19] INFO tc.docker.exe - #37 exporting manifest list sha256:40ef78ba705bef02f01d2067f0893276fe54fd3ea3bd7af89a39a1f8db2b1f23 0.0s done
+[Thread-19] INFO tc.docker.exe - #37 naming to docker.io/library/7juudrybmto6-stock-service:latest 0.0s done
+[Thread-19] INFO tc.docker.exe - #37 unpacking to docker.io/library/7juudrybmto6-stock-service:latest 0.7s done
+[Thread-19] INFO tc.docker.exe - #37 DONE 5.4s
+[Thread-19] INFO tc.docker.exe - #38 [payment-service] exporting to image
+[Thread-19] INFO tc.docker.exe - #38 exporting layers 4.4s done
+[Thread-19] INFO tc.docker.exe - #38 exporting manifest sha256:8b185c70ac92fcd76ad501b94be170db9d98845502cfad48b02de03c13492a80 0.1s done
+[Thread-19] INFO tc.docker.exe - #38 exporting config sha256:5b18d61b3a6d0ff1a99f09627aab3d41342939886eafb630b8377ef8fd0714cf 0.0s done
+[Thread-19] INFO tc.docker.exe - #38 exporting attestation manifest sha256:5839f8eb6ad48c36d53c5bbd60db004bb9f7d34a534cc1f2f457219ae0139671 0.1s done
+[Thread-19] INFO tc.docker.exe - #38 exporting manifest list sha256:5aa324ac4b79ffe9edd7e6c06247bd3581b47a5a52a9b8efba5ddde7a64f1aae 0.0s done
+[Thread-19] INFO tc.docker.exe - #38 naming to docker.io/library/7juudrybmto6-payment-service:latest 0.0s done
+[Thread-19] INFO tc.docker.exe - #38 unpacking to docker.io/library/7juudrybmto6-payment-service:latest 0.7s done
+[Thread-19] INFO tc.docker.exe - #38 DONE 5.4s
+[Thread-19] INFO tc.docker.exe - #39 [stock-service] resolving provenance for metadata file
+[Thread-19] INFO tc.docker.exe - #39 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #40 [payment-service] resolving provenance for metadata file
+[Thread-19] INFO tc.docker.exe - #40 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #41 [order-service] resolving provenance for metadata file
+[Thread-19] INFO tc.docker.exe - #41 DONE 0.1s
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-order-service Built 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-payment-service Built 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-stock-service Built 
+[Thread-20] INFO tc.docker.exe -  Network 7juudrybmto6_tcc-network Creating 
+[Thread-20] INFO tc.docker.exe -  Network 7juudrybmto6_tcc-network Created 
+[Thread-20] INFO tc.docker.exe -  Volume 7juudrybmto6_postgres_data Creating 
+[Thread-20] INFO tc.docker.exe -  Volume 7juudrybmto6_postgres_data Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Started 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Creating container for image: alpine/socat:1.7.4.3-r0
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 is starting: 1066185f2dd44637586a3e5d9b438d2375e83cf3de616bd9de6770a7acbc5369
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 started in PT1.8734709S
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose down -v
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Stopping 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Stopping 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Stopping 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Stopped 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Removing 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Removed 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Stopped 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Removing 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Removed 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Stopped 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Removing 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Removed 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Stopping 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Stopping 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Stopped 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Removing 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Removed 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Stopped 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Removing 
+[Thread-22] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Removed 
+[Thread-22] INFO tc.docker.exe -  Volume 7juudrybmto6_postgres_data Removing 
+[Thread-22] INFO tc.docker.exe -  Network 7juudrybmto6_tcc-network Removing 
+[Thread-22] INFO tc.docker.exe -  Volume 7juudrybmto6_postgres_data Removed 
+[Thread-22] INFO tc.docker.exe -  Network 7juudrybmto6_tcc-network Removed 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 174.0 s -- in br.com.gabriel.pedidoeventos.integrationtests.FluxoCompletoIntegrationTest
+[INFO] Running br.com.gabriel.pedidoeventos.integrationtests.IdempotenciaConsumerIntegrationTest
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'postgres:16-alpine', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'apache/kafka:3.8.0', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose up -d --build
+[Thread-24] INFO tc.docker.exe -  Image ostz3x4vd7zk-order-service Building 
+[Thread-24] INFO tc.docker.exe -  Image ostz3x4vd7zk-payment-service Building 
+[Thread-24] INFO tc.docker.exe -  Image ostz3x4vd7zk-stock-service Building 
+[Thread-23] INFO tc.docker.exe - #1 [internal] load local bake definitions
+[Thread-23] INFO tc.docker.exe - #1 reading from stdin 1.71kB 0.0s done
+[Thread-23] INFO tc.docker.exe - #1 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #2 [payment-service internal] load build definition from Dockerfile
+[Thread-23] INFO tc.docker.exe - #2 transferring dockerfile: 387B 0.0s done
+[Thread-23] INFO tc.docker.exe - #2 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #3 [stock-service internal] load build definition from Dockerfile
+[Thread-23] INFO tc.docker.exe - #3 transferring dockerfile: 387B 0.0s done
+[Thread-23] INFO tc.docker.exe - #3 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #4 [order-service internal] load build definition from Dockerfile
+[Thread-23] INFO tc.docker.exe - #4 transferring dockerfile: 387B 0.0s done
+[Thread-23] INFO tc.docker.exe - #4 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #5 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-23] INFO tc.docker.exe - #5 DONE 0.7s
+[Thread-23] INFO tc.docker.exe - #6 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+[Thread-23] INFO tc.docker.exe - #6 DONE 0.7s
+[Thread-23] INFO tc.docker.exe - #7 [payment-service internal] load .dockerignore
+[Thread-23] INFO tc.docker.exe - #7 transferring context: 2B done
+[Thread-23] INFO tc.docker.exe - #7 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #8 [stock-service internal] load .dockerignore
+[Thread-23] INFO tc.docker.exe - #8 transferring context: 2B done
+[Thread-23] INFO tc.docker.exe - #8 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #9 [order-service internal] load .dockerignore
+[Thread-23] INFO tc.docker.exe - #9 transferring context: 2B done
+[Thread-23] INFO tc.docker.exe - #9 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #10 [stock-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-23] INFO tc.docker.exe - #10 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-23] INFO tc.docker.exe - #10 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #11 [stock-service stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372
+[Thread-23] INFO tc.docker.exe - #11 resolve docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372 0.0s done
+[Thread-23] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #12 [order-service internal] load build context
+[Thread-23] INFO tc.docker.exe - #12 transferring context: 5.58kB 0.0s done
+[Thread-23] INFO tc.docker.exe - #12 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #13 [payment-service internal] load build context
+[Thread-23] INFO tc.docker.exe - #13 transferring context: 4.89kB 0.0s done
+[Thread-23] INFO tc.docker.exe - #13 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #14 [stock-service internal] load build context
+[Thread-23] INFO tc.docker.exe - #14 transferring context: 4.70kB 0.0s done
+[Thread-23] INFO tc.docker.exe - #14 DONE 0.0s
+[Thread-23] INFO tc.docker.exe - #15 [payment-service build 6/7] COPY src src
+[Thread-23] INFO tc.docker.exe - #15 CACHED
+[Thread-23] INFO tc.docker.exe - #16 [payment-service build 3/7] COPY mvnw pom.xml ./
+[Thread-23] INFO tc.docker.exe - #16 CACHED
+[Thread-23] INFO tc.docker.exe - #17 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-23] INFO tc.docker.exe - #17 CACHED
+[Thread-23] INFO tc.docker.exe - #18 [payment-service build 4/7] COPY .mvn .mvn
+[Thread-23] INFO tc.docker.exe - #18 CACHED
+[Thread-23] INFO tc.docker.exe - #19 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-23] INFO tc.docker.exe - #19 CACHED
+[Thread-23] INFO tc.docker.exe - #20 [payment-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-23] INFO tc.docker.exe - #20 CACHED
+[Thread-23] INFO tc.docker.exe - #21 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-23] INFO tc.docker.exe - #21 CACHED
+[Thread-23] INFO tc.docker.exe - #22 [stock-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-23] INFO tc.docker.exe - #22 CACHED
+[Thread-23] INFO tc.docker.exe - #23 [stock-service build 3/7] COPY mvnw pom.xml ./
+[Thread-23] INFO tc.docker.exe - #23 CACHED
+[Thread-23] INFO tc.docker.exe - #24 [stock-service build 6/7] COPY src src
+[Thread-23] INFO tc.docker.exe - #24 CACHED
+[Thread-23] INFO tc.docker.exe - #25 [stock-service build 4/7] COPY .mvn .mvn
+[Thread-23] INFO tc.docker.exe - #25 CACHED
+[Thread-23] INFO tc.docker.exe - #26 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-23] INFO tc.docker.exe - #26 CACHED
+[Thread-23] INFO tc.docker.exe - #27 [order-service build 6/7] COPY src src
+[Thread-23] INFO tc.docker.exe - #27 CACHED
+[Thread-23] INFO tc.docker.exe - #28 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-23] INFO tc.docker.exe - #28 CACHED
+[Thread-23] INFO tc.docker.exe - #29 [order-service build 3/7] COPY mvnw pom.xml ./
+[Thread-23] INFO tc.docker.exe - #29 CACHED
+[Thread-23] INFO tc.docker.exe - #30 [order-service build 2/7] WORKDIR /app
+[Thread-23] INFO tc.docker.exe - #30 CACHED
+[Thread-23] INFO tc.docker.exe - #31 [order-service build 4/7] COPY .mvn .mvn
+[Thread-23] INFO tc.docker.exe - #31 CACHED
+[Thread-23] INFO tc.docker.exe - #32 [order-service stage-1 2/3] WORKDIR /app
+[Thread-23] INFO tc.docker.exe - #32 CACHED
+[Thread-23] INFO tc.docker.exe - #33 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-23] INFO tc.docker.exe - #33 CACHED
+[Thread-23] INFO tc.docker.exe - #34 [stock-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-23] INFO tc.docker.exe - #34 CACHED
+[Thread-23] INFO tc.docker.exe - #35 [stock-service] exporting to image
+[Thread-23] INFO tc.docker.exe - #35 exporting layers done
+[Thread-23] INFO tc.docker.exe - #35 exporting manifest sha256:30c5d8277b9bd45bfd1fb46e81e3a950df64edec1450adafcc00972dd43a0058 0.0s done
+[Thread-23] INFO tc.docker.exe - #35 exporting config sha256:217c042b82c6918dc189d680f4bbe2328d329e6443c15b4df7c96eaa69f7eaaf
+[Thread-23] INFO tc.docker.exe - #35 exporting config sha256:217c042b82c6918dc189d680f4bbe2328d329e6443c15b4df7c96eaa69f7eaaf 0.0s done
+[Thread-23] INFO tc.docker.exe - #35 exporting attestation manifest sha256:63e90a9951d433419a19b466bdd1c1f84b338155ce3cfac6301d1723dd0980eb 0.1s done
+[Thread-23] INFO tc.docker.exe - #35 exporting manifest list sha256:b4497567958abd07bbd6882be7cd3e6c7ff07f3b1805aba3644558072084c69d
+[Thread-23] INFO tc.docker.exe - #35 exporting manifest list sha256:b4497567958abd07bbd6882be7cd3e6c7ff07f3b1805aba3644558072084c69d 0.0s done
+[Thread-23] INFO tc.docker.exe - #35 naming to docker.io/library/ostz3x4vd7zk-stock-service:latest done
+[Thread-23] INFO tc.docker.exe - #35 unpacking to docker.io/library/ostz3x4vd7zk-stock-service:latest 0.0s done
+[Thread-23] INFO tc.docker.exe - #35 DONE 0.3s
+[Thread-23] INFO tc.docker.exe - #36 [payment-service] exporting to image
+[Thread-23] INFO tc.docker.exe - #36 exporting layers done
+[Thread-23] INFO tc.docker.exe - #36 exporting manifest sha256:300298249cf92ffe5d83583dfc66afd4b29ba98f36e746e33a6ae855a14c3439 0.0s done
+[Thread-23] INFO tc.docker.exe - #36 exporting config sha256:449ff3faa9bd4d05f77daf87d5e2b05eac5860810ad01ee06c63aaa1b034d41d 0.0s done
+[Thread-23] INFO tc.docker.exe - #36 exporting attestation manifest sha256:7a9d4ca51b58f552764e5987cc71c75dffd4f84932e42cf271fbea599bfa7e6e 0.1s done
+[Thread-23] INFO tc.docker.exe - #36 exporting manifest list sha256:5d47393a657e913fe4d822c8329b073c25c998b91e9c53c6dc3c00a170a77e4b 0.0s done
+[Thread-23] INFO tc.docker.exe - #36 naming to docker.io/library/ostz3x4vd7zk-payment-service:latest done
+[Thread-23] INFO tc.docker.exe - #36 unpacking to docker.io/library/ostz3x4vd7zk-payment-service:latest 0.0s done
+[Thread-23] INFO tc.docker.exe - #36 DONE 0.3s
+[Thread-23] INFO tc.docker.exe - #37 [order-service] exporting to image
+[Thread-23] INFO tc.docker.exe - #37 exporting layers done
+[Thread-23] INFO tc.docker.exe - #37 exporting manifest sha256:0378b71b6fddbb18dc287880af5fc37579bb1c43511ceb25da06f80b430507bf 0.0s done
+[Thread-23] INFO tc.docker.exe - #37 exporting config sha256:2b8e4073488e9f2a53b9512104a632fccb6578e3f3a41ca43ee17c285a2c7dca 0.0s done
+[Thread-23] INFO tc.docker.exe - #37 exporting attestation manifest sha256:0eccd186d196abf46d28ea4d05f1fced6d50da4bedb0ff823c58f8915d2bc87b 0.1s done
+[Thread-23] INFO tc.docker.exe - #37 exporting manifest list sha256:f0b425ac5713e2141e6b4a79d99972ffcff8f79368ffd8cd072dfa5a2c5c7d69 0.0s done
+[Thread-23] INFO tc.docker.exe - #37 naming to docker.io/library/ostz3x4vd7zk-order-service:latest done
+[Thread-23] INFO tc.docker.exe - #37 unpacking to docker.io/library/ostz3x4vd7zk-order-service:latest 0.0s done
+[Thread-23] INFO tc.docker.exe - #37 DONE 0.3s
+[Thread-23] INFO tc.docker.exe - #38 [payment-service] resolving provenance for metadata file
+[Thread-23] INFO tc.docker.exe - #38 DONE 0.1s
+[Thread-23] INFO tc.docker.exe - #39 [stock-service] resolving provenance for metadata file
+[Thread-23] INFO tc.docker.exe - #39 DONE 0.1s
+[Thread-23] INFO tc.docker.exe - #40 [order-service] resolving provenance for metadata file
+[Thread-23] INFO tc.docker.exe - #40 DONE 0.0s
+[Thread-24] INFO tc.docker.exe -  Image ostz3x4vd7zk-payment-service Built 
+[Thread-24] INFO tc.docker.exe -  Image ostz3x4vd7zk-stock-service Built 
+[Thread-24] INFO tc.docker.exe -  Image ostz3x4vd7zk-order-service Built 
+[Thread-24] INFO tc.docker.exe -  Network ostz3x4vd7zk_tcc-network Creating 
+[Thread-24] INFO tc.docker.exe -  Network ostz3x4vd7zk_tcc-network Created 
+[Thread-24] INFO tc.docker.exe -  Volume ostz3x4vd7zk_postgres_data Creating 
+[Thread-24] INFO tc.docker.exe -  Volume ostz3x4vd7zk_postgres_data Created 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Creating 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Creating 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Created 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Created 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Creating 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Creating 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Creating 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Created 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Created 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Created 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Starting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Starting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Started 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Started 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Waiting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Waiting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Waiting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Waiting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Waiting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Waiting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Healthy 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Healthy 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Healthy 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Healthy 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Starting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Healthy 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Starting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Healthy 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Starting 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Started 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Started 
+[Thread-24] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Started 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Creating container for image: alpine/socat:1.7.4.3-r0
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 is starting: 49230c3b1ea8e0c09e83574e38242c479f8165c988dbc84d45fe83ac498229ff
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 started in PT2.1314423S
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose down -v
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Stopping 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Stopping 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Stopping 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Stopped 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Removing 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Stopped 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Removing 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-stock-service-1 Removed 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-order-service-1 Removed 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Stopped 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Removing 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-payment-service-1 Removed 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Stopping 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Stopping 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Stopped 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Removing 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-postgres-1 Removed 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Stopped 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Removing 
+[Thread-26] INFO tc.docker.exe -  Container ostz3x4vd7zk-kafka-1 Removed 
+[Thread-26] INFO tc.docker.exe -  Volume ostz3x4vd7zk_postgres_data Removing 
+[Thread-26] INFO tc.docker.exe -  Network ostz3x4vd7zk_tcc-network Removing 
+[Thread-26] INFO tc.docker.exe -  Volume ostz3x4vd7zk_postgres_data Removed 
+[Thread-26] INFO tc.docker.exe -  Network ostz3x4vd7zk_tcc-network Removed 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 83.99 s -- in br.com.gabriel.pedidoeventos.integrationtests.IdempotenciaConsumerIntegrationTest
+[INFO] Running br.com.gabriel.pedidoeventos.integrationtests.OutboxIntegrationTest
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'postgres:16-alpine', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'apache/kafka:3.8.0', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose up -d --build
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-order-service Building 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-payment-service Building 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-stock-service Building 
+[Thread-27] INFO tc.docker.exe - #1 [internal] load local bake definitions
+[Thread-27] INFO tc.docker.exe - #1 reading from stdin 1.71kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #1 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #2 [stock-service internal] load build definition from Dockerfile
+[Thread-27] INFO tc.docker.exe - #2 transferring dockerfile: 387B done
+[Thread-27] INFO tc.docker.exe - #2 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #3 [order-service internal] load build definition from Dockerfile
+[Thread-27] INFO tc.docker.exe - #3 transferring dockerfile: 387B done
+[Thread-27] INFO tc.docker.exe - #3 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #4 [payment-service internal] load build definition from Dockerfile
+[Thread-27] INFO tc.docker.exe - #4 transferring dockerfile: 387B done
+[Thread-27] INFO tc.docker.exe - #4 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #5 [payment-service internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+[Thread-27] INFO tc.docker.exe - #5 DONE 0.6s
+[Thread-27] INFO tc.docker.exe - #6 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-27] INFO tc.docker.exe - #6 DONE 0.6s
+[Thread-27] INFO tc.docker.exe - #7 [order-service internal] load .dockerignore
+[Thread-27] INFO tc.docker.exe - #7 transferring context: 2B done
+[Thread-27] INFO tc.docker.exe - #7 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #8 [stock-service internal] load .dockerignore
+[Thread-27] INFO tc.docker.exe - #8 transferring context: 2B done
+[Thread-27] INFO tc.docker.exe - #8 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #9 [payment-service internal] load .dockerignore
+[Thread-27] INFO tc.docker.exe - #9 transferring context: 2B done
+[Thread-27] INFO tc.docker.exe - #9 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #10 [stock-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #10 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #12 [order-service stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372
+[Thread-27] INFO tc.docker.exe - #12 resolve docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372 0.0s done
+[Thread-27] INFO tc.docker.exe - #12 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #13 [payment-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-27] INFO tc.docker.exe - #13 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-27] INFO tc.docker.exe - #13 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #14 [order-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #14 transferring context: 5.58kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #14 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #11 transferring context: 4.89kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #10 [stock-service internal] load build context
+[Thread-27] INFO tc.docker.exe - #10 transferring context: 4.70kB 0.0s done
+[Thread-27] INFO tc.docker.exe - #10 DONE 0.0s
+[Thread-27] INFO tc.docker.exe - #15 [payment-service build 3/7] COPY mvnw pom.xml ./
+[Thread-27] INFO tc.docker.exe - #15 CACHED
+[Thread-27] INFO tc.docker.exe - #16 [payment-service build 6/7] COPY src src
+[Thread-27] INFO tc.docker.exe - #16 CACHED
+[Thread-27] INFO tc.docker.exe - #17 [payment-service build 4/7] COPY .mvn .mvn
+[Thread-27] INFO tc.docker.exe - #17 CACHED
+[Thread-27] INFO tc.docker.exe - #18 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-27] INFO tc.docker.exe - #18 CACHED
+[Thread-27] INFO tc.docker.exe - #19 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-27] INFO tc.docker.exe - #19 CACHED
+[Thread-27] INFO tc.docker.exe - #20 [payment-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-27] INFO tc.docker.exe - #20 CACHED
+[Thread-27] INFO tc.docker.exe - #21 [stock-service build 6/7] COPY src src
+[Thread-27] INFO tc.docker.exe - #21 CACHED
+[Thread-27] INFO tc.docker.exe - #22 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-27] INFO tc.docker.exe - #22 CACHED
+[Thread-27] INFO tc.docker.exe - #23 [stock-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-27] INFO tc.docker.exe - #23 CACHED
+[Thread-27] INFO tc.docker.exe - #24 [stock-service build 3/7] COPY mvnw pom.xml ./
+[Thread-27] INFO tc.docker.exe - #24 CACHED
+[Thread-27] INFO tc.docker.exe - #25 [stock-service build 4/7] COPY .mvn .mvn
+[Thread-27] INFO tc.docker.exe - #25 CACHED
+[Thread-27] INFO tc.docker.exe - #26 [order-service build 6/7] COPY src src
+[Thread-27] INFO tc.docker.exe - #26 CACHED
+[Thread-27] INFO tc.docker.exe - #27 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-27] INFO tc.docker.exe - #27 CACHED
+[Thread-27] INFO tc.docker.exe - #28 [order-service build 2/7] WORKDIR /app
+[Thread-27] INFO tc.docker.exe - #28 CACHED
+[Thread-27] INFO tc.docker.exe - #29 [order-service build 3/7] COPY mvnw pom.xml ./
+[Thread-27] INFO tc.docker.exe - #29 CACHED
+[Thread-27] INFO tc.docker.exe - #30 [order-service stage-1 2/3] WORKDIR /app
+[Thread-27] INFO tc.docker.exe - #30 CACHED
+[Thread-27] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-27] INFO tc.docker.exe - #31 CACHED
+[Thread-27] INFO tc.docker.exe - #32 [order-service build 4/7] COPY .mvn .mvn
+[Thread-27] INFO tc.docker.exe - #32 CACHED
+[Thread-27] INFO tc.docker.exe - #33 [stock-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-27] INFO tc.docker.exe - #33 CACHED
+[Thread-27] INFO tc.docker.exe - #34 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-27] INFO tc.docker.exe - #34 CACHED
+[Thread-27] INFO tc.docker.exe - #35 [payment-service] exporting to image
+[Thread-27] INFO tc.docker.exe - #35 exporting layers done
+[Thread-27] INFO tc.docker.exe - #35 exporting manifest sha256:84cdbbab8122120bd189033293736f8d14b4597b1fe3f59f8792a0486b46c682 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 exporting config sha256:cc57d426aed8e7b40b8f1a168fad73af191782865bcc892d6852744636eb5973 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 exporting attestation manifest sha256:bbcd7f9877a161ac57f3948cd05d9d7ab7ae2571636f93a9f2564a7754c247a6 0.1s done
+[Thread-27] INFO tc.docker.exe - #35 exporting manifest list sha256:050d029257af6c2cdbbb10ba43b079f219f883fd72df3b468a4994da753ad726 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 naming to docker.io/library/rmjrbhtga3jl-payment-service:latest
+[Thread-27] INFO tc.docker.exe - #35 naming to docker.io/library/rmjrbhtga3jl-payment-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 unpacking to docker.io/library/rmjrbhtga3jl-payment-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #35 DONE 0.2s
+[Thread-27] INFO tc.docker.exe - #36 [order-service] exporting to image
+[Thread-27] INFO tc.docker.exe - #36 exporting layers done
+[Thread-27] INFO tc.docker.exe - #36 exporting manifest sha256:252bd4598fd290030ef4b860a9a63e4e6e3aff7787ef91d906bf406ed2655fca 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 exporting config sha256:a9deb264ae5bf8fe4b284d334b7f7ec1ee2444ba6917232857a479a9f7ae9955 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 exporting attestation manifest sha256:0ae444491e6c65d2ecc06598a608b4d7324944f04f0c8e27d449b6ffc462bbe4 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 exporting manifest list sha256:8ebebba7ac797e194ec8929f34491c3a5e5d82b4ee15405bc9a80b4486f11bdb 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 naming to docker.io/library/rmjrbhtga3jl-order-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 unpacking to docker.io/library/rmjrbhtga3jl-order-service:latest
+[Thread-27] INFO tc.docker.exe - #36 unpacking to docker.io/library/rmjrbhtga3jl-order-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #36 DONE 0.3s
+[Thread-27] INFO tc.docker.exe - #37 [stock-service] exporting to image
+[Thread-27] INFO tc.docker.exe - #37 exporting layers done
+[Thread-27] INFO tc.docker.exe - #37 exporting manifest sha256:59e6511948f182635e9880a9cd716869ae42f54b767d5fd06cfce99ad3242c11 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 exporting config sha256:4f92f88f71deea91e477e758998de8e9561df38619547119e536cabe9ba70d39 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 exporting attestation manifest sha256:b5b8b1ffb27d182566040c5a35e5bb889ea04681b6e837d4a52ec17a4fd4d3dd 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 exporting manifest list sha256:79715e7fbf6c623d41eede6d8961fc7a7991585ee1e9e6261e724dc64f65117f 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 naming to docker.io/library/rmjrbhtga3jl-stock-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 unpacking to docker.io/library/rmjrbhtga3jl-stock-service:latest 0.0s done
+[Thread-27] INFO tc.docker.exe - #37 DONE 0.3s
+[Thread-27] INFO tc.docker.exe - #38 [payment-service] resolving provenance for metadata file
+[Thread-27] INFO tc.docker.exe - #38 DONE 0.1s
+[Thread-27] INFO tc.docker.exe - #39 [order-service] resolving provenance for metadata file
+[Thread-27] INFO tc.docker.exe - #39 DONE 0.1s
+[Thread-27] INFO tc.docker.exe - #40 [stock-service] resolving provenance for metadata file
+[Thread-27] INFO tc.docker.exe - #40 DONE 0.0s
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-stock-service Built 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-order-service Built 
+[Thread-28] INFO tc.docker.exe -  Image rmjrbhtga3jl-payment-service Built 
+[Thread-28] INFO tc.docker.exe -  Network rmjrbhtga3jl_tcc-network Creating 
+[Thread-28] INFO tc.docker.exe -  Network rmjrbhtga3jl_tcc-network Created 
+[Thread-28] INFO tc.docker.exe -  Volume rmjrbhtga3jl_postgres_data Creating 
+[Thread-28] INFO tc.docker.exe -  Volume rmjrbhtga3jl_postgres_data Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Creating 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Created 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Waiting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Healthy 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Starting 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Started 
+[Thread-28] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Started 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Creating container for image: alpine/socat:1.7.4.3-r0
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 is starting: f1e72e435729589f50783ca99c1b5fbf3d649c1fea26bc51fc2d19332aed52fb
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 started in PT2.4515173S
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose down -v
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Stopping 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Stopping 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Stopping 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Stopped 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Removing 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-order-service-1 Removed 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Stopped 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Removing 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-stock-service-1 Removed 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Stopped 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Removing 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-payment-service-1 Removed 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Stopping 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Stopping 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Stopped 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Removing 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-postgres-1 Removed 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Stopped 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Removing 
+[Thread-30] INFO tc.docker.exe -  Container rmjrbhtga3jl-kafka-1 Removed 
+[Thread-30] INFO tc.docker.exe -  Volume rmjrbhtga3jl_postgres_data Removing 
+[Thread-30] INFO tc.docker.exe -  Network rmjrbhtga3jl_tcc-network Removing 
+[Thread-30] INFO tc.docker.exe -  Volume rmjrbhtga3jl_postgres_data Removed 
+[Thread-30] INFO tc.docker.exe -  Network rmjrbhtga3jl_tcc-network Removed 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 94.74 s -- in br.com.gabriel.pedidoeventos.integrationtests.OutboxIntegrationTest
+[INFO] Running br.com.gabriel.pedidoeventos.integrationtests.ProducerIdempotenteIntegrationTest
+[main] INFO tc.ghcr.io/shopify/toxiproxy:2.5.0 - Creating container for image: ghcr.io/shopify/toxiproxy:2.5.0
+[main] INFO org.testcontainers.utility.RegistryAuthLocator - Credential helper/store (docker-credential-desktop) does not have credentials for ghcr.io
+[main] INFO tc.ghcr.io/shopify/toxiproxy:2.5.0 - Container ghcr.io/shopify/toxiproxy:2.5.0 is starting: 915e9d4d781fcca4341acceae916df212512a3fb7eba4f878a782dc3ae5afe0c
+[main] INFO org.testcontainers.containers.wait.strategy.HttpWaitStrategy - /determined_sammet: Waiting for 60 seconds for URL: http://localhost:57805/version (where port 57805 maps to container port 8474)
+[main] INFO tc.ghcr.io/shopify/toxiproxy:2.5.0 - Container ghcr.io/shopify/toxiproxy:2.5.0 started in PT1.1478085S
+[main] INFO tc.apache/kafka:3.8.0 - Creating container for image: apache/kafka:3.8.0
+[main] INFO tc.apache/kafka:3.8.0 - Container apache/kafka:3.8.0 is starting: 46043b1f9c5aa5b6dc3bc999a07c5c5defa1ba88cff2895c42998791f78f7d7b
+[main] INFO tc.apache/kafka:3.8.0 - Container apache/kafka:3.8.0 started in PT3.7188308S
+[main] INFO org.apache.kafka.common.config.AbstractConfig - ProducerConfig values: 
+	acks = -1
+	batch.size = 16384
+	bootstrap.servers = [localhost:57786]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = producer-1
+	compression.gzip.level = -1
+	compression.lz4.level = 9
+	compression.type = none
+	compression.zstd.level = 3
+	config.providers = []
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 30000
+	enable.idempotence = true
+	enable.metrics.push = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 5
+	max.block.ms = 15000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metadata.recovery.rebootstrap.trigger.ms = 300000
+	metadata.recovery.strategy = rebootstrap
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.adaptive.partitioning.enable = true
+	partitioner.availability.timeout.ms = 0
+	partitioner.class = null
+	partitioner.ignore.keys = false
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 2000
+	retries = 2147483647
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.assertion.algorithm = RS256
+	sasl.oauthbearer.assertion.claim.aud = null
+	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+	sasl.oauthbearer.assertion.claim.iss = null
+	sasl.oauthbearer.assertion.claim.jti.include = false
+	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+	sasl.oauthbearer.assertion.claim.sub = null
+	sasl.oauthbearer.assertion.file = null
+	sasl.oauthbearer.assertion.private.key.file = null
+	sasl.oauthbearer.assertion.private.key.passphrase = null
+	sasl.oauthbearer.assertion.template.file = null
+	sasl.oauthbearer.client.credentials.client.id = null
+	sasl.oauthbearer.client.credentials.client.secret = null
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = []
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.header.urlencode = false
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+	sasl.oauthbearer.scope = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = []
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transaction.two.phase.commit.enable = false
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+[main] INFO org.apache.kafka.common.telemetry.internals.KafkaMetricsCollector - initializing Kafka metrics collector
+[main] INFO org.apache.kafka.clients.producer.KafkaProducer - [Producer clientId=producer-1] Instantiated an idempotent producer.
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka version: 4.2.1
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka commitId: 92f61c44867f39dc
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1793517049080
+[kafka-producer-network-thread | producer-1] WARN org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] The metadata response from the cluster reported a recoverable issue with correlation id 2 : {teste-idempotente-aac20920-bcaa-41f8-aae2-11d5eaf3a045=UNKNOWN_TOPIC_OR_PARTITION}
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-1] Cluster ID: MkU3OEVBNTcwNTJENDM2Qk
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.producer.internals.TransactionManager - [Producer clientId=producer-1] ProducerId set to 0 with epoch 0
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] Disconnecting from node 1 due to request timeout.
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] Cancelled in-flight PRODUCE request with correlation id 10 due to node 1 being disconnected (elapsed time since creation: 2014ms, elapsed time since send: 2014ms, throttle time: 0ms, request timeout: 2000ms)
+[kafka-producer-network-thread | producer-1] WARN org.apache.kafka.clients.producer.internals.Sender - [Producer clientId=producer-1] Got error produce response with correlation id 10 on topic-partition teste-idempotente-aac20920-bcaa-41f8-aae2-11d5eaf3a045-0, retrying (2147483646 attempts left). Error: REQUEST_TIMED_OUT. Error Message: Disconnected from node 1 due to timeout
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-1] Rebootstrapping with [localhost/127.0.0.1:57786]
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] Node -1 disconnected.
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] Cancelled in-flight METADATA request with correlation id 11 due to node -1 being disconnected (elapsed time since creation: 572ms, elapsed time since send: 572ms, throttle time: 0ms, request timeout: 2000ms)
+[kafka-producer-network-thread | producer-1] WARN org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] Bootstrap broker localhost:57786 (id: -1 rack: null isFenced: false) disconnected
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-1] Resetting the last seen epoch of partition teste-idempotente-aac20920-bcaa-41f8-aae2-11d5eaf3a045-0 to 0 since the associated topicId changed from null to fIizcMnZSg2LjPwZg0qWIA
+[kafka-producer-network-thread | producer-1] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-1] Cluster ID: MkU3OEVBNTcwNTJENDM2Qk
+[main] INFO org.apache.kafka.clients.producer.KafkaProducer - [Producer clientId=producer-1] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms.
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics scheduler closed
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics reporters closed
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - App info kafka.producer for producer-1 unregistered
+[main] INFO org.apache.kafka.common.config.AbstractConfig - ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:57786]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-contador-503aa803-646b-4087-a224-55b447f23e77-1
+	client.rack = 
+	config.providers = []
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = true
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = contador-503aa803-646b-4087-a224-55b447f23e77
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metadata.recovery.rebootstrap.trigger.ms = 300000
+	metadata.recovery.strategy = rebootstrap
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.assertion.algorithm = RS256
+	sasl.oauthbearer.assertion.claim.aud = null
+	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+	sasl.oauthbearer.assertion.claim.iss = null
+	sasl.oauthbearer.assertion.claim.jti.include = false
+	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+	sasl.oauthbearer.assertion.claim.sub = null
+	sasl.oauthbearer.assertion.file = null
+	sasl.oauthbearer.assertion.private.key.file = null
+	sasl.oauthbearer.assertion.private.key.passphrase = null
+	sasl.oauthbearer.assertion.template.file = null
+	sasl.oauthbearer.client.credentials.client.id = null
+	sasl.oauthbearer.client.credentials.client.secret = null
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = []
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.header.urlencode = false
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+	sasl.oauthbearer.scope = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	share.acknowledgement.mode = implicit
+	share.acquire.mode = BATCH_OPTIMIZED
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = []
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+[main] INFO org.apache.kafka.common.telemetry.internals.KafkaMetricsCollector - initializing Kafka metrics collector
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka version: 4.2.1
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka commitId: 92f61c44867f39dc
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1793517052753
+[main] INFO org.apache.kafka.clients.Metadata - [Consumer clientId=consumer-contador-503aa803-646b-4087-a224-55b447f23e77-1, groupId=contador-503aa803-646b-4087-a224-55b447f23e77] Cluster ID: MkU3OEVBNTcwNTJENDM2Qk
+[main] WARN org.apache.kafka.clients.consumer.internals.OffsetFetcherUtils - [Consumer clientId=consumer-contador-503aa803-646b-4087-a224-55b447f23e77-1, groupId=contador-503aa803-646b-4087-a224-55b447f23e77] Not updating high watermark for partition teste-idempotente-aac20920-bcaa-41f8-aae2-11d5eaf3a045-0 as it is no longer assigned
+[main] WARN org.apache.kafka.clients.consumer.internals.OffsetFetcherUtils - [Consumer clientId=consumer-contador-503aa803-646b-4087-a224-55b447f23e77-1, groupId=contador-503aa803-646b-4087-a224-55b447f23e77] Not updating high watermark for partition teste-idempotente-aac20920-bcaa-41f8-aae2-11d5eaf3a045-0 as it is no longer assigned
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-contador-503aa803-646b-4087-a224-55b447f23e77-1, groupId=contador-503aa803-646b-4087-a224-55b447f23e77] Resetting generation and member id due to: consumer pro-actively leaving the group
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-contador-503aa803-646b-4087-a224-55b447f23e77-1, groupId=contador-503aa803-646b-4087-a224-55b447f23e77] Request joining group due to: consumer pro-actively leaving the group
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics scheduler closed
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics reporters closed
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - App info kafka.consumer for consumer-contador-503aa803-646b-4087-a224-55b447f23e77-1 unregistered
+>>> RESULTADO idempotente=true: registros no topico = 2
+[main] INFO org.apache.kafka.common.config.AbstractConfig - ProducerConfig values: 
+	acks = -1
+	batch.size = 16384
+	bootstrap.servers = [localhost:57786]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = producer-2
+	compression.gzip.level = -1
+	compression.lz4.level = 9
+	compression.type = none
+	compression.zstd.level = 3
+	config.providers = []
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 30000
+	enable.idempotence = false
+	enable.metrics.push = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 5
+	max.block.ms = 15000
+	max.in.flight.requests.per.connection = 5
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metadata.recovery.rebootstrap.trigger.ms = 300000
+	metadata.recovery.strategy = rebootstrap
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.adaptive.partitioning.enable = true
+	partitioner.availability.timeout.ms = 0
+	partitioner.class = null
+	partitioner.ignore.keys = false
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 2000
+	retries = 2147483647
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.assertion.algorithm = RS256
+	sasl.oauthbearer.assertion.claim.aud = null
+	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+	sasl.oauthbearer.assertion.claim.iss = null
+	sasl.oauthbearer.assertion.claim.jti.include = false
+	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+	sasl.oauthbearer.assertion.claim.sub = null
+	sasl.oauthbearer.assertion.file = null
+	sasl.oauthbearer.assertion.private.key.file = null
+	sasl.oauthbearer.assertion.private.key.passphrase = null
+	sasl.oauthbearer.assertion.template.file = null
+	sasl.oauthbearer.client.credentials.client.id = null
+	sasl.oauthbearer.client.credentials.client.secret = null
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = []
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.header.urlencode = false
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+	sasl.oauthbearer.scope = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = []
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transaction.two.phase.commit.enable = false
+	transactional.id = null
+	value.serializer = class org.apache.kafka.common.serialization.StringSerializer
+
+[main] INFO org.apache.kafka.common.telemetry.internals.KafkaMetricsCollector - initializing Kafka metrics collector
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka version: 4.2.1
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka commitId: 92f61c44867f39dc
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1793517052825
+[kafka-producer-network-thread | producer-2] WARN org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-2] The metadata response from the cluster reported a recoverable issue with correlation id 2 : {teste-controle-0e557b04-9d07-4fc2-a502-b60471e94789=UNKNOWN_TOPIC_OR_PARTITION}
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-2] Cluster ID: MkU3OEVBNTcwNTJENDM2Qk
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-2] Disconnecting from node 1 due to request timeout.
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-2] Cancelled in-flight PRODUCE request with correlation id 8 due to node 1 being disconnected (elapsed time since creation: 2007ms, elapsed time since send: 2007ms, throttle time: 0ms, request timeout: 2000ms)
+[kafka-producer-network-thread | producer-2] WARN org.apache.kafka.clients.producer.internals.Sender - [Producer clientId=producer-2] Got error produce response with correlation id 8 on topic-partition teste-controle-0e557b04-9d07-4fc2-a502-b60471e94789-0, retrying (2147483646 attempts left). Error: REQUEST_TIMED_OUT. Error Message: Disconnected from node 1 due to timeout
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-2] Rebootstrapping with [localhost/127.0.0.1:57786]
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-2] Node -1 disconnected.
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-2] Cancelled in-flight METADATA request with correlation id 9 due to node -1 being disconnected (elapsed time since creation: 591ms, elapsed time since send: 591ms, throttle time: 0ms, request timeout: 2000ms)
+[kafka-producer-network-thread | producer-2] WARN org.apache.kafka.clients.NetworkClient - [Producer clientId=producer-2] Bootstrap broker localhost:57786 (id: -1 rack: null isFenced: false) disconnected
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-2] Resetting the last seen epoch of partition teste-controle-0e557b04-9d07-4fc2-a502-b60471e94789-0 to 0 since the associated topicId changed from null to nebZyBvmRo2Ip__1E_aXGg
+[kafka-producer-network-thread | producer-2] INFO org.apache.kafka.clients.Metadata - [Producer clientId=producer-2] Cluster ID: MkU3OEVBNTcwNTJENDM2Qk
+[main] INFO org.apache.kafka.clients.producer.KafkaProducer - [Producer clientId=producer-2] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms.
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics scheduler closed
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics reporters closed
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - App info kafka.producer for producer-2 unregistered
+[main] INFO org.apache.kafka.common.config.AbstractConfig - ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:57786]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-contador-4b99068a-55fe-4300-a3dd-e24a24d22470-2
+	client.rack = 
+	config.providers = []
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = true
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = contador-4b99068a-55fe-4300-a3dd-e24a24d22470
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metadata.recovery.rebootstrap.trigger.ms = 300000
+	metadata.recovery.strategy = rebootstrap
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.assertion.algorithm = RS256
+	sasl.oauthbearer.assertion.claim.aud = null
+	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+	sasl.oauthbearer.assertion.claim.iss = null
+	sasl.oauthbearer.assertion.claim.jti.include = false
+	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+	sasl.oauthbearer.assertion.claim.sub = null
+	sasl.oauthbearer.assertion.file = null
+	sasl.oauthbearer.assertion.private.key.file = null
+	sasl.oauthbearer.assertion.private.key.passphrase = null
+	sasl.oauthbearer.assertion.template.file = null
+	sasl.oauthbearer.client.credentials.client.id = null
+	sasl.oauthbearer.client.credentials.client.secret = null
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = []
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.header.urlencode = false
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+	sasl.oauthbearer.scope = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	share.acknowledgement.mode = implicit
+	share.acquire.mode = BATCH_OPTIMIZED
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = []
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+[main] INFO org.apache.kafka.common.telemetry.internals.KafkaMetricsCollector - initializing Kafka metrics collector
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka version: 4.2.1
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka commitId: 92f61c44867f39dc
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1793517055779
+[main] INFO org.apache.kafka.clients.Metadata - [Consumer clientId=consumer-contador-4b99068a-55fe-4300-a3dd-e24a24d22470-2, groupId=contador-4b99068a-55fe-4300-a3dd-e24a24d22470] Cluster ID: MkU3OEVBNTcwNTJENDM2Qk
+[main] WARN org.apache.kafka.clients.consumer.internals.OffsetFetcherUtils - [Consumer clientId=consumer-contador-4b99068a-55fe-4300-a3dd-e24a24d22470-2, groupId=contador-4b99068a-55fe-4300-a3dd-e24a24d22470] Not updating high watermark for partition teste-controle-0e557b04-9d07-4fc2-a502-b60471e94789-0 as it is no longer assigned
+[main] WARN org.apache.kafka.clients.consumer.internals.OffsetFetcherUtils - [Consumer clientId=consumer-contador-4b99068a-55fe-4300-a3dd-e24a24d22470-2, groupId=contador-4b99068a-55fe-4300-a3dd-e24a24d22470] Not updating high watermark for partition teste-controle-0e557b04-9d07-4fc2-a502-b60471e94789-0 as it is no longer assigned
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-contador-4b99068a-55fe-4300-a3dd-e24a24d22470-2, groupId=contador-4b99068a-55fe-4300-a3dd-e24a24d22470] Resetting generation and member id due to: consumer pro-actively leaving the group
+[main] INFO org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-contador-4b99068a-55fe-4300-a3dd-e24a24d22470-2, groupId=contador-4b99068a-55fe-4300-a3dd-e24a24d22470] Request joining group due to: consumer pro-actively leaving the group
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics scheduler closed
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+[main] INFO org.apache.kafka.common.metrics.Metrics - Metrics reporters closed
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - App info kafka.consumer for consumer-contador-4b99068a-55fe-4300-a3dd-e24a24d22470-2 unregistered
+>>> RESULTADO idempotente=false: registros no topico = 3
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.32 s -- in br.com.gabriel.pedidoeventos.integrationtests.ProducerIdempotenteIntegrationTest
+[INFO] Running br.com.gabriel.pedidoeventos.integrationtests.RetryDlqIntegrationTest
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'postgres:16-alpine', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'apache/kafka:3.8.0', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose up -d --build
+[Thread-37] INFO tc.docker.exe -  Image unjdmmvw6rto-order-service Building 
+[Thread-37] INFO tc.docker.exe -  Image unjdmmvw6rto-payment-service Building 
+[Thread-37] INFO tc.docker.exe -  Image unjdmmvw6rto-stock-service Building 
+[Thread-36] INFO tc.docker.exe - #1 [internal] load local bake definitions
+[Thread-36] INFO tc.docker.exe - #1 reading from stdin 1.71kB 0.0s done
+[Thread-36] INFO tc.docker.exe - #1 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #2 [stock-service internal] load build definition from Dockerfile
+[Thread-36] INFO tc.docker.exe - #2 transferring dockerfile: 387B 0.0s done
+[Thread-36] INFO tc.docker.exe - #2 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #3 [payment-service internal] load build definition from Dockerfile
+[Thread-36] INFO tc.docker.exe - #3 transferring dockerfile: 387B 0.0s done
+[Thread-36] INFO tc.docker.exe - #3 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #4 [order-service internal] load build definition from Dockerfile
+[Thread-36] INFO tc.docker.exe - #4 transferring dockerfile: 387B 0.0s done
+[Thread-36] INFO tc.docker.exe - #4 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #5 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
+[Thread-36] INFO tc.docker.exe - #5 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #6 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-36] INFO tc.docker.exe - #6 DONE 1.0s
+[Thread-36] INFO tc.docker.exe - #7 [payment-service internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+[Thread-36] INFO tc.docker.exe - #7 DONE 1.0s
+[Thread-36] INFO tc.docker.exe - #8 [order-service internal] load .dockerignore
+[Thread-36] INFO tc.docker.exe - #8 transferring context: 2B done
+[Thread-36] INFO tc.docker.exe - #8 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #9 [stock-service internal] load .dockerignore
+[Thread-36] INFO tc.docker.exe - #9 transferring context: 2B done
+[Thread-36] INFO tc.docker.exe - #9 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #10 [payment-service internal] load .dockerignore
+[Thread-36] INFO tc.docker.exe - #10 transferring context: 2B done
+[Thread-36] INFO tc.docker.exe - #10 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #11 [stock-service stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372
+[Thread-36] INFO tc.docker.exe - #11 resolve docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372 0.0s done
+[Thread-36] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #12 [stock-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-36] INFO tc.docker.exe - #12 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-36] INFO tc.docker.exe - #12 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #13 [payment-service internal] load build context
+[Thread-36] INFO tc.docker.exe - #13 transferring context: 4.89kB 0.0s done
+[Thread-36] INFO tc.docker.exe - #13 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #14 [stock-service internal] load build context
+[Thread-36] INFO tc.docker.exe - #14 transferring context: 4.70kB 0.0s done
+[Thread-36] INFO tc.docker.exe - #14 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #15 [order-service internal] load build context
+[Thread-36] INFO tc.docker.exe - #15 transferring context: 5.58kB 0.0s done
+[Thread-36] INFO tc.docker.exe - #15 DONE 0.0s
+[Thread-36] INFO tc.docker.exe - #16 [payment-service build 4/7] COPY .mvn .mvn
+[Thread-36] INFO tc.docker.exe - #16 CACHED
+[Thread-36] INFO tc.docker.exe - #17 [payment-service build 6/7] COPY src src
+[Thread-36] INFO tc.docker.exe - #17 CACHED
+[Thread-36] INFO tc.docker.exe - #18 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-36] INFO tc.docker.exe - #18 CACHED
+[Thread-36] INFO tc.docker.exe - #19 [payment-service build 3/7] COPY mvnw pom.xml ./
+[Thread-36] INFO tc.docker.exe - #19 CACHED
+[Thread-36] INFO tc.docker.exe - #20 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-36] INFO tc.docker.exe - #20 CACHED
+[Thread-36] INFO tc.docker.exe - #21 [payment-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-36] INFO tc.docker.exe - #21 CACHED
+[Thread-36] INFO tc.docker.exe - #22 [stock-service build 3/7] COPY mvnw pom.xml ./
+[Thread-36] INFO tc.docker.exe - #22 CACHED
+[Thread-36] INFO tc.docker.exe - #23 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-36] INFO tc.docker.exe - #23 CACHED
+[Thread-36] INFO tc.docker.exe - #24 [stock-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-36] INFO tc.docker.exe - #24 CACHED
+[Thread-36] INFO tc.docker.exe - #25 [stock-service build 4/7] COPY .mvn .mvn
+[Thread-36] INFO tc.docker.exe - #25 CACHED
+[Thread-36] INFO tc.docker.exe - #26 [stock-service build 6/7] COPY src src
+[Thread-36] INFO tc.docker.exe - #26 CACHED
+[Thread-36] INFO tc.docker.exe - #27 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-36] INFO tc.docker.exe - #27 CACHED
+[Thread-36] INFO tc.docker.exe - #28 [stock-service stage-1 2/3] WORKDIR /app
+[Thread-36] INFO tc.docker.exe - #28 CACHED
+[Thread-36] INFO tc.docker.exe - #29 [order-service build 6/7] COPY src src
+[Thread-36] INFO tc.docker.exe - #29 CACHED
+[Thread-36] INFO tc.docker.exe - #30 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-36] INFO tc.docker.exe - #30 CACHED
+[Thread-36] INFO tc.docker.exe - #31 [stock-service build 2/7] WORKDIR /app
+[Thread-36] INFO tc.docker.exe - #31 CACHED
+[Thread-36] INFO tc.docker.exe - #32 [order-service build 4/7] COPY .mvn .mvn
+[Thread-36] INFO tc.docker.exe - #32 CACHED
+[Thread-36] INFO tc.docker.exe - #33 [order-service build 3/7] COPY mvnw pom.xml ./
+[Thread-36] INFO tc.docker.exe - #33 CACHED
+[Thread-36] INFO tc.docker.exe - #34 [stock-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-36] INFO tc.docker.exe - #34 CACHED
+[Thread-36] INFO tc.docker.exe - #35 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-36] INFO tc.docker.exe - #35 CACHED
+[Thread-36] INFO tc.docker.exe - #36 [order-service] exporting to image
+[Thread-36] INFO tc.docker.exe - #36 exporting layers done
+[Thread-36] INFO tc.docker.exe - #36 exporting manifest sha256:dc881e99dc80e0c828bb5845fa6858e1ba327cf1d67df5ab393431e7befbb3bc 0.0s done
+[Thread-36] INFO tc.docker.exe - #36 exporting config sha256:9c56b9942fd7d8d1427ddd52f476603738e1f93de8dc6240881ee419bf6fda78
+[Thread-36] INFO tc.docker.exe - #36 exporting config sha256:9c56b9942fd7d8d1427ddd52f476603738e1f93de8dc6240881ee419bf6fda78 0.0s done
+[Thread-36] INFO tc.docker.exe - #36 exporting attestation manifest sha256:9fe75ac5e7f9b68cfb21ab2aed157e80c13e361b2f5bd96413ad37d8edef4286 0.1s done
+[Thread-36] INFO tc.docker.exe - #36 exporting manifest list sha256:12fa0e880e4e3dedcf651273b6d815f48451b524e390032c4fa96c255299f74e
+[Thread-36] INFO tc.docker.exe - #36 exporting manifest list sha256:12fa0e880e4e3dedcf651273b6d815f48451b524e390032c4fa96c255299f74e 0.0s done
+[Thread-36] INFO tc.docker.exe - #36 naming to docker.io/library/unjdmmvw6rto-order-service:latest 0.0s done
+[Thread-36] INFO tc.docker.exe - #36 unpacking to docker.io/library/unjdmmvw6rto-order-service:latest 0.0s done
+[Thread-36] INFO tc.docker.exe - #36 DONE 0.3s
+[Thread-36] INFO tc.docker.exe - #37 [payment-service] exporting to image
+[Thread-36] INFO tc.docker.exe - #37 exporting layers done
+[Thread-36] INFO tc.docker.exe - #37 exporting manifest sha256:39828d64509a76181cf30db9c6b6546bb165af62a1350dcf6c62c1d245c020bf 0.0s done
+[Thread-36] INFO tc.docker.exe - #37 exporting config sha256:7b819956c73a231f016cfbd374dd368c491902d44ac925331c591f784266b44c 0.0s done
+[Thread-36] INFO tc.docker.exe - #37 exporting attestation manifest sha256:df79bc321407a028c61d644ccdbe4674875899e41990cb8c6ab28fc7e8530d57 0.1s done
+[Thread-36] INFO tc.docker.exe - #37 exporting manifest list sha256:405b0769ec813c5dd58314d9390564f1e24f66dd080e8f479be7c370d8e3c42f 0.0s done
+[Thread-36] INFO tc.docker.exe - #37 naming to docker.io/library/unjdmmvw6rto-payment-service:latest 0.0s done
+[Thread-36] INFO tc.docker.exe - #37 unpacking to docker.io/library/unjdmmvw6rto-payment-service:latest 0.0s done
+[Thread-36] INFO tc.docker.exe - #37 DONE 0.3s
+[Thread-36] INFO tc.docker.exe - #38 [stock-service] exporting to image
+[Thread-36] INFO tc.docker.exe - #38 exporting layers done
+[Thread-36] INFO tc.docker.exe - #38 exporting manifest sha256:9dfd33c4a5ceb6b988e86114d3e37a1cf5fed50b778ef672c8f1bc627793ed6f 0.0s done
+[Thread-36] INFO tc.docker.exe - #38 exporting config sha256:f3ce49c8d5e39a7c58f2117f17675971e096990eb99e03b775848b50e84b3b5d 0.0s done
+[Thread-36] INFO tc.docker.exe - #38 exporting attestation manifest sha256:fc90b80da01323c118095a088a632f1d039b047c812511f393a0f824e41a7b11 0.1s done
+[Thread-36] INFO tc.docker.exe - #38 exporting manifest list sha256:9dc71af93d9db61d6e37d0c2e74cd432049ffa13f98cbb9b9ff610c87abfd009 0.0s done
+[Thread-36] INFO tc.docker.exe - #38 naming to docker.io/library/unjdmmvw6rto-stock-service:latest 0.0s done
+[Thread-36] INFO tc.docker.exe - #38 unpacking to docker.io/library/unjdmmvw6rto-stock-service:latest 0.0s done
+[Thread-36] INFO tc.docker.exe - #38 DONE 0.3s
+[Thread-36] INFO tc.docker.exe - #39 [payment-service] resolving provenance for metadata file
+[Thread-36] INFO tc.docker.exe - #39 DONE 0.1s
+[Thread-36] INFO tc.docker.exe - #40 [stock-service] resolving provenance for metadata file
+[Thread-36] INFO tc.docker.exe - #40 DONE 0.1s
+[Thread-36] INFO tc.docker.exe - #41 [order-service] resolving provenance for metadata file
+[Thread-36] INFO tc.docker.exe - #41 DONE 0.0s
+[Thread-37] INFO tc.docker.exe -  Image unjdmmvw6rto-order-service Built 
+[Thread-37] INFO tc.docker.exe -  Image unjdmmvw6rto-payment-service Built 
+[Thread-37] INFO tc.docker.exe -  Image unjdmmvw6rto-stock-service Built 
+[Thread-37] INFO tc.docker.exe -  Network unjdmmvw6rto_tcc-network Creating 
+[Thread-37] INFO tc.docker.exe -  Network unjdmmvw6rto_tcc-network Created 
+[Thread-37] INFO tc.docker.exe -  Volume unjdmmvw6rto_postgres_data Creating 
+[Thread-37] INFO tc.docker.exe -  Volume unjdmmvw6rto_postgres_data Created 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Creating 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Creating 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Created 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Created 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Creating 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Creating 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Creating 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Created 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Created 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Created 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Starting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Starting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Started 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Started 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Waiting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Waiting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Waiting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Waiting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Waiting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Waiting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Healthy 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Healthy 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Healthy 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Healthy 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Starting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Healthy 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Starting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Healthy 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Starting 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Started 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Started 
+[Thread-37] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Started 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Creating container for image: alpine/socat:1.7.4.3-r0
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 is starting: 388c56f55b5f10f790b822d9be1d0b258e8b504f165f4a3da3551244331540ca
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 started in PT2.914312S
+[METRICA] referencia (sem veneno): mediana=2370 ms, max=2448 ms
+[METRICA] com veneno na frente:   mediana=1662 ms, max=4866 ms
+[METRICA] pedidos atrasados (> mediana de referencia + 2000 ms): 3 de 12
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose down -v
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Stopping 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Stopping 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Stopping 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Stopped 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Removing 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-order-service-1 Removed 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Stopped 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Removing 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-stock-service-1 Removed 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Stopped 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Removing 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-payment-service-1 Removed 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Stopping 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Stopping 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Stopped 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Removing 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-postgres-1 Removed 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Stopped 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Removing 
+[Thread-39] INFO tc.docker.exe -  Container unjdmmvw6rto-kafka-1 Removed 
+[Thread-39] INFO tc.docker.exe -  Network unjdmmvw6rto_tcc-network Removing 
+[Thread-39] INFO tc.docker.exe -  Volume unjdmmvw6rto_postgres_data Removing 
+[Thread-39] INFO tc.docker.exe -  Volume unjdmmvw6rto_postgres_data Removed 
+[Thread-39] INFO tc.docker.exe -  Network unjdmmvw6rto_tcc-network Removed 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 63.27 s -- in br.com.gabriel.pedidoeventos.integrationtests.RetryDlqIntegrationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  07:15 min
+[INFO] Finished at: 2026-11-01T04:12:02-03:00
+[INFO] ------------------------------------------------------------------------

@@ -1,0 +1,7 @@
+data,classe,teste,resultado,tempo_s,mensagem,metricas
+2026-11-01T04:07:45,FluxoCompletoIntegrationTest,deveCriarPedidoEConcluirComSucesso,passou,7.645,,
+2026-11-01T04:09:09,IdempotenciaConsumerIntegrationTest,replayDasMensagens_naoDuplicaOEfeitoDeNegocio,passou,43.688,,
+2026-11-01T04:10:43,OutboxIntegrationTest,killEntreCommitEPublicacao_eventoNaoSePerdeEPublicaAoReiniciar,passou,54.775,,
+2026-11-01T04:10:59,ProducerIdempotenteIntegrationTest,producerIdempotente_naoDuplicaNoBrokerQuandoOAckSePerde,passou,4.059,,
+2026-11-01T04:10:59,ProducerIdempotenteIntegrationTest,controle_producerSemIdempotencia_duplicaNoBrokerQuandoOAckSePerde,passou,2.995,,
+2026-11-01T04:12:02,RetryDlqIntegrationTest,poisonMessage_vaiParaDlqSemBloquearOsDemaisPedidos,passou,18.689,,"[METRICA] referencia (sem veneno): mediana=2370 ms, max=2448 ms | [METRICA] com veneno na frente:   mediana=1662 ms, max=4866 ms | [METRICA] pedidos atrasados (> mediana de referencia + 2000 ms): 3 de 12"

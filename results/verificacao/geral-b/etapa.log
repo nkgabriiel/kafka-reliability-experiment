@@ -1,0 +1,78 @@
+[05:09:11] saída: C:\Users\pc\Desktop\kafka-reliability-experiment\results\verificacao\geral-b
+[05:09:11] subindo kafka, postgres e toxiproxy
+[05:09:24] === v0 / kill_ack_janela_0: queda do pagamento na janela do ack, com janela de 0 ms
+[05:10:08]     rep 1/1: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[05:10:08] === v0 / kill_ack_janela_200: queda do pagamento na janela do ack, com janela de 200 ms
+[05:10:52]     rep 1/1: concluidos=8/8 criacao_falhou=12 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[05:10:52] === v0 / kill_ack_janela_400: queda do pagamento na janela do ack, com janela de 400 ms
+[05:11:36]     rep 1/1: concluidos=8/8 criacao_falhou=12 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.03s valida=sim sinal=
+[05:11:36] === v0 / kill_ack_janela_800: queda do pagamento na janela do ack, com janela de 800 ms
+[05:12:22]     rep 1/1: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[05:12:22] === v0 / falha_transitoria_5: não se aplica ao monólito (sem Kafka), pulando
+[05:12:22] === v0 / falha_transitoria_15: não se aplica ao monólito (sem Kafka), pulando
+[05:12:22] === v0 / falha_transitoria_30: não se aplica ao monólito (sem Kafka), pulando
+[05:12:22] === v0 / poison_10: não se aplica ao monólito (sem Kafka), pulando
+[05:12:22] === v0 / retry_1: não se aplica ao monólito (sem Kafka), pulando
+[05:12:22] === v0 / retry_5: não se aplica ao monólito (sem Kafka), pulando
+[05:12:22] === v0 / retry_9: não se aplica ao monólito (sem Kafka), pulando
+[05:12:22] === v5b / kill_ack_janela_0: queda do pagamento na janela do ack, com janela de 0 ms
+[05:13:36]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.07s valida=sim sinal=0
+[05:13:36] === v5b / kill_ack_janela_200: queda do pagamento na janela do ack, com janela de 200 ms
+[05:14:43]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.0s valida=sim sinal=0
+[05:14:43] === v5b / kill_ack_janela_400: queda do pagamento na janela do ack, com janela de 400 ms
+[05:15:51]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.6s valida=sim sinal=1
+[05:15:51] === v5b / kill_ack_janela_800: queda do pagamento na janela do ack, com janela de 800 ms
+[05:17:02]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.03s valida=sim sinal=1
+[05:17:02] === v5b / falha_transitoria_5: 5% das chamadas do pagamento falham de forma aleatória
+[05:17:59]     rep 1/1: concluidos=80/80 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.05s valida=sim sinal=6
+[05:17:59] === v5b / falha_transitoria_15: 15% das chamadas do pagamento falham de forma aleatória
+[05:18:53]     rep 1/1: concluidos=60/60 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.35s valida=sim sinal=10
+[05:18:53] === v5b / falha_transitoria_30: 30% das chamadas do pagamento falham de forma aleatória
+[05:19:47]     rep 1/1: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.17s valida=sim sinal=10
+[05:19:47] === v5b / poison_10: 10% dos pedidos (3 de 30) são mensagens envenenadas
+[05:20:46]     rep 1/1: concluidos=27/30 criacao_falhou=0 perdidos=0 cancelados=3 duplicados=0 estoque_extra=0 dlq=3 p95=5.42s valida=sim sinal=12
+[05:20:46] === v5b / retry_1: só vale para ['v5', 'v6'], pulando
+[05:20:46] === v5b / retry_5: só vale para ['v5', 'v6'], pulando
+[05:20:46] === v5b / retry_9: só vale para ['v5', 'v6'], pulando
+[05:20:46] === v6 / kill_ack_janela_0: queda do pagamento na janela do ack, com janela de 0 ms
+[05:22:03]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.38s valida=sim sinal=0
+[05:22:03] === v6 / kill_ack_janela_200: queda do pagamento na janela do ack, com janela de 200 ms
+[05:23:40]     rep 1/1: concluidos=19/20 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.37s valida=sim sinal=0
+[05:23:40] === v6 / kill_ack_janela_400: queda do pagamento na janela do ack, com janela de 400 ms
+[05:25:16]     rep 1/1: concluidos=19/20 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.43s valida=sim sinal=1
+[05:25:16] === v6 / kill_ack_janela_800: queda do pagamento na janela do ack, com janela de 800 ms
+[05:26:56]     rep 1/1: concluidos=19/20 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.03s valida=sim sinal=1
+[05:26:56] === v6 / falha_transitoria_5: 5% das chamadas do pagamento falham de forma aleatória
+[05:28:03]     rep 1/1: concluidos=80/80 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.6s valida=sim sinal=7
+[05:28:03] === v6 / falha_transitoria_15: 15% das chamadas do pagamento falham de forma aleatória
+[05:29:04]     rep 1/1: concluidos=60/60 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.22s valida=sim sinal=6
+[05:29:04] === v6 / falha_transitoria_30: 30% das chamadas do pagamento falham de forma aleatória
+[05:30:07]     rep 1/1: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=6.29s valida=sim sinal=11
+[05:30:07] === v6 / poison_10: 10% dos pedidos (3 de 30) são mensagens envenenadas
+[05:31:11]     rep 1/1: concluidos=27/30 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=3 p95=4.82s valida=sim sinal=12
+[05:31:11] === v6 / retry_1: falha passageira de 50% com 1 retentativa(s) no retry
+[05:33:41]     rep 1/1: concluidos=29/40 criacao_falhou=0 perdidos=11 cancelados=0 duplicados=0 estoque_extra=0 dlq=11 p95=3.0s valida=sim sinal=25
+[05:33:41] === v6 / retry_5: falha passageira de 50% com 5 retentativa(s) no retry
+[05:35:55]     rep 1/1: concluidos=39/40 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=18.39s valida=sim sinal=23
+[05:35:55] === v6 / retry_9: falha passageira de 50% com 9 retentativa(s) no retry
+[05:37:35]     rep 1/1: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=41.08s valida=sim sinal=20
+[05:37:35] === v6b / kill_ack_janela_0: queda do pagamento na janela do ack, com janela de 0 ms
+[05:38:53]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.31s valida=sim sinal=0
+[05:38:53] === v6b / kill_ack_janela_200: queda do pagamento na janela do ack, com janela de 200 ms
+[05:40:09]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.84s valida=sim sinal=0
+[05:40:09] === v6b / kill_ack_janela_400: queda do pagamento na janela do ack, com janela de 400 ms
+[05:41:26]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.49s valida=sim sinal=1
+[05:41:26] === v6b / kill_ack_janela_800: queda do pagamento na janela do ack, com janela de 800 ms
+[05:42:44]     rep 1/1: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.8s valida=sim sinal=2
+[05:42:44] === v6b / falha_transitoria_5: 5% das chamadas do pagamento falham de forma aleatória
+[05:43:53]     rep 1/1: concluidos=80/80 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.03s valida=sim sinal=2
+[05:43:53] === v6b / falha_transitoria_15: 15% das chamadas do pagamento falham de forma aleatória
+[05:45:00]     rep 1/1: concluidos=60/60 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.02s valida=sim sinal=8
+[05:45:00] === v6b / falha_transitoria_30: 30% das chamadas do pagamento falham de forma aleatória
+[05:46:02]     rep 1/1: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=5.46s valida=sim sinal=13
+[05:46:02] === v6b / poison_10: 10% dos pedidos (3 de 30) são mensagens envenenadas
+[05:47:03]     rep 1/1: concluidos=27/30 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=3 p95=5.1s valida=sim sinal=12
+[05:47:03] === v6b / retry_1: só vale para ['v5', 'v6'], pulando
+[05:47:03] === v6b / retry_5: só vale para ['v5', 'v6'], pulando
+[05:47:03] === v6b / retry_9: só vale para ['v5', 'v6'], pulando
+[05:47:06] concluído: C:\Users\pc\Desktop\kafka-reliability-experiment\results\verificacao\geral-b\bateria.csv

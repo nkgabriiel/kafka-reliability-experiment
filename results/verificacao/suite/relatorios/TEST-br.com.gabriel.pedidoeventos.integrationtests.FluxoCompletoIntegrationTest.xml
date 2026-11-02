@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="br.com.gabriel.pedidoeventos.integrationtests.FluxoCompletoIntegrationTest" time="173.994" tests="1" errors="0" skipped="0" failures="0" flakes="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\test-classes;C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\classes;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\pc\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\pc\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\pc\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers\2.0.5\testcontainers-2.0.5.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-compress\1.28.0\commons-compress-1.28.0.jar;C:\Users\pc\.m2\repository\commons-codec\commons-codec\1.21.0\commons-codec-1.21.0.jar;C:\Users\pc\.m2\repository\commons-io\commons-io\2.20.0\commons-io-2.20.0.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-lang3\3.20.0\commons-lang3-3.20.0.jar;C:\Users\pc\.m2\repository\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;C:\Users\pc\.m2\repository\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-api\3.7.1\docker-java-api-3.7.1.jar;C:\Users\pc\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport-zerodep\3.7.1\docker-java-transport-zerodep-3.7.1.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport\3.7.1\docker-java-transport-3.7.1.jar;C:\Users\pc\.m2\repository\net\java\dev\jna\jna\5.18.1\jna-5.18.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-junit-jupiter\2.0.5\testcontainers-junit-jupiter-2.0.5.jar;C:\Users\pc\.m2\repository\org\postgresql\postgresql\42.7.13\postgresql-42.7.13.jar;C:\Users\pc\.m2\repository\org\checkerframework\checker-qual\3.55.1\checker-qual-3.55.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-toxiproxy\2.0.5\testcontainers-toxiproxy-2.0.5.jar;C:\Users\pc\.m2\repository\eu\rekawek\toxiproxy\toxiproxy-java\2.1.11\toxiproxy-java-2.1.11.jar;C:\Users\pc\.m2\repository\com\google\code\gson\gson\2.13.2\gson-2.13.2.jar;C:\Users\pc\.m2\repository\com\google\errorprone\error_prone_annotations\2.41.0\error_prone_annotations-2.41.0.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-kafka\2.0.5\testcontainers-kafka-2.0.5.jar;C:\Users\pc\.m2\repository\org\apache\kafka\kafka-clients\4.2.1\kafka-clients-4.2.1.jar;C:\Users\pc\.m2\repository\com\github\luben\zstd-jni\1.5.6-10\zstd-jni-1.5.6-10.jar;C:\Users\pc\.m2\repository\at\yawk\lz4\lz4-java\1.10.1\lz4-java-1.10.1.jar;C:\Users\pc\.m2\repository\org\xerial\snappy\snappy-java\1.1.10.7\snappy-java-1.1.10.7.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-simple\2.0.18\slf4j-simple-2.0.18.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="America/Sao_Paulo"/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="BR"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
+    <property name="sun.java.command" value="C:\Users\pc\AppData\Local\Temp\surefire17103151928276256201\surefirebooter-20261101040450016_3.jar C:\Users\pc\AppData\Local\Temp\surefire17103151928276256201 2026-11-01T04-04-49_807-jvmRun1 surefire-20261101040450016_1tmp surefire_0-20261101040450016_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\test-classes;C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests\target\classes;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\pc\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\pc\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\pc\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers\2.0.5\testcontainers-2.0.5.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-compress\1.28.0\commons-compress-1.28.0.jar;C:\Users\pc\.m2\repository\commons-codec\commons-codec\1.21.0\commons-codec-1.21.0.jar;C:\Users\pc\.m2\repository\commons-io\commons-io\2.20.0\commons-io-2.20.0.jar;C:\Users\pc\.m2\repository\org\apache\commons\commons-lang3\3.20.0\commons-lang3-3.20.0.jar;C:\Users\pc\.m2\repository\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;C:\Users\pc\.m2\repository\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-api\3.7.1\docker-java-api-3.7.1.jar;C:\Users\pc\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport-zerodep\3.7.1\docker-java-transport-zerodep-3.7.1.jar;C:\Users\pc\.m2\repository\com\github\docker-java\docker-java-transport\3.7.1\docker-java-transport-3.7.1.jar;C:\Users\pc\.m2\repository\net\java\dev\jna\jna\5.18.1\jna-5.18.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-junit-jupiter\2.0.5\testcontainers-junit-jupiter-2.0.5.jar;C:\Users\pc\.m2\repository\org\postgresql\postgresql\42.7.13\postgresql-42.7.13.jar;C:\Users\pc\.m2\repository\org\checkerframework\checker-qual\3.55.1\checker-qual-3.55.1.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-toxiproxy\2.0.5\testcontainers-toxiproxy-2.0.5.jar;C:\Users\pc\.m2\repository\eu\rekawek\toxiproxy\toxiproxy-java\2.1.11\toxiproxy-java-2.1.11.jar;C:\Users\pc\.m2\repository\com\google\code\gson\gson\2.13.2\gson-2.13.2.jar;C:\Users\pc\.m2\repository\com\google\errorprone\error_prone_annotations\2.41.0\error_prone_annotations-2.41.0.jar;C:\Users\pc\.m2\repository\org\testcontainers\testcontainers-kafka\2.0.5\testcontainers-kafka-2.0.5.jar;C:\Users\pc\.m2\repository\org\apache\kafka\kafka-clients\4.2.1\kafka-clients-4.2.1.jar;C:\Users\pc\.m2\repository\com\github\luben\zstd-jni\1.5.6-10\zstd-jni-1.5.6-10.jar;C:\Users\pc\.m2\repository\at\yawk\lz4\lz4-java\1.10.1\lz4-java-1.10.1.jar;C:\Users\pc\.m2\repository\org\xerial\snappy\snappy-java\1.1.10.7\snappy-java-1.1.10.7.jar;C:\Users\pc\.m2\repository\org\slf4j\slf4j-simple\2.0.18\slf4j-simple-2.0.18.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\pc"/>
+    <property name="user.language" value="pt"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2025-10-21"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-21"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\pc\AppData\Local\Temp\surefire17103151928276256201\surefirebooter-20261101040450016_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.9+7-LTS-338"/>
+    <property name="user.name" value="pc"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\pc\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\pc\AppData\Local\Temp\"/>
+    <property name="java.version" value="21.0.9"/>
+    <property name="user.dir" value="C:\Users\pc\Desktop\kafka-reliability-experiment\integration-tests"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-21\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Users\pc\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\pc\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\dotnet;C:\Program Files\Git\cmd;C:\Program Files\nodejs;C:\Program Files\GitHub CLI;C:\Program Files\WSL;C:\Users\pc\AppData\Local\Programs\Python\Launcher;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\Users\pc\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\Java\jdk-21\bin;C:\Users\pc\develop\flutter\bin;C:\Users\pc\AppData\Local\Microsoft\WindowsApps;C:\Program Files\JetBrains\IntelliJ IDEA 2025.3.3\bin;C:\Users\pc\AppData\Local\Programs\Microsoft VS Code\bin;C:\Exercism;C:\Program Files\JetBrains\WebStorm 2026.1\bin;C:\Users\pc\AppData\Roaming\npm;C:\Users\pc\AppData\Local\Android\Sdk\emulator;C:\Users\pc\AppData\Local\Android\Sdk\cmdline-tools\latest\bin;C:\Users\pc\AppData\Local\JetBrains\Toolbox\scripts;C:\Users\pc\AppData\Local\Programs\Ollama;C:\Users\pc\AppData\Local\Programs\DockerDesktop\resources\bin;C:\Users\pc\.rokit\bin;C:\Program Files\JetBrains\PyCharm 2026.2.3\bin;C:\Users\pc\AppData\Local\Programs\Python\Python314;C:\Program Files\nodejs;C:\Program Files\Git\mingw64\bin;C:\Program Files\GitHub CLI;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21.0.9+7-LTS-338"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="deveCriarPedidoEConcluirComSucesso" classname="br.com.gabriel.pedidoeventos.integrationtests.FluxoCompletoIntegrationTest" time="7.645">
+    <system-err><![CDATA[[main] INFO org.testcontainers.images.PullPolicy - Image pull policy will be performed by: DefaultPullPolicy()
+[main] INFO org.testcontainers.utility.ImageNameSubstitutor - Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+[main] INFO org.testcontainers.DockerClientFactory - Testcontainers version: 2.0.5
+[main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy - Loaded org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+[main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy - Found Docker environment with local Npipe socket (npipe:////./pipe/docker_engine)
+[main] INFO org.testcontainers.DockerClientFactory - Docker host IP address is localhost
+[main] INFO org.testcontainers.DockerClientFactory - Connected to docker: 
+  Server Version: 29.6.2
+  API Version: 1.55
+  Operating System: Docker Desktop (containerized)
+  Total Memory: 7892 MB
+  Labels: 
+    com.docker.desktop.address=npipe://\\.\pipe\docker_cli
+[main] INFO org.testcontainers.utility.RyukResourceReaper - Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+[main] INFO org.testcontainers.DockerClientFactory - Checking the system...
+[main] INFO org.testcontainers.DockerClientFactory - ✔︎ Docker server version should be at least 1.6.0
+[main] INFO tc.testcontainers/ryuk:0.14.0 - Creating container for image: testcontainers/ryuk:0.14.0
+[main] INFO tc.testcontainers/ryuk:0.14.0 - Container testcontainers/ryuk:0.14.0 is starting: e86db6fa8a194cc73a0231717dddbaa92e8ab33f8f4c153efdc112d81de0dc42
+[main] INFO tc.testcontainers/ryuk:0.14.0 - Container testcontainers/ryuk:0.14.0 started in PT1.5583427S
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'postgres:16-alpine', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO org.testcontainers.containers.ComposeDelegate - Preemptively checking local images for 'apache/kafka:3.8.0', referenced via a compose file or transitive Dockerfile. If not available, it will be pulled.
+[main] INFO tc.docker.exe - Local Docker Compose is running command: compose up -d --build
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-order-service Building 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-payment-service Building 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-stock-service Building 
+[Thread-19] INFO tc.docker.exe - #1 [internal] load local bake definitions
+[Thread-19] INFO tc.docker.exe - #1 reading from stdin 1.71kB 0.0s done
+[Thread-19] INFO tc.docker.exe - #1 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #2 [stock-service internal] load build definition from Dockerfile
+[Thread-19] INFO tc.docker.exe - #2 transferring dockerfile: 387B 0.0s done
+[Thread-19] INFO tc.docker.exe - #2 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #3 [payment-service internal] load build definition from Dockerfile
+[Thread-19] INFO tc.docker.exe - #3 transferring dockerfile: 387B 0.0s done
+[Thread-19] INFO tc.docker.exe - #3 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #4 [order-service internal] load build definition from Dockerfile
+[Thread-19] INFO tc.docker.exe - #4 transferring dockerfile: 387B 0.0s done
+[Thread-19] INFO tc.docker.exe - #4 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #5 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-19] INFO tc.docker.exe - #5 ...
+[Thread-19] INFO tc.docker.exe - #6 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
+[Thread-19] INFO tc.docker.exe - #6 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #7 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jre-alpine
+[Thread-19] INFO tc.docker.exe - #7 DONE 1.8s
+[Thread-19] INFO tc.docker.exe - #5 [order-service internal] load metadata for docker.io/library/eclipse-temurin:21-jdk-alpine
+[Thread-19] INFO tc.docker.exe - #5 DONE 1.8s
+[Thread-19] INFO tc.docker.exe - #8 [payment-service internal] load .dockerignore
+[Thread-19] INFO tc.docker.exe - #8 transferring context: 2B done
+[Thread-19] INFO tc.docker.exe - #8 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #9 [order-service internal] load .dockerignore
+[Thread-19] INFO tc.docker.exe - #9 transferring context: 2B done
+[Thread-19] INFO tc.docker.exe - #9 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #10 [stock-service internal] load .dockerignore
+[Thread-19] INFO tc.docker.exe - #10 transferring context: 2B done
+[Thread-19] INFO tc.docker.exe - #10 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #11 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #12 [order-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #12 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #13 [stock-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #13 DONE 0.0s
+[Thread-19] INFO tc.docker.exe - #14 [stock-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 resolve docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 ...
+[Thread-19] INFO tc.docker.exe - #11 [payment-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #11 transferring context: 56.92kB 0.1s done
+[Thread-19] INFO tc.docker.exe - #11 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #12 [order-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #12 transferring context: 61.93kB 0.1s done
+[Thread-19] INFO tc.docker.exe - #12 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #13 [stock-service internal] load build context
+[Thread-19] INFO tc.docker.exe - #13 transferring context: 54.38kB 0.1s done
+[Thread-19] INFO tc.docker.exe - #13 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #14 [payment-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 sha256:26c02d4e330ef003c5e6b5886f4ca2f030b5749e7c6a1b4e75778d55975fd7e2 0B / 2.46kB 0.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:26c02d4e330ef003c5e6b5886f4ca2f030b5749e7c6a1b4e75778d55975fd7e2 2.46kB / 2.46kB 0.2s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:f6e84b59c2bfc6ecbf9fdb397926e6825bdb96312dc056132134ec6573b7743a 129B / 129B 0.2s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 0B / 158.62MB 0.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 0B / 21.44MB 0.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 3.15MB / 21.44MB 0.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 6.29MB / 21.44MB 0.9s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 8.39MB / 21.44MB 1.1s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 8.39MB / 158.62MB 1.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 12.58MB / 21.44MB 1.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 14.68MB / 21.44MB 2.0s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 16.78MB / 21.44MB 2.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 18.87MB / 21.44MB 2.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 16.78MB / 158.62MB 2.9s
+[Thread-19] INFO tc.docker.exe - #14 sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 21.44MB / 21.44MB 2.8s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 25.17MB / 158.62MB 3.6s
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 1.4s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:ec276e181c3d9a70c7065087ae0315383bdd5cc3ea89aa30356b51a54bce8eb0 1.4s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 34.60MB / 158.62MB 4.5s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 42.99MB / 158.62MB 5.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 51.38MB / 158.62MB 6.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 59.77MB / 158.62MB 6.9s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 68.16MB / 158.62MB 7.8s
+[Thread-19] INFO tc.docker.exe - #14 ...
+[Thread-19] INFO tc.docker.exe - #15 [payment-service stage-1 1/3] FROM docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372
+[Thread-19] INFO tc.docker.exe - #15 resolve docker.io/library/eclipse-temurin:21-jre-alpine@sha256:82cf3d9ccbe1ed46252008d51b2f2329e6b9e8a2f4394c4bebefc3ea7f4b1372 0.0s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:1a4ad63dfbce5b3edc008a7e316209a58dadabff7aac0b02190eb22f74b95478 2.46kB / 2.46kB 0.4s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:11d552fe703dd0bf1eed620b058c744a402225b3aa72be3028e7a6a3df0d383e 127B / 127B 0.4s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:30414a79ff6e738ae1dda517a6cd2e295f67de87055edffed33e149fef30de9a 53.38MB / 53.38MB 5.5s done
+[Thread-19] INFO tc.docker.exe - #15 sha256:fe426ef558f85718d259e266c713c1c4b63c669957fc5962174d90302b7379b0 16.97MB / 16.97MB 2.1s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:fe426ef558f85718d259e266c713c1c4b63c669957fc5962174d90302b7379b0 1.2s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:30414a79ff6e738ae1dda517a6cd2e295f67de87055edffed33e149fef30de9a 2.0s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:11d552fe703dd0bf1eed620b058c744a402225b3aa72be3028e7a6a3df0d383e 0.0s done
+[Thread-19] INFO tc.docker.exe - #15 extracting sha256:1a4ad63dfbce5b3edc008a7e316209a58dadabff7aac0b02190eb22f74b95478 0.0s done
+[Thread-19] INFO tc.docker.exe - #15 DONE 8.4s
+[Thread-19] INFO tc.docker.exe - #14 [order-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 ...
+[Thread-19] INFO tc.docker.exe - #16 [order-service stage-1 2/3] WORKDIR /app
+[Thread-19] INFO tc.docker.exe - #16 DONE 0.5s
+[Thread-19] INFO tc.docker.exe - #14 [order-service build 1/7] FROM docker.io/library/eclipse-temurin:21-jdk-alpine@sha256:b78a1d385da875588e21207f07dddf9a1418849971ae857fb24c8f3a7d441a72
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 77.59MB / 158.62MB 8.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 85.98MB / 158.62MB 9.5s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 94.37MB / 158.62MB 10.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 102.76MB / 158.62MB 10.6s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 111.15MB / 158.62MB 11.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 119.54MB / 158.62MB 12.4s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 128.97MB / 158.62MB 13.2s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 137.36MB / 158.62MB 13.8s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 146.80MB / 158.62MB 14.7s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 155.19MB / 158.62MB 15.3s
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 158.62MB / 158.62MB 15.4s done
+[Thread-19] INFO tc.docker.exe - #14 sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 158.62MB / 158.62MB 15.4s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 2.3s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:3748549469e0a352bb957751903c30ccb57651a0ebfde48b707321c3ecd8d3f9 2.3s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:f6e84b59c2bfc6ecbf9fdb397926e6825bdb96312dc056132134ec6573b7743a 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 extracting sha256:26c02d4e330ef003c5e6b5886f4ca2f030b5749e7c6a1b4e75778d55975fd7e2 0.0s done
+[Thread-19] INFO tc.docker.exe - #14 DONE 18.1s
+[Thread-19] INFO tc.docker.exe - #17 [stock-service build 2/7] WORKDIR /app
+[Thread-19] INFO tc.docker.exe - #17 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #18 [order-service build 3/7] COPY mvnw pom.xml ./
+[Thread-19] INFO tc.docker.exe - #18 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #19 [stock-service build 3/7] COPY mvnw pom.xml ./
+[Thread-19] INFO tc.docker.exe - #19 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #20 [payment-service build 3/7] COPY mvnw pom.xml ./
+[Thread-19] INFO tc.docker.exe - #20 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #21 [order-service build 4/7] COPY .mvn .mvn
+[Thread-19] INFO tc.docker.exe - #21 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #22 [payment-service build 4/7] COPY .mvn .mvn
+[Thread-19] INFO tc.docker.exe - #22 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #23 [stock-service build 4/7] COPY .mvn .mvn
+[Thread-19] INFO tc.docker.exe - #23 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #24 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #24 ...
+[Thread-19] INFO tc.docker.exe - #25 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #25 ...
+[Thread-19] INFO tc.docker.exe - #26 [stock-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #26 DONE 72.8s
+[Thread-19] INFO tc.docker.exe - #25 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #25 ...
+[Thread-19] INFO tc.docker.exe - #27 [stock-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #27 ...
+[Thread-19] INFO tc.docker.exe - #24 [payment-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #24 DONE 73.3s
+[Thread-19] INFO tc.docker.exe - #28 [payment-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #28 ...
+[Thread-19] INFO tc.docker.exe - #25 [order-service build 5/7] RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+[Thread-19] INFO tc.docker.exe - #25 DONE 73.8s
+[Thread-19] INFO tc.docker.exe - #27 [stock-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #27 DONE 1.0s
+[Thread-19] INFO tc.docker.exe - #28 [payment-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #28 DONE 0.4s
+[Thread-19] INFO tc.docker.exe - #29 [order-service build 6/7] COPY src src
+[Thread-19] INFO tc.docker.exe - #29 DONE 0.2s
+[Thread-19] INFO tc.docker.exe - #30 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #30 ...
+[Thread-19] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #31 ...
+[Thread-19] INFO tc.docker.exe - #32 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #32 ...
+[Thread-19] INFO tc.docker.exe - #30 [payment-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #30 DONE 20.7s
+[Thread-19] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #31 ...
+[Thread-19] INFO tc.docker.exe - #32 [stock-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #32 DONE 20.9s
+[Thread-19] INFO tc.docker.exe - #31 [order-service build 7/7] RUN ./mvnw package -DskipTests -q
+[Thread-19] INFO tc.docker.exe - #31 DONE 20.8s
+[Thread-19] INFO tc.docker.exe - #33 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #33 ...
+[Thread-19] INFO tc.docker.exe - #34 [stock-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #34 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #35 [payment-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #35 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #33 [order-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar
+[Thread-19] INFO tc.docker.exe - #33 DONE 0.3s
+[Thread-19] INFO tc.docker.exe - #36 [order-service] exporting to image
+[Thread-19] INFO tc.docker.exe - #36 exporting layers
+[Thread-19] INFO tc.docker.exe - #36 exporting layers 4.4s done
+[Thread-19] INFO tc.docker.exe - #36 exporting manifest sha256:67228e85b1a52bc30e89b2bb039cff63d0f0df78fd5964a55fb891d0f96e7254 0.0s done
+[Thread-19] INFO tc.docker.exe - #36 exporting config sha256:e80e2696c1224c106db28766e0c38db0fe47c8fff22841754493c844b33ab4df 0.0s done
+[Thread-19] INFO tc.docker.exe - #36 exporting attestation manifest sha256:7aed576af3aa6402547792050676ed5277a4bd83f0cf1670459332b25bf0638f 0.1s done
+[Thread-19] INFO tc.docker.exe - #36 exporting manifest list sha256:e7b04eb7d5c8c05e5ada21561e9adf17396d868c0bbd0b409580b75f0ae73920 0.0s done
+[Thread-19] INFO tc.docker.exe - #36 naming to docker.io/library/7juudrybmto6-order-service:latest done
+[Thread-19] INFO tc.docker.exe - #36 unpacking to docker.io/library/7juudrybmto6-order-service:latest
+[Thread-19] INFO tc.docker.exe - #36 unpacking to docker.io/library/7juudrybmto6-order-service:latest 0.7s done
+[Thread-19] INFO tc.docker.exe - #36 DONE 5.4s
+[Thread-19] INFO tc.docker.exe - #37 [stock-service] exporting to image
+[Thread-19] INFO tc.docker.exe - #37 exporting layers 4.2s done
+[Thread-19] INFO tc.docker.exe - #37 exporting manifest sha256:1ba78b9666b45c98ae0703ff73933136760c488c15b0661c84d469339d6d2bd9 0.1s done
+[Thread-19] INFO tc.docker.exe - #37 exporting config sha256:64a4af6015a0310b18513d6d42cfa2370bcbf9461d42577a3058ca5ffe90aa83 0.1s done
+[Thread-19] INFO tc.docker.exe - #37 exporting attestation manifest sha256:71169f987fdb7646a5a6f19841d1186019899f0feec9e8282e1cc149219a8340 0.1s done
+[Thread-19] INFO tc.docker.exe - #37 exporting manifest list sha256:40ef78ba705bef02f01d2067f0893276fe54fd3ea3bd7af89a39a1f8db2b1f23 0.0s done
+[Thread-19] INFO tc.docker.exe - #37 naming to docker.io/library/7juudrybmto6-stock-service:latest 0.0s done
+[Thread-19] INFO tc.docker.exe - #37 unpacking to docker.io/library/7juudrybmto6-stock-service:latest 0.7s done
+[Thread-19] INFO tc.docker.exe - #37 DONE 5.4s
+[Thread-19] INFO tc.docker.exe - #38 [payment-service] exporting to image
+[Thread-19] INFO tc.docker.exe - #38 exporting layers 4.4s done
+[Thread-19] INFO tc.docker.exe - #38 exporting manifest sha256:8b185c70ac92fcd76ad501b94be170db9d98845502cfad48b02de03c13492a80 0.1s done
+[Thread-19] INFO tc.docker.exe - #38 exporting config sha256:5b18d61b3a6d0ff1a99f09627aab3d41342939886eafb630b8377ef8fd0714cf 0.0s done
+[Thread-19] INFO tc.docker.exe - #38 exporting attestation manifest sha256:5839f8eb6ad48c36d53c5bbd60db004bb9f7d34a534cc1f2f457219ae0139671 0.1s done
+[Thread-19] INFO tc.docker.exe - #38 exporting manifest list sha256:5aa324ac4b79ffe9edd7e6c06247bd3581b47a5a52a9b8efba5ddde7a64f1aae 0.0s done
+[Thread-19] INFO tc.docker.exe - #38 naming to docker.io/library/7juudrybmto6-payment-service:latest 0.0s done
+[Thread-19] INFO tc.docker.exe - #38 unpacking to docker.io/library/7juudrybmto6-payment-service:latest 0.7s done
+[Thread-19] INFO tc.docker.exe - #38 DONE 5.4s
+[Thread-19] INFO tc.docker.exe - #39 [stock-service] resolving provenance for metadata file
+[Thread-19] INFO tc.docker.exe - #39 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #40 [payment-service] resolving provenance for metadata file
+[Thread-19] INFO tc.docker.exe - #40 DONE 0.1s
+[Thread-19] INFO tc.docker.exe - #41 [order-service] resolving provenance for metadata file
+[Thread-19] INFO tc.docker.exe - #41 DONE 0.1s
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-order-service Built 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-payment-service Built 
+[Thread-20] INFO tc.docker.exe -  Image 7juudrybmto6-stock-service Built 
+[Thread-20] INFO tc.docker.exe -  Network 7juudrybmto6_tcc-network Creating 
+[Thread-20] INFO tc.docker.exe -  Network 7juudrybmto6_tcc-network Created 
+[Thread-20] INFO tc.docker.exe -  Volume 7juudrybmto6_postgres_data Creating 
+[Thread-20] INFO tc.docker.exe -  Volume 7juudrybmto6_postgres_data Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Creating 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Created 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Waiting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-postgres-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-kafka-1 Healthy 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Starting 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-stock-service-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-order-service-1 Started 
+[Thread-20] INFO tc.docker.exe -  Container 7juudrybmto6-payment-service-1 Started 
+[main] INFO tc.docker.exe - Docker Compose has finished running
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Creating container for image: alpine/socat:1.7.4.3-r0
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 is starting: 1066185f2dd44637586a3e5d9b438d2375e83cf3de616bd9de6770a7acbc5369
+[main] INFO tc.alpine/socat:1.7.4.3-r0 - Container alpine/socat:1.7.4.3-r0 started in PT1.8734709S
+]]></system-err>
+  </testcase>
+</testsuite>
