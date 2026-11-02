@@ -382,19 +382,22 @@ def main():
     saida.mkdir(parents=True, exist_ok=True)
     nreps = max(r["reps"] for r in resumo.values())
     estilo()
-    mapa_de_calor(resumo, saida, nreps)
-    mapa_de_calor(resumo, saida, nreps, chave="estrito", chave_reps="reps_estrito",
-                  arquivo="1b_mapa_de_calor_estrito.png",
-                  titulo="Pedidos que não concluíram com sucesso, contando a DLQ e os cancelados",
-                  subtitulo="Duplicados, perdidos (inclusive os na DLQ) ou cancelados por falha técnica, em % dos pedidos. Quanto mais claro, melhor.",
-                  nota="Leitura mais dura que a figura 1: a DLQ guarda a mensagem e o cancelamento dá estado final, mas o pedido continua sem concluir.")
-    detalhe(resumo, saida)
-    barras_simples(resumo, saida, "lat_p50", "Custo: tempo para o pedido concluir (mediana e máximo)", "segundos",
-                   "3_custo_latencia.png", "{:.1f} s", chave_max="lat_max")
-    barras_simples(resumo, saida, "recuperacao", "Tempo de recuperação: da falha até o último pedido concluir",
-                   "segundos", "5_recuperacao.png", "{:.0f} s")
-    barras_simples(resumo, saida, "rejeitados", "Disponibilidade: pedidos rejeitados na criação (% das tentativas)",
-                   "% das tentativas", "4_disponibilidade.png", "{:.0f}%")
+    # um CSV só com cenários de sensibilidade (perfil sensibilidade) não tem os cenários principais: sem eles,
+    # as figuras 1 a 5 não existem, e as curvas das famílias e a tabela são geradas do mesmo jeito
+    if cenarios_presentes(resumo):
+        mapa_de_calor(resumo, saida, nreps)
+        mapa_de_calor(resumo, saida, nreps, chave="estrito", chave_reps="reps_estrito",
+                      arquivo="1b_mapa_de_calor_estrito.png",
+                      titulo="Pedidos que não concluíram com sucesso, contando a DLQ e os cancelados",
+                      subtitulo="Duplicados, perdidos (inclusive os na DLQ) ou cancelados por falha técnica, em % dos pedidos. Quanto mais claro, melhor.",
+                      nota="Leitura mais dura que a figura 1: a DLQ guarda a mensagem e o cancelamento dá estado final, mas o pedido continua sem concluir.")
+        detalhe(resumo, saida)
+        barras_simples(resumo, saida, "lat_p50", "Custo: tempo para o pedido concluir (mediana e máximo)", "segundos",
+                       "3_custo_latencia.png", "{:.1f} s", chave_max="lat_max")
+        barras_simples(resumo, saida, "recuperacao", "Tempo de recuperação: da falha até o último pedido concluir",
+                       "segundos", "5_recuperacao.png", "{:.0f} s")
+        barras_simples(resumo, saida, "rejeitados", "Disponibilidade: pedidos rejeitados na criação (% das tentativas)",
+                       "% das tentativas", "4_disponibilidade.png", "{:.0f}%")
     for fam in FAMILIAS:
         curva_por_versao(resumo, saida, fam)
     curva_retry(resumo, saida)
