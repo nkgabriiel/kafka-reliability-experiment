@@ -1,0 +1,172 @@
+{
+  "perfil": "sensibilidade",
+  "versoes": [
+    "v0",
+    "v1",
+    "v2",
+    "v3",
+    "v4",
+    "v5",
+    "v5b",
+    "v6",
+    "v6b"
+  ],
+  "cenarios": {
+    "kill_ack_janela_0": {
+      "descricao": "queda do pagamento na janela do ack, com janela de 0 ms",
+      "env": {
+        "ATRASO_ACK_MS": "0"
+      },
+      "pedidos": 20,
+      "taxa": 2,
+      "espera_max": 35,
+      "espera_pos": 22,
+      "acao": {
+        "tipo": "kill",
+        "alvo": "payment-service",
+        "em": 5.0
+      }
+    },
+    "kill_ack_janela_200": {
+      "descricao": "queda do pagamento na janela do ack, com janela de 200 ms",
+      "env": {
+        "ATRASO_ACK_MS": "200"
+      },
+      "pedidos": 20,
+      "taxa": 2,
+      "espera_max": 35,
+      "espera_pos": 22,
+      "acao": {
+        "tipo": "kill",
+        "alvo": "payment-service",
+        "em": 5.0
+      }
+    },
+    "kill_ack_janela_400": {
+      "descricao": "queda do pagamento na janela do ack, com janela de 400 ms",
+      "env": {
+        "ATRASO_ACK_MS": "400"
+      },
+      "pedidos": 20,
+      "taxa": 2,
+      "espera_max": 35,
+      "espera_pos": 22,
+      "acao": {
+        "tipo": "kill",
+        "alvo": "payment-service",
+        "em": 5.0
+      }
+    },
+    "kill_ack_janela_800": {
+      "descricao": "queda do pagamento na janela do ack, com janela de 800 ms",
+      "env": {
+        "ATRASO_ACK_MS": "800"
+      },
+      "pedidos": 20,
+      "taxa": 2,
+      "espera_max": 35,
+      "espera_pos": 22,
+      "acao": {
+        "tipo": "kill",
+        "alvo": "payment-service",
+        "em": 5.0
+      }
+    },
+    "falha_transitoria_5": {
+      "descricao": "5% das chamadas do pagamento falham de forma aleatória",
+      "env": {
+        "FAILURE_RATE": "5"
+      },
+      "pedidos": 80,
+      "taxa": 5,
+      "espera_max": 30
+    },
+    "falha_transitoria_15": {
+      "descricao": "15% das chamadas do pagamento falham de forma aleatória",
+      "env": {
+        "FAILURE_RATE": "15"
+      },
+      "pedidos": 60,
+      "taxa": 5,
+      "espera_max": 30
+    },
+    "falha_transitoria_30": {
+      "descricao": "30% das chamadas do pagamento falham de forma aleatória",
+      "env": {
+        "FAILURE_RATE": "30"
+      },
+      "pedidos": 40,
+      "taxa": 5,
+      "espera_max": 30
+    },
+    "poison_10": {
+      "descricao": "10% dos pedidos (3 de 30) são mensagens envenenadas",
+      "env": {
+        "PRODUTO_ENVENENADO": "99999999-9999-9999-9999-999999999999"
+      },
+      "pedidos": 30,
+      "taxa": 5,
+      "veneno_indices": [
+        5,
+        15,
+        25
+      ],
+      "espera_max": 45
+    },
+    "retry_1": {
+      "descricao": "falha passageira de 50% com 1 retentativa(s) no retry",
+      "env": {
+        "FAILURE_RATE": "50",
+        "RETRY_MAX_RETENTATIVAS": "1"
+      },
+      "pedidos": 40,
+      "taxa": 5,
+      "espera_max": 70,
+      "versoes": [
+        "v5",
+        "v6"
+      ]
+    },
+    "retry_5": {
+      "descricao": "falha passageira de 50% com 5 retentativa(s) no retry",
+      "env": {
+        "FAILURE_RATE": "50",
+        "RETRY_MAX_RETENTATIVAS": "5"
+      },
+      "pedidos": 40,
+      "taxa": 5,
+      "espera_max": 70,
+      "versoes": [
+        "v5",
+        "v6"
+      ]
+    },
+    "retry_9": {
+      "descricao": "falha passageira de 50% com 9 retentativa(s) no retry",
+      "env": {
+        "FAILURE_RATE": "50",
+        "RETRY_MAX_RETENTATIVAS": "9"
+      },
+      "pedidos": 40,
+      "taxa": 5,
+      "espera_max": 70,
+      "versoes": [
+        "v5",
+        "v6"
+      ]
+    }
+  },
+  "repeticoes": 5,
+  "ambiente_base": {
+    "SESSION_TIMEOUT_MS": "6000",
+    "HEARTBEAT_MS": "1000",
+    "LISTENER_CONCURRENCY": "3"
+  },
+  "estoque_inicial": 1000,
+  "aquecimento": 2,
+  "tentativas_erro": 2,
+  "tentativas_validade": 2,
+  "sorteio_do_instante": true,
+  "semente": 42,
+  "jitter_s": 1.5
+}

@@ -442,7 +442,7 @@ A V5 isola a poison message: ela é tentada com backoff, esgota as tentativas e 
 
 **Como ler o resultado:** cancelar **não aumenta os pedidos concluídos**. Elimina os pedidos presos (sem estado final), mas um pedido cancelado por falha técnica continua sem concluir com sucesso. Por isso a bateria conta os `cancelados` à parte, a figura de detalhe os mostra como categoria própria e o mapa estrito os conta como não concluídos. O ganho da V5b é **estado final e visibilidade** (o cliente pode ser avisado). Aumentar os concluídos nas falhas passageiras exigiria **reprocessar** a mensagem da DLQ, o que ficou como trabalho futuro.
 
-**Validação (1 repetição por cenário, ainda não medida):** com um pedido envenenado em 30, `perdidos` (presos) foi 0 (na V5 era 1), com 1 cancelado e 1 na DLQ; com 3 envenenados em 30, 3 cancelados; com 50% de falha passageira, 2 cancelados e 2 na DLQ; na queda entre gravar e publicar, 20 de 20 concluídos, igual à V5. No banco, os pedidos cancelados tinham o motivo correto.
+**Validação inicial (1 repetição por cenário; a medição completa, com n = 5, está em "Resultado final"):** com um pedido envenenado em 30, `perdidos` (presos) foi 0 (na V5 era 1), com 1 cancelado e 1 na DLQ; com 3 envenenados em 30, 3 cancelados; com 50% de falha passageira, 2 cancelados e 2 na DLQ; na queda entre gravar e publicar, 20 de 20 concluídos, igual à V5. No banco, os pedidos cancelados tinham o motivo correto.
 
 **Limitações:** só trata a DLQ do pagamento (`pedidos.criados.dlq`). Uma falha no estoque depois do pagamento aprovado exigiria estornar o pagamento (compensação, ou Saga), que não foi implementada.
 
@@ -488,7 +488,7 @@ O exactly-once do Kafka garante atomicidade **dentro do Kafka** (entre o offset 
 
 O profile `transacoes-e-outbox` liga o producer transacional e a leitura `read_committed` como a V6, mas **mantém a outbox ligada**: o evento de saída continua gravado no banco, na mesma transação do efeito. Com o producer transacional, todo envio ao Kafka precisa estar dentro de uma transação; por isso o poller da outbox passou a enviar por `executeInTransaction` quando as transações estão ligadas.
 
-**Validação (1 repetição, ainda não medida):** nas duas quedas (com 3 mensagens em voo no momento da falha) a V6b concluiu **20 de 20** pedidos, sem perda e sem duplicação, ao contrário da V6; a mensagem envenenada e a falha passageira foram para a DLQ como na V5. Nenhum erro de transação nos logs, e o poller publicou os eventos normalmente. O resultado esperado, e que a medição completa vai confirmar ou não, é que a V6b **iguale a V5**: o exactly-once do Kafka só se paga quando não há um banco no caminho.
+**Validação inicial (1 repetição):** nas duas quedas (com 3 mensagens em voo no momento da falha) a V6b concluiu **20 de 20** pedidos, sem perda e sem duplicação, ao contrário da V6; a mensagem envenenada e a falha passageira foram para a DLQ como na V5. Nenhum erro de transação nos logs, e o poller publicou os eventos normalmente. A medição completa (n = 5) confirmou: a V6b **iguala a V5** em todos os cenários, sem perder pedidos sem registro; o exactly-once do Kafka só se paga quando não há um banco no caminho.
 
 ## Fases 9 e 10 — Bateria única de experimentos
 
@@ -554,8 +554,8 @@ O **perfil rápido** roda os quatro primeiros cenários principais com 3 repeti�
 | `geral-a` | V0, V5b, V6 e V6b nos 11 cenários principais, 1 repetição | `results/verificacao/geral-a/` | cerca de 1,0 h |
 | `geral-b` | as mesmas versões nos cenários de sensibilidade, 1 repetição | `results/verificacao/geral-b/` | cerca de 0,7 h |
 | `geral-c` | infraestrutura nas V2, V3 e V4, 1 repetição | `results/verificacao/geral-c/` | cerca de 0,6 h |
-| `matriz` | os 11 cenários principais, 9 versões, n = 5 | `results/bateria/matriz-completa/` | cerca de 7,8 h |
-| `sensibilidade` | as famílias de sensibilidade, 9 versões, n = 5 | `results/bateria/matriz-sensibilidade/` | cerca de 4,9 h |
+| `matriz` | os 11 cenários principais, 9 versões, n = 5 | `results/bateria/matriz-completa/` | cerca de 7,8 h (medido: 7,3 h) |
+| `sensibilidade` | as famílias de sensibilidade, 9 versões, n = 5 | `results/bateria/matriz-sensibilidade/` | cerca de 4,9 h (medido: 4,4 h, mais 5 min de uma tentativa interrompida) |
 
 ```bash
 py benchmark/etapas.py --listar                    # etapas e duração estimada
@@ -569,40 +569,65 @@ py benchmark/resumo_testes.py                      # só converte os relatórios
 - **Índice de execuções:** `results/etapas.csv` registra, para cada etapa rodada, o início, o resultado, a duração, o número de linhas, de repetições inválidas e de repetições com erro, e a pasta.
 - Por padrão, a sequência **para na primeira etapa que falhar** (`--continuar-se-falhar` muda isso).
 
-### Resultado (perfil rápido, 3 repetições por célula)
+### Resultado final (matriz completa e sensibilidade, n = 5 por célula)
 
-Dados brutos em `results/bateria/rapido-*/bateria.csv`; gráficos e tabela em `results/bateria/rapido-v0-a-v6/`.
+Dados brutos: `results/bateria/matriz-completa/bateria.csv` (465 repetições: 11 cenários, 9 versões) e `results/bateria/matriz-sensibilidade/bateria.csv` (370 repetições). **Todas as 835 repetições foram válidas e nenhuma terminou em erro** (duas foram refeitas automaticamente por não terem atingido a janela da falha). Gráficos e tabela dos dois CSVs juntos: `results/bateria/final/`.
 
-![Mapa de calor](results/bateria/rapido-v0-a-v6/1_mapa_de_calor.png)
+![Mapa de calor](results/bateria/final/1_mapa_de_calor.png)
 
-Média por repetição (em **negrito**, o problema que aparece em todas as 3 repetições):
+Média por repetição (em **negrito**, o problema que apareceu em todas as 5 repetições). "N" é o total de pedidos enviados por repetição:
 
-| Cenário (de N pedidos) | V0 | V1 | V2 | V3 | V4 | V5 | V6 |
-|---|---|---|---|---|---|---|---|
-| Queda na janela do ack (20) | 0, mas **45% rejeitados** | **2,3 duplicados** | **3,3 duplicados** | 0 | 0 | 0 | **3,0 perdidos** |
-| Queda entre gravar e publicar (20) | 0, mas **45% rejeitados** | **3,7 duplicados** | **2,3 duplicados** | **2,7 perdidos** | 0 | 0 | **2,7 perdidos** |
-| Mensagem envenenada (30) | n/a | **1 perdida** | **1 perdida** | **1 perdida** | **1 perdida** | 1 na DLQ | 1 na DLQ |
-| Falha passageira 50% (40) | n/a | 0,3 perdidos (1 de 3 rep.) | 0 | 0 | 0 | 3,7 na DLQ | 4,0 na DLQ |
+| Cenário (N) | V0 | V1 | V2 | V3 | V4 | V5 | V5b | V6 | V6b |
+|---|---|---|---|---|---|---|---|---|---|
+| Queda na janela do ack (20) | 0, mas **44% rejeitados** | **3,6 duplicados** | **3,0 duplicados** | 0 | 0 | 0 | 0 | **2,6 perdidos** | 0 |
+| Queda entre gravar e publicar (20) | 0, mas **43% rejeitados** | **3,0 duplicados** | **3,0 duplicados** | **2,6 perdidos** | 0 | 0 | 0 | **2,6 perdidos** | 0 |
+| Mensagem envenenada (30) | n/a | **1 perdida** | **1 perdida** | **1 perdida** | **1 perdida** | **1 na DLQ** | **1 cancelada** | **1 na DLQ** | **1 na DLQ** |
+| Falha passageira 50% (40) | n/a | 0 | 0 | 0 | 0 | **3,0 na DLQ** | **3,4 canceladas** | **2,2 na DLQ** | **2,2 na DLQ** |
+| Queda do broker (30) | n/a | **3,8 duplicados** | 4,4 duplicados (4 de 5) | 0 | 0 | 0 | 0 | 0,8 perdidos (3 de 5) | 0 |
+| Partição de rede com o Kafka (30) | n/a | **3,0 duplicados** | **3,4 duplicados** | 0 | 0 | 0 | 0 | **3,0 perdidos** | 0 |
+| Queda do banco, restart do consumer, latência de rede, partição do banco | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Queda do `order-service` (20) | 0, mas **48% rejeitados** | 0 (47% rejeitados) | 0 (48%) | 0 (47%) | 0 (48%) | 0 (46%) | 0 (47%) | 0 (47%) | 0 (48%) |
 
-Latência p95 relevante: com mensagem envenenada, V5 ~5,3 s contra ~2 s nas V1 a V4; com falha passageira, V5 ~11 s e V6 ~11,8 s contra 2 a 3,5 s. Nos cenários de queda a latência (~15 a 27 s) é dominada pelo reinício do serviço e **não** mede o custo da técnica.
+Disponibilidade e recuperação ficam em figuras próprias, e o mapa estrito (que conta DLQ e cancelados) em `1b_mapa_de_calor_estrito.png`:
+
+![Disponibilidade](results/bateria/final/4_disponibilidade.png)
+
+### Sensibilidade: como o resultado muda com o parâmetro
+
+**Janela do ack** (figura 6): a duplicação cresce com a janela nas versões que não deduplicam. Em % dos pedidos, para janelas de 0, 200, 400, 800 e 2000 ms: V1 0, 5, 4, 8 e 18; V2 0, 4, 3, 7 e 15; V6 (que perde, em vez de duplicar) 0, 2, 5, 8 e 13. V3, V4, V5, V5b e V6b ficam em 0 em todas as janelas. Com janela de 0 ms nenhuma versão falha: a falha erra a janela.
+
+![Janela](results/bateria/final/6_varredura_janela.png)
+
+**Taxa de falha passageira** (figura 7): com 5% e 15% de falha nenhuma versão perde pedido. A V5 só passa a mandar pedidos para a DLQ a partir de 30% (1,0% dos pedidos) e chega a 7,5% com 50%. As V1 a V4 ficam em 0 nas quatro taxas.
+
+![Taxa de falha](results/bateria/final/7_varredura_taxa_falha.png)
+
+**Retentativas do retry** (figura 8, falha de 50%): o que vai para a DLQ na V5 é uma questão de **parâmetro**, não do mecanismo. Pedidos que não concluem, em % de 40, com 1, 3, 5 e 9 retentativas: V5 23,5; 7,5; 3,0 e 0,0; V6 20,0; 5,5; 2,5 e 0,5. Com 9 retentativas a V5 iguala as V1 a V4 (0 pedidos na DLQ), mas a latência máxima sobe de cerca de 3 s (1 retentativa) para 27 s (9). Ou seja, mais tentativas trocam pedidos na DLQ por tempo de espera.
+
+![Retry](results/bateria/final/8_varredura_retry.png)
+
+**Mais mensagens envenenadas** (`poison_10`, 3 de 30): V1 a V4 perdem os 3; V5, V6 e V6b mandam os 3 para a DLQ; a V5b cancela os 3.
 
 ### Leitura dos resultados
 
-- **Cada técnica fecha a falha que ataca:** a V3 elimina a duplicação (0 contra 2 a 4 por repetição), a V4 elimina a perda entre gravar e publicar (0 contra 2,7 da V3), e a V5 isola a mensagem envenenada na DLQ em vez de perdê-la.
-- **A V3 troca duplicação por perda**, e a V4 corrige isso. É o resultado que a Fase 5 deixava como limitação não reproduzida.
-- **A V2 parece igual à V1** no mapa: ela protege a escrita no broker (provado no teste da Fase 4, 2 registros contra 3), não o consumidor. A diferença de 12% contra 17% entre V1 e V2 é ruído (quantas mensagens estavam em voo na queda), não piora.
-- **A V6 literal perde pedidos**, pela razão explicada na Fase 8.
-- **A V0 nunca duplica nem perde**, porque tudo é uma transação só, mas rejeita pedidos quando cai: a consistência se paga em disponibilidade.
-- **Retry com poucas tentativas tem custo:** com falhas passageiras altas, a V5 (4 tentativas) manda mais pedidos para a DLQ que o tratamento padrão das V1 a V4 (10 tentativas). A DLQ preserva a mensagem, mas o pedido continua sem concluir; na leitura estrita (`1b_mapa_de_calor_estrito.png`) a V5 aparece com 9% nesse cenário.
+- **Cada técnica fecha a falha que ataca:** a V3 elimina a duplicação (0 contra 3 a 4 por repetição nas V1 e V2), a V4 elimina a perda entre gravar e publicar (0 contra 2,6 da V3), e a V5 isola a mensagem envenenada na DLQ em vez de perdê-la.
+- **A V3 troca duplicação por perda** (ela descarta a reentrega, mas o evento não foi publicado), e a V4 corrige isso com a outbox.
+- **A V2 parece igual à V1:** ela protege a escrita no broker (provado no teste da Fase 4), não o consumidor.
+- **A V6 literal perde pedidos** nas quedas do pagamento, na queda do broker e na partição de rede (0,8 a 3,0 por repetição), pela razão da Fase 8: sem a outbox, o banco fica fora da transação do Kafka. A **V6b**, que mantém a outbox, não perdeu nenhum pedido sem registro em nenhum cenário (os que não concluem estão na DLQ, como na V5). A V6b é, portanto, a forma correta de somar transações Kafka às proteções anteriores.
+- **A V4 não é "melhor" que a V5:** o mapa estrito mostra a V5 pior na falha passageira (7,5% contra 0%), mas a curva de retentativas mostra que isso vem das 4 tentativas da V5 contra 10 do padrão das V1 a V4. Com 9 retentativas a V5 iguala as V1 a V4, e só ela isola o pedido envenenado (a V4 o perde sem registro).
+- **A V5b dá estado final ao pedido,** mas não aumenta os pedidos concluídos: o ganho é a visibilidade.
+- **A V0 nunca duplica nem perde,** porque tudo é uma transação só, mas rejeita pedidos quando cai (40% a 48% nas quedas de serviço): a consistência se paga em disponibilidade.
+- **Queda da porta de entrada:** a integridade é perfeita em todas as versões, e todas rejeitam cerca de metade dos pedidos durante a queda. Nas V4 a V6b o último pedido leva cerca de 45 s para concluir, contra 7 a 9 s nas V1 a V3. A explicação provável é que, com a outbox, o pedido aceito logo antes da queda fica gravado e só é publicado quando o `order-service` volta ao ar (a inicialização leva cerca de 40 s); nas V1 a V3 ele já tinha saído para o Kafka. Essa explicação não foi isolada em um teste à parte.
+- **Custo da proteção:** a latência com a outbox é maior. Na partição do banco, por exemplo, a mediana vai de 0,3 s (V1 a V3) para 1,1 a 1,9 s (V4 a V6b), e com latência de rede de 6 s para 8 a 9 s, por causa do intervalo de varredura da outbox.
 
 ### Limitações
 
-- **N pequeno.** Três repetições mostram o padrão (cada célula informa em quantas repetições a falha apareceu), mas não sustentam diferenças pequenas nem intervalos de confiança. Os cenários aleatórios (falha passageira) e a latência são os mais sensíveis. A matriz completa (n = 5, como o artigo declara) fica para a análise final.
+- **N = 5.** Mostra o padrão (cada célula informa em quantas repetições a falha apareceu), mas não sustenta diferenças pequenas nem intervalos de confiança. Os cenários aleatórios (falha passageira) e a latência são os mais sensíveis. Médias como "2,6 perdidos" são médias de 5 repetições.
 - **Janelas amplificadas.** Os ganchos de atraso existem porque o `docker kill` externo leva cerca de 0,9 s para chegar, e a janela natural é de milissegundos (0 de 5 na Fase 3). A bateria mede se a proteção **resiste à falha**, não **com que frequência** ela ocorre. A amplificação é igual em todas as versões.
-- **A métrica principal não conta a DLQ como problema** (a mensagem foi preservada). A figura estrita conta, e ambas estão nos resultados.
+- **A métrica principal não conta a DLQ como problema** (a mensagem foi preservada). A figura estrita conta, e ambas estão nos resultados. O mapa mede integridade, e a disponibilidade fica na figura 4.
 - **A V0 não é comparável em tudo:** a arquitetura é síncrona, os ganchos de falha vivem nos serviços Kafka, e a latência dela é o tempo de resposta, não o tempo até concluir. As duas linhas de queda são, para ela, o mesmo teste.
 - **Repetições não independentes.** Rodam no mesmo sistema, sem reiniciar entre elas. O aquecimento reduz o efeito da JVM "fria", mas não o elimina.
-- **A leitura estrita conta os cancelados** como não concluídos: cancelar dá estado final, mas o pedido não conclui com sucesso. O ganho da V5b é a visibilidade, não mais sucessos.
-- **Os cenários extras** (queda de broker, queda de banco, restart do consumidor, latência e partição de rede) foram validados em **uma** repetição, e não medidos. Observações preliminares: a queda do broker na V1 duplicou 13 de 30 pedidos, e a latência de 1,5 s e a partição de 15 s elevaram o p95 da V5 para ~11,6 s e ~28,9 s, sem perda.
+- **A leitura estrita conta os cancelados** como não concluídos: cancelar dá estado final, mas o pedido não conclui com sucesso.
 - **Máquina única e carga pequena** (2 a 5 pedidos por segundo): vale a comparação entre versões, não os valores absolutos.
 - O gerador de carga é um script Python (não k6), e a "auditoria" é feita por consultas ao banco, não por uma tabela de observação à parte.
+- **Perfil rápido:** o `--perfil rapido` (V1 a V5, 3 repetições, cerca de 1 h) continua disponível para checagens semanais; seus dados antigos ficam em `results/bateria/rapido-*`.

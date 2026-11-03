@@ -300,8 +300,9 @@ def curva_retry(resumo, saida):
         return                      # uma curva precisa de pelo menos dois pontos medidos
     cores = {"v5": COR_DUPLICADO, "v6": COR_PERDIDO}      # slots 1 e 2 da paleta
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11.5, 4.4))
-    for chave, ax, rotulo, formato in (("estrito", ax1, "% dos pedidos que foram para a DLQ", "{:.1f}%"),
+    for chave, ax, rotulo, formato in (("estrito", ax1, "% dos pedidos que não concluíram (DLQ ou perdidos)", "{:.1f}%"),
                                        ("lat_max", ax2, "latência máxima (s)", "{:.0f} s")):
+        finais, topo = [], 1e-9
         for v in vs:
             xs = [i for i, (c, _) in enumerate(pontos) if (c, v) in resumo and resumo[(c, v)][chave] is not None]
             ys = [resumo[(pontos[i][0], v)][chave] for i in xs]
@@ -309,8 +310,14 @@ def curva_retry(resumo, saida):
             ax.plot(xs, ys, color=cores[v], linewidth=2, linestyle="--" if v == "v6" else "-",
                     marker="s" if v == "v6" else "o", markersize=7, markeredgecolor=SUPERFICIE,
                     markeredgewidth=2, label=NOME_VERSAO[v].replace(chr(10), " "))
+            topo = max([topo] + ys)
             if xs:
-                ax.text(xs[-1] + 0.06, ys[-1], formato.format(ys[-1]), va="center", fontsize=8.5)
+                finais.append((xs[-1], ys[-1]))
+        # rótulos do último ponto: se as duas curvas terminam juntas, um vai abaixo e o outro acima
+        juntos = len(finais) == 2 and abs(finais[0][1] - finais[1][1]) < 0.06 * topo
+        for k, (x, y) in enumerate(finais):
+            ax.text(x + 0.06, y, formato.format(y), fontsize=8.5,
+                    va=("top" if k == 0 else "bottom") if juntos else "center")
         ax.set_xticks(range(len(pontos)), [rot for _, rot in pontos])
         ax.set_xlim(-0.3, len(pontos) - 0.4)
         ax.set_xlabel("retentativas do retry (escala não proporcional)", fontsize=9, color=TINTA_2)
@@ -319,7 +326,7 @@ def curva_retry(resumo, saida):
         ax.yaxis.grid(True, color=GRADE, linewidth=0.8)
         ax.set_axisbelow(True)
     ax1.legend(frameon=False, fontsize=9)
-    fig.suptitle("Retry: o que vai para a DLQ e o que custa, conforme o número de retentativas (falha de 50%)",
+    fig.suptitle("Retry: o que não conclui e o que custa, conforme o número de retentativas (falha de 50%)",
                  x=0.02, ha="left", fontsize=13, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.93))
     fig.savefig(saida / RETRY["arquivo"], dpi=160)
