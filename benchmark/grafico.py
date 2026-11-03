@@ -390,7 +390,7 @@ def main():
                       arquivo="1b_mapa_de_calor_estrito.png",
                       titulo="Pedidos que não concluíram com sucesso, contando a DLQ e os cancelados",
                       subtitulo="Duplicados, perdidos (inclusive os na DLQ) ou cancelados por falha técnica, em % dos pedidos. Quanto mais claro, melhor.",
-                      nota="Leitura mais dura que a figura 1: a DLQ guarda a mensagem e o cancelamento dá estado final, mas o pedido continua sem concluir.")
+                      nota="Leitura mais dura que a figura 1: a DLQ guarda a mensagem e o cancelamento dá estado final, mas o pedido continua sem concluir. O mapa mede integridade; a V0 rejeita pedidos na queda (figura 4).")
         detalhe(resumo, saida)
         barras_simples(resumo, saida, "lat_p50", "Custo: tempo para o pedido concluir (mediana e máximo)", "segundos",
                        "3_custo_latencia.png", "{:.1f} s", chave_max="lat_max")
