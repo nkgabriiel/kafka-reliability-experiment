@@ -3,3 +3,4 @@ inicio,etapa,resultado,duracao_min,linhas,invalidas,erros,pasta
 2026-11-01T04:12:03,geral-a,ok,57.1,38,0,0,results\verificacao\geral-a
 2026-11-01T05:09:11,geral-b,ok,38.0,31,0,0,results\verificacao\geral-b
 2026-11-01T05:47:09,geral-c,ok,29.7,21,0,0,results\verificacao\geral-c
+2026-11-02T01:58:06,matriz,ok,438.3,465,0,0,results\bateria\matriz-completa

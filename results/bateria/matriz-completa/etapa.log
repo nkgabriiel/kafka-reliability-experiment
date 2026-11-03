@@ -1,0 +1,568 @@
+[01:58:07] saída: C:\Users\pc\Desktop\kafka-reliability-experiment\results\bateria\matriz-completa
+[01:58:07] construindo imagens (uma vez; o código é o mesmo para todas as versões)
+[01:58:17] subindo kafka, postgres e toxiproxy
+[01:58:30] === v0 / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[01:59:13]     rep 1/5: concluidos=13/13 criacao_falhou=7 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[01:59:47]     rep 2/5: concluidos=10/10 criacao_falhou=10 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:00:22]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:00:55]     rep 4/5: concluidos=8/8 criacao_falhou=12 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.03s valida=sim sinal=
+[02:01:31]     rep 5/5: concluidos=13/13 criacao_falhou=7 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:01:31] === v0 / kill_publicacao: queda do pagamento entre o commit e a publicação
+[02:02:15]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:02:49]     rep 2/5: concluidos=10/10 criacao_falhou=10 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:03:24]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:03:58]     rep 4/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:04:33]     rep 5/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:04:33] === v0 / poison: não se aplica ao monólito (sem Kafka), pulando
+[02:04:33] === v0 / falha_transitoria: não se aplica ao monólito (sem Kafka), pulando
+[02:04:33] === v0 / queda_broker: não se aplica ao monólito (sem Kafka), pulando
+[02:04:33] === v0 / queda_banco: queda do PostgreSQL por 8 s
+[02:05:35]     rep 1/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:06:29]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:07:24]     rep 3/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.03s valida=sim sinal=
+[02:08:19]     rep 4/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.03s valida=sim sinal=
+[02:09:11]     rep 5/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.03s valida=sim sinal=
+[02:09:11] === v0 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[02:09:56]     rep 1/5: concluidos=16/16 criacao_falhou=14 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:10:34]     rep 2/5: concluidos=19/19 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:11:13]     rep 3/5: concluidos=20/20 criacao_falhou=10 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:11:51]     rep 4/5: concluidos=19/19 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:12:29]     rep 5/5: concluidos=16/16 criacao_falhou=14 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:12:29] === v0 / latencia_rede: não se aplica ao monólito (sem Kafka), pulando
+[02:12:29] === v0 / particao_rede: não se aplica ao monólito (sem Kafka), pulando
+[02:12:29] === v0 / particao_banco: não se aplica ao monólito (sem Kafka), pulando
+[02:12:29] === v0 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[02:13:14]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:13:50]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.05s valida=sim sinal=
+[02:14:28]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:15:04]     rep 4/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:15:42]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.04s valida=sim sinal=
+[02:15:42] === v1 / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[02:16:51]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=25.18s valida=sim sinal=3
+[02:17:27]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=18.27s valida=sim sinal=3
+[02:18:06]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=23.13s valida=sim sinal=3
+[02:18:41]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=18.99s valida=sim sinal=3
+[02:19:16]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=18.98s valida=sim sinal=3
+[02:19:16] === v1 / kill_publicacao: queda do pagamento entre o commit e a publicação
+[02:20:19]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=0 dlq=0 p95=24.11s valida=sim sinal=3
+[02:20:55]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=1 dlq=0 p95=19.04s valida=sim sinal=3
+[02:21:33]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=2 estoque_extra=0 dlq=0 p95=19.87s valida=sim sinal=2
+[02:22:09]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=0 dlq=0 p95=20.12s valida=sim sinal=3
+[02:22:48]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=0 dlq=0 p95=19.13s valida=sim sinal=3
+[02:22:48] === v1 / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[02:23:21]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.87s valida=sim sinal=10
+[02:23:35]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.11s valida=sim sinal=10
+[02:23:47]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.85s valida=sim sinal=10
+[02:24:00]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.77s valida=sim sinal=10
+[02:24:12]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.91s valida=sim sinal=10
+[02:24:12] === v1 / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[02:24:49]     rep 1/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.65s valida=sim sinal=15
+[02:25:06]     rep 2/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.6s valida=sim sinal=21
+[02:25:25]     rep 3/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.87s valida=sim sinal=19
+[02:25:41]     rep 4/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.59s valida=sim sinal=20
+[02:25:57]     rep 5/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.4s valida=sim sinal=16
+[02:25:57] === v1 / queda_broker: queda do broker Kafka por 8 s
+[02:27:18]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=6 estoque_extra=6 dlq=0 p95=27.02s valida=sim sinal=
+[02:28:17]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=3.31s valida=sim sinal=
+[02:29:16]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=26.66s valida=sim sinal=
+[02:30:17]     rep 4/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=1 estoque_extra=2 dlq=0 p95=6.57s valida=sim sinal=
+[02:31:18]     rep 5/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=5 estoque_extra=6 dlq=0 p95=6.62s valida=sim sinal=
+[02:31:18] === v1 / queda_banco: queda do PostgreSQL por 8 s
+[02:32:34]     rep 1/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.34s valida=sim sinal=
+[02:33:29]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=5.39s valida=sim sinal=
+[02:34:24]     rep 3/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.67s valida=sim sinal=
+[02:35:20]     rep 4/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.19s valida=sim sinal=
+[02:36:13]     rep 5/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.53s valida=sim sinal=
+[02:36:13] === v1 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[02:37:12]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.51s valida=sim sinal=
+[02:37:51]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.1s valida=sim sinal=
+[02:38:30]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.79s valida=sim sinal=
+[02:39:08]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.65s valida=sim sinal=
+[02:39:46]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.64s valida=sim sinal=
+[02:39:46] === v1 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[02:40:56]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.17s valida=sim sinal=
+[02:41:43]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.64s valida=sim sinal=
+[02:42:28]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.52s valida=sim sinal=
+[02:43:15]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.35s valida=sim sinal=
+[02:44:00]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.63s valida=sim sinal=
+[02:44:00] === v1 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[02:45:29]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=21.82s valida=sim sinal=
+[02:46:35]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=22.28s valida=sim sinal=
+[02:47:40]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=4 dlq=0 p95=21.58s valida=sim sinal=
+[02:48:46]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=2 estoque_extra=2 dlq=0 p95=22.35s valida=sim sinal=
+[02:49:50]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=21.09s valida=sim sinal=
+[02:49:50] === v1 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[02:51:06]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.04s valida=sim sinal=
+[02:51:59]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.97s valida=sim sinal=
+[02:52:52]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.93s valida=sim sinal=
+[02:53:46]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.84s valida=sim sinal=
+[02:54:40]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.91s valida=sim sinal=
+[02:54:40] === v1 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[02:55:39]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.43s valida=sim sinal=
+[02:56:32]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.21s valida=sim sinal=
+[02:57:24]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.51s valida=sim sinal=
+[02:58:18]     rep 4/5: concluidos=10/10 criacao_falhou=10 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.77s valida=sim sinal=
+[02:59:12]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.04s valida=sim sinal=
+[02:59:12] === v2 / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[03:00:20]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=2 estoque_extra=2 dlq=0 p95=22.11s valida=sim sinal=2
+[03:00:54]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=21.28s valida=sim sinal=3
+[03:01:29]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=19.09s valida=sim sinal=2
+[03:02:04]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=18.93s valida=sim sinal=3
+[03:02:42]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=21.91s valida=sim sinal=3
+[03:02:42] === v2 / kill_publicacao: queda do pagamento entre o commit e a publicação
+[03:03:41]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=0 dlq=0 p95=18.88s valida=sim sinal=3
+[03:04:21]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=0 dlq=0 p95=22.28s valida=sim sinal=3
+[03:05:16]     rep 3/5: concluidos=19/20 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=3 estoque_extra=1 dlq=0 p95=23.67s valida=sim sinal=2
+[03:05:56]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=0 dlq=0 p95=21.19s valida=sim sinal=3
+[03:06:37]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=0 dlq=0 p95=22.32s valida=sim sinal=3
+[03:06:37] === v2 / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[03:07:13]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.81s valida=sim sinal=10
+[03:07:27]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.35s valida=sim sinal=10
+[03:07:39]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.33s valida=sim sinal=10
+[03:07:52]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.75s valida=sim sinal=10
+[03:08:05]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.8s valida=sim sinal=10
+[03:08:05] === v2 / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[03:08:47]     rep 1/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.21s valida=sim sinal=18
+[03:09:03]     rep 2/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.21s valida=sim sinal=19
+[03:09:19]     rep 3/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.85s valida=sim sinal=20
+[03:09:36]     rep 4/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.67s valida=sim sinal=23
+[03:09:53]     rep 5/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.51s valida=sim sinal=22
+[03:09:53] === v2 / queda_broker: queda do broker Kafka por 8 s
+[03:11:17]     rep 1/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=6.78s valida=sim sinal=
+[03:12:16]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=4 estoque_extra=5 dlq=0 p95=6.81s valida=sim sinal=
+[03:13:16]     rep 3/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=8 estoque_extra=10 dlq=0 p95=6.55s valida=sim sinal=
+[03:14:17]     rep 4/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=1 dlq=0 p95=3.0s valida=sim sinal=
+[03:15:17]     rep 5/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=6 estoque_extra=6 dlq=0 p95=3.55s valida=sim sinal=
+[03:15:17] === v2 / queda_banco: queda do PostgreSQL por 8 s
+[03:16:37]     rep 1/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.41s valida=sim sinal=
+[03:17:32]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.56s valida=sim sinal=
+[03:18:27]     rep 3/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.54s valida=sim sinal=
+[03:19:23]     rep 4/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.53s valida=sim sinal=
+[03:20:16]     rep 5/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.51s valida=sim sinal=
+[03:20:16] === v2 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[03:21:18]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.54s valida=sim sinal=
+[03:21:56]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.33s valida=sim sinal=
+[03:22:36]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.67s valida=sim sinal=
+[03:23:14]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.07s valida=sim sinal=
+[03:23:52]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.37s valida=sim sinal=
+[03:23:52] === v2 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[03:25:06]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.09s valida=sim sinal=
+[03:25:53]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.0s valida=sim sinal=
+[03:26:39]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.04s valida=sim sinal=
+[03:27:26]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.04s valida=sim sinal=
+[03:28:11]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.46s valida=sim sinal=
+[03:28:11] === v2 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[03:29:42]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=21.39s valida=sim sinal=
+[03:30:48]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=25.16s valida=sim sinal=
+[03:31:54]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=22.94s valida=sim sinal=
+[03:33:01]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=4 estoque_extra=4 dlq=0 p95=21.91s valida=sim sinal=
+[03:34:05]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=3 estoque_extra=3 dlq=0 p95=21.89s valida=sim sinal=
+[03:34:05] === v2 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[03:35:24]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.91s valida=sim sinal=
+[03:36:17]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.85s valida=sim sinal=
+[03:37:10]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.08s valida=sim sinal=
+[03:38:05]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.82s valida=sim sinal=
+[03:38:58]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.85s valida=sim sinal=
+[03:38:58] === v2 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[03:40:00]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.11s valida=sim sinal=
+[03:40:54]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.51s valida=sim sinal=
+[03:41:47]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.83s valida=sim sinal=
+[03:42:38]     rep 4/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.61s valida=sim sinal=
+[03:43:29]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.18s valida=sim sinal=
+[03:43:29] === v3 / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[03:44:44]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=25.54s valida=sim sinal=1
+[03:45:20]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.04s valida=sim sinal=3
+[03:45:57]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.11s valida=sim sinal=3
+[03:46:33]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.94s valida=sim sinal=1
+[03:47:10]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.83s valida=sim sinal=3
+[03:47:10] === v3 / kill_publicacao: queda do pagamento entre o commit e a publicação
+[03:48:28]     rep 1/5: concluidos=18/20 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.77s valida=sim sinal=2
+[03:49:24]     rep 2/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.07s valida=sim sinal=3
+[03:50:19]     rep 3/5: concluidos=18/20 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.08s valida=sim sinal=2
+[03:51:12]     rep 4/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.61s valida=sim sinal=3
+[03:52:08]     rep 5/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.21s valida=sim sinal=3
+[03:52:08] === v3 / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[03:52:45]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.7s valida=sim sinal=10
+[03:52:58]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.2s valida=sim sinal=10
+[03:53:11]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.31s valida=sim sinal=10
+[03:53:23]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.31s valida=sim sinal=10
+[03:53:36]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.74s valida=sim sinal=10
+[03:53:36] === v3 / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[03:54:18]     rep 1/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.18s valida=sim sinal=19
+[03:54:34]     rep 2/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.29s valida=sim sinal=25
+[03:54:51]     rep 3/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.12s valida=sim sinal=20
+[03:55:09]     rep 4/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.22s valida=sim sinal=21
+[03:55:26]     rep 5/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=1.9s valida=sim sinal=23
+[03:55:26] === v3 / queda_broker: queda do broker Kafka por 8 s
+[03:56:50]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.55s valida=sim sinal=
+[03:57:49]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=4.52s valida=sim sinal=
+[03:58:48]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=26.8s valida=sim sinal=
+[03:59:49]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.7s valida=sim sinal=
+[04:00:50]     rep 5/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=4.34s valida=sim sinal=
+[04:00:50] === v3 / queda_banco: queda do PostgreSQL por 8 s
+[04:02:09]     rep 1/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.56s valida=sim sinal=
+[04:03:04]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=5.34s valida=sim sinal=
+[04:04:00]     rep 3/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.7s valida=sim sinal=
+[04:04:55]     rep 4/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.19s valida=sim sinal=
+[04:05:48]     rep 5/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.77s valida=sim sinal=
+[04:05:48] === v3 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[04:06:51]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.67s valida=sim sinal=
+[04:07:30]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.2s valida=sim sinal=
+[04:08:09]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.03s valida=sim sinal=
+[04:08:48]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.48s valida=sim sinal=
+[04:09:26]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.29s valida=sim sinal=
+[04:09:26] === v3 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[04:10:39]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.09s valida=sim sinal=
+[04:11:26]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.65s valida=sim sinal=
+[04:12:12]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.8s valida=sim sinal=
+[04:12:59]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.65s valida=sim sinal=
+[04:13:44]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=7.85s valida=sim sinal=
+[04:13:44] === v3 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[04:15:16]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.28s valida=sim sinal=
+[04:16:23]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.68s valida=sim sinal=
+[04:17:28]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.06s valida=sim sinal=
+[04:18:34]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.71s valida=sim sinal=
+[04:19:39]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.59s valida=sim sinal=
+[04:19:39] === v3 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[04:21:01]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.98s valida=sim sinal=
+[04:21:54]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.92s valida=sim sinal=
+[04:22:48]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.01s valida=sim sinal=
+[04:23:42]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.0s valida=sim sinal=
+[04:24:35]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.81s valida=sim sinal=
+[04:24:35] === v3 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[04:25:37]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.7s valida=sim sinal=
+[04:26:28]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.56s valida=sim sinal=
+[04:27:21]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.24s valida=sim sinal=
+[04:28:12]     rep 4/5: concluidos=10/10 criacao_falhou=10 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.75s valida=sim sinal=
+[04:29:04]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=0.51s valida=sim sinal=
+[04:29:04] === v4 / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[04:30:18]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=24.59s valida=sim sinal=3
+[04:30:57]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.21s valida=sim sinal=2
+[04:31:33]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=18.58s valida=sim sinal=3
+[04:32:11]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.51s valida=sim sinal=3
+[04:32:47]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.07s valida=sim sinal=3
+[04:32:47] === v4 / kill_publicacao: queda do pagamento entre o commit e a publicação
+[04:33:50]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.88s valida=sim sinal=4
+[04:34:27]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.15s valida=sim sinal=3
+[04:35:05]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.53s valida=sim sinal=4
+[04:35:42]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.75s valida=sim sinal=4
+[04:36:19]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.39s valida=sim sinal=4
+[04:36:19] === v4 / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[04:36:57]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.77s valida=sim sinal=10
+[04:37:12]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.28s valida=sim sinal=10
+[04:37:26]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.3s valida=sim sinal=10
+[04:37:41]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.18s valida=sim sinal=10
+[04:37:56]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.73s valida=sim sinal=10
+[04:37:56] === v4 / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[04:38:40]     rep 1/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.94s valida=sim sinal=21
+[04:38:58]     rep 2/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.88s valida=sim sinal=21
+[04:39:21]     rep 3/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.89s valida=sim sinal=23
+[04:39:39]     rep 4/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=2.81s valida=sim sinal=18
+[04:40:00]     rep 5/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.5s valida=sim sinal=16
+[04:40:00] === v4 / queda_broker: queda do broker Kafka por 8 s
+[04:41:25]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.74s valida=sim sinal=
+[04:42:25]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.34s valida=sim sinal=
+[04:43:24]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.81s valida=sim sinal=
+[04:44:26]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.2s valida=sim sinal=
+[04:45:28]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.96s valida=sim sinal=
+[04:45:28] === v4 / queda_banco: queda do PostgreSQL por 8 s
+[04:46:48]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.5s valida=sim sinal=
+[04:47:44]     rep 2/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.87s valida=sim sinal=
+[04:48:40]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.52s valida=sim sinal=
+[04:49:37]     rep 4/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.18s valida=sim sinal=
+[04:50:31]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.46s valida=sim sinal=
+[04:50:31] === v4 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[04:51:34]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.34s valida=sim sinal=
+[04:52:14]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.31s valida=sim sinal=
+[04:52:52]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.75s valida=sim sinal=
+[04:53:32]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.22s valida=sim sinal=
+[04:54:10]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.5s valida=sim sinal=
+[04:54:10] === v4 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[04:55:24]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.72s valida=sim sinal=
+[04:56:13]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.92s valida=sim sinal=
+[04:56:59]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.48s valida=sim sinal=
+[04:57:46]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.7s valida=sim sinal=
+[04:58:33]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.31s valida=sim sinal=
+[04:58:33] === v4 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[05:00:05]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.03s valida=sim sinal=
+[05:01:12]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.0s valida=sim sinal=
+[05:02:18]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=25.47s valida=sim sinal=
+[05:03:25]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.25s valida=sim sinal=
+[05:04:31]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.57s valida=sim sinal=
+[05:04:31] === v4 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[05:05:50]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.23s valida=sim sinal=
+[05:06:44]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.49s valida=sim sinal=
+[05:07:38]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.74s valida=sim sinal=
+[05:08:33]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.77s valida=sim sinal=
+[05:09:28]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.67s valida=sim sinal=
+[05:09:28] === v4 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[05:10:46]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.6s valida=sim sinal=
+[05:11:43]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.76s valida=sim sinal=
+[05:12:41]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=46.23s valida=sim sinal=
+[05:13:38]     rep 4/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=46.0s valida=sim sinal=
+[05:14:36]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.55s valida=sim sinal=
+[05:14:36] === v5 / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[05:15:39]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.14s valida=sim sinal=3
+[05:16:18]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=18.75s valida=sim sinal=3
+[05:17:00]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=18.26s valida=sim sinal=2
+[05:17:43]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.51s valida=sim sinal=3
+[05:18:26]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=18.73s valida=sim sinal=3
+[05:18:26] === v5 / kill_publicacao: queda do pagamento entre o commit e a publicação
+[05:19:28]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.41s valida=sim sinal=4
+[05:20:10]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.63s valida=sim sinal=4
+[05:20:51]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.94s valida=sim sinal=4
+[05:21:33]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.32s valida=sim sinal=3
+[05:22:14]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.58s valida=sim sinal=4
+[05:22:14] === v5 / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[05:23:03]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=4.81s valida=sim sinal=4
+[05:23:30]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=4.1s valida=sim sinal=4
+[05:23:58]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=5.25s valida=sim sinal=4
+[05:24:26]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=5.18s valida=sim sinal=4
+[05:24:53]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=3.96s valida=sim sinal=4
+[05:24:53] === v5 / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[05:26:32]     rep 1/5: concluidos=34/40 criacao_falhou=0 perdidos=6 cancelados=0 duplicados=0 estoque_extra=0 dlq=6 p95=14.81s valida=sim sinal=20
+[05:27:30]     rep 2/5: concluidos=35/40 criacao_falhou=0 perdidos=5 cancelados=0 duplicados=0 estoque_extra=0 dlq=5 p95=12.86s valida=sim sinal=22
+[05:28:47]     rep 3/5: concluidos=39/40 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=6.13s valida=sim sinal=20
+[05:29:46]     rep 4/5: concluidos=39/40 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=5.09s valida=sim sinal=17
+[05:30:44]     rep 5/5: concluidos=38/40 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=2 p95=10.07s valida=sim sinal=17
+[05:30:44] === v5 / queda_broker: queda do broker Kafka por 8 s
+[05:32:19]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=26.95s valida=sim sinal=
+[05:33:33]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.19s valida=sim sinal=
+[05:34:46]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.02s valida=sim sinal=
+[05:36:01]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.16s valida=sim sinal=
+[05:37:15]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.53s valida=sim sinal=
+[05:37:15] === v5 / queda_banco: queda do PostgreSQL por 8 s
+[05:38:44]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.45s valida=sim sinal=
+[05:39:53]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.61s valida=sim sinal=
+[05:41:02]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.97s valida=sim sinal=
+[05:42:10]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.88s valida=sim sinal=
+[05:43:17]     rep 5/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.39s valida=sim sinal=
+[05:43:17] === v5 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[05:44:29]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.35s valida=sim sinal=
+[05:45:21]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.9s valida=sim sinal=
+[05:46:13]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.44s valida=sim sinal=
+[05:47:06]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.79s valida=sim sinal=
+[05:47:57]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.68s valida=sim sinal=
+[05:47:57] === v5 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[05:49:21]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.85s valida=sim sinal=
+[05:50:22]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.83s valida=sim sinal=
+[05:51:20]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.62s valida=sim sinal=
+[05:52:21]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.83s valida=sim sinal=
+[05:53:20]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.71s valida=sim sinal=
+[05:53:20] === v5 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[05:55:02]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.61s valida=sim sinal=
+[05:56:22]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.88s valida=sim sinal=
+[05:57:41]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.06s valida=sim sinal=
+[05:58:59]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.13s valida=sim sinal=
+[06:00:16]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.14s valida=sim sinal=
+[06:00:16] === v5 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[06:01:46]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.72s valida=sim sinal=
+[06:02:53]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.78s valida=sim sinal=
+[06:04:00]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.18s valida=sim sinal=
+[06:05:07]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.68s valida=sim sinal=
+[06:06:14]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.76s valida=sim sinal=
+[06:06:14] === v5 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[06:07:46]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=46.03s valida=sim sinal=
+[06:08:56]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.76s valida=sim sinal=
+[06:10:06]     rep 3/5: concluidos=13/13 criacao_falhou=7 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.8s valida=sim sinal=
+[06:11:16]     rep 4/5: concluidos=10/10 criacao_falhou=10 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.84s valida=sim sinal=
+[06:12:27]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.91s valida=sim sinal=
+[06:12:27] === v5b / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[06:13:39]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.78s valida=sim sinal=3
+[06:14:28]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=18.14s valida=sim sinal=3
+[06:15:17]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.27s valida=sim sinal=3
+[06:16:06]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.14s valida=sim sinal=3
+[06:16:59]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.86s valida=sim sinal=3
+[06:16:59] === v5b / kill_publicacao: queda do pagamento entre o commit e a publicação
+[06:18:12]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.74s valida=sim sinal=4
+[06:19:02]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.76s valida=sim sinal=4
+[06:19:53]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.74s valida=sim sinal=4
+[06:20:44]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.13s valida=sim sinal=4
+[06:21:34]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.31s valida=sim sinal=3
+[06:21:34] === v5b / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[06:22:23]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=0 cancelados=1 duplicados=0 estoque_extra=0 dlq=1 p95=4.39s valida=sim sinal=4
+[06:22:51]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=0 cancelados=1 duplicados=0 estoque_extra=0 dlq=1 p95=4.15s valida=sim sinal=4
+[06:23:19]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=0 cancelados=1 duplicados=0 estoque_extra=0 dlq=1 p95=5.53s valida=sim sinal=4
+[06:23:47]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=0 cancelados=1 duplicados=0 estoque_extra=0 dlq=1 p95=4.08s valida=sim sinal=4
+[06:24:14]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=0 cancelados=1 duplicados=0 estoque_extra=0 dlq=1 p95=4.67s valida=sim sinal=4
+[06:24:14] === v5b / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[06:25:34]     rep 1/5: concluidos=37/40 criacao_falhou=0 perdidos=0 cancelados=3 duplicados=0 estoque_extra=0 dlq=3 p95=15.81s valida=sim sinal=24
+[06:26:32]     rep 2/5: concluidos=39/40 criacao_falhou=0 perdidos=0 cancelados=1 duplicados=0 estoque_extra=0 dlq=1 p95=6.3s valida=sim sinal=17
+[06:27:34]     rep 3/5: concluidos=39/40 criacao_falhou=0 perdidos=0 cancelados=1 duplicados=0 estoque_extra=0 dlq=1 p95=10.51s valida=sim sinal=19
+[06:28:33]     rep 4/5: concluidos=34/40 criacao_falhou=0 perdidos=0 cancelados=6 duplicados=0 estoque_extra=0 dlq=6 p95=14.96s valida=sim sinal=23
+[06:29:32]     rep 5/5: concluidos=34/40 criacao_falhou=0 perdidos=0 cancelados=6 duplicados=0 estoque_extra=0 dlq=6 p95=14.87s valida=sim sinal=22
+[06:29:32] === v5b / queda_broker: queda do broker Kafka por 8 s
+[06:31:07]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.58s valida=sim sinal=
+[06:32:19]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.23s valida=sim sinal=
+[06:33:33]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.17s valida=sim sinal=
+[06:34:48]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.97s valida=sim sinal=
+[06:36:02]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.95s valida=sim sinal=
+[06:36:02] === v5b / queda_banco: queda do PostgreSQL por 8 s
+[06:37:31]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.59s valida=sim sinal=
+[06:38:39]     rep 2/5: concluidos=28/28 criacao_falhou=2 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.92s valida=sim sinal=
+[06:39:48]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.07s valida=sim sinal=
+[06:40:57]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.98s valida=sim sinal=
+[06:42:04]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.87s valida=sim sinal=
+[06:42:04] === v5b / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[06:43:16]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.56s valida=sim sinal=
+[06:44:08]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.31s valida=sim sinal=
+[06:45:00]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.67s valida=sim sinal=
+[06:45:53]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.49s valida=sim sinal=
+[06:46:44]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.86s valida=sim sinal=
+[06:46:44] === v5b / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[06:48:07]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.62s valida=sim sinal=
+[06:49:08]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.71s valida=sim sinal=
+[06:50:07]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.26s valida=sim sinal=
+[06:51:07]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.75s valida=sim sinal=
+[06:52:06]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.52s valida=sim sinal=
+[06:52:06] === v5b / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[06:53:47]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.16s valida=sim sinal=
+[06:55:08]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.09s valida=sim sinal=
+[06:56:26]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.53s valida=sim sinal=
+[06:57:46]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.67s valida=sim sinal=
+[06:59:04]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=24.09s valida=sim sinal=
+[06:59:04] === v5b / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[07:00:33]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.32s valida=sim sinal=
+[07:01:41]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.84s valida=sim sinal=
+[07:02:48]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.02s valida=sim sinal=
+[07:03:56]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.35s valida=sim sinal=
+[07:05:03]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.73s valida=sim sinal=
+[07:05:03] === v5b / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[07:06:35]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.91s valida=sim sinal=
+[07:07:44]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.4s valida=sim sinal=
+[07:08:55]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.85s valida=sim sinal=
+[07:10:05]     rep 4/5: concluidos=10/10 criacao_falhou=10 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.73s valida=sim sinal=
+[07:11:15]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.58s valida=sim sinal=
+[07:11:15] === v6 / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[07:12:45]     rep 1/5: concluidos=18/20 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.25s valida=sim sinal=2
+[07:13:52]     rep 2/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.78s valida=sim sinal=3
+[07:14:58]     rep 3/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.7s valida=sim sinal=3
+[07:16:04]     rep 4/5: concluidos=18/20 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.51s valida=sim sinal=2
+[07:17:11]     rep 5/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=18.73s valida=sim sinal=2
+[07:17:11] === v6 / kill_publicacao: queda do pagamento entre o commit e a publicação
+[07:18:39]     rep 1/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=24.92s valida=sim sinal=3
+[07:19:48]     rep 2/5: concluidos=18/20 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.41s valida=sim sinal=1
+[07:20:56]     rep 3/5: concluidos=18/20 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=20.2s valida=sim sinal=2
+[07:22:02]     rep 4/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.22s valida=sim sinal=2
+[07:23:09]     rep 5/5: concluidos=17/20 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=18.82s valida=sim sinal=3
+[07:23:09] === v6 / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[07:23:57]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=5.22s valida=sim sinal=4
+[07:24:23]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=3.82s valida=sim sinal=4
+[07:24:50]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=4.41s valida=sim sinal=4
+[07:25:16]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=3.54s valida=sim sinal=4
+[07:25:42]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=2.52s valida=sim sinal=4
+[07:25:42] === v6 / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[07:27:02]     rep 1/5: concluidos=38/40 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=2 p95=6.43s valida=sim sinal=15
+[07:28:19]     rep 2/5: concluidos=37/40 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=3 p95=13.63s valida=sim sinal=22
+[07:29:20]     rep 3/5: concluidos=38/40 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=2 p95=9.34s valida=sim sinal=22
+[07:30:20]     rep 4/5: concluidos=39/40 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=8.17s valida=sim sinal=20
+[07:31:18]     rep 5/5: concluidos=37/40 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=3 p95=8.31s valida=sim sinal=20
+[07:31:18] === v6 / queda_broker: queda do broker Kafka por 8 s
+[07:33:20]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.9s valida=sim sinal=
+[07:34:32]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.8s valida=sim sinal=
+[07:36:12]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.2s valida=sim sinal=
+[07:37:51]     rep 4/5: concluidos=28/30 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.0s valida=sim sinal=
+[07:39:05]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.55s valida=sim sinal=
+[07:39:05] === v6 / queda_banco: queda do PostgreSQL por 8 s
+[07:40:35]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.76s valida=sim sinal=
+[07:41:43]     rep 2/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.92s valida=sim sinal=
+[07:42:52]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.6s valida=sim sinal=
+[07:44:00]     rep 4/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.52s valida=sim sinal=
+[07:45:06]     rep 5/5: concluidos=29/29 criacao_falhou=1 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.82s valida=sim sinal=
+[07:45:06] === v6 / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[07:46:18]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.21s valida=sim sinal=
+[07:47:10]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.12s valida=sim sinal=
+[07:48:02]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.58s valida=sim sinal=
+[07:48:54]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.53s valida=sim sinal=
+[07:49:45]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.42s valida=sim sinal=
+[07:49:45] === v6 / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[07:51:12]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.53s valida=sim sinal=
+[07:52:12]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.3s valida=sim sinal=
+[07:53:11]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.16s valida=sim sinal=
+[07:54:11]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.87s valida=sim sinal=
+[07:55:13]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.7s valida=sim sinal=
+[07:55:13] === v6 / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[07:57:26]     rep 1/5: concluidos=27/30 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=25.31s valida=sim sinal=
+[07:59:17]     rep 2/5: concluidos=27/30 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.52s valida=sim sinal=
+[08:01:09]     rep 3/5: concluidos=27/30 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.77s valida=sim sinal=
+[08:03:01]     rep 4/5: concluidos=27/30 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.36s valida=sim sinal=
+[08:04:51]     rep 5/5: concluidos=27/30 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.91s valida=sim sinal=
+[08:04:51] === v6 / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[08:06:20]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.0s valida=sim sinal=
+[08:07:27]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.08s valida=sim sinal=
+[08:08:33]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=8.99s valida=sim sinal=
+[08:09:40]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=3.82s valida=sim sinal=
+[08:10:47]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.04s valida=sim sinal=
+[08:10:47] === v6 / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[08:12:19]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.38s valida=sim sinal=
+[08:13:27]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.06s valida=sim sinal=
+[08:14:38]     rep 3/5: concluidos=13/13 criacao_falhou=7 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.48s valida=sim sinal=
+[08:15:47]     rep 4/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.1s valida=sim sinal=
+[08:16:56]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=44.9s valida=sim sinal=
+[08:16:56] === v6b / kill_ack: queda do pagamento na janela do ack (gravou, ainda não confirmou)
+[08:18:07]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.33s valida=sim sinal=3
+[08:18:58]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=19.11s valida=sim sinal=2
+[08:19:48]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.89s valida=sim sinal=3
+[08:20:35]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.36s valida=sim sinal=3
+[08:21:25]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.83s valida=sim sinal=3
+[08:21:25] === v6b / kill_publicacao: queda do pagamento entre o commit e a publicação
+[08:22:37]     rep 1/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.98s valida=sim sinal=4
+[08:23:27]     rep 2/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.45s valida=sim sinal=4
+[08:24:18]     rep 3/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.27s valida=sim sinal=5
+[08:25:08]     rep 4/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.71s valida=sim sinal=3
+[08:25:59]     rep 5/5: concluidos=20/20 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=13.7s valida=sim sinal=4
+[08:25:59] === v6b / poison: um pedido que falha sempre (poison message) no meio de pedidos normais
+[08:26:48]     rep 1/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=4.62s valida=sim sinal=4
+[08:27:15]     rep 2/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=3.48s valida=sim sinal=4
+[08:27:42]     rep 3/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=5.19s valida=sim sinal=4
+[08:28:10]     rep 4/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=4.03s valida=sim sinal=4
+[08:28:38]     rep 5/5: concluidos=29/30 criacao_falhou=0 perdidos=1 cancelados=0 duplicados=0 estoque_extra=0 dlq=1 p95=1.93s valida=sim sinal=4
+[08:28:38] === v6b / falha_transitoria: 50% das chamadas do pagamento falham de forma aleatória
+[08:29:59]     rep 1/5: concluidos=38/40 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=2 p95=15.26s valida=sim sinal=17
+[08:30:56]     rep 2/5: concluidos=40/40 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.56s valida=sim sinal=19
+[08:31:56]     rep 3/5: concluidos=38/40 criacao_falhou=0 perdidos=2 cancelados=0 duplicados=0 estoque_extra=0 dlq=2 p95=10.53s valida=sim sinal=16
+[08:33:13]     rep 4/5: concluidos=36/40 criacao_falhou=0 perdidos=4 cancelados=0 duplicados=0 estoque_extra=0 dlq=4 p95=8.69s valida=sim sinal=18
+[08:34:12]     rep 5/5: concluidos=37/40 criacao_falhou=0 perdidos=3 cancelados=0 duplicados=0 estoque_extra=0 dlq=3 p95=8.84s valida=sim sinal=21
+[08:34:12] === v6b / queda_broker: queda do broker Kafka por 8 s
+[08:35:48]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.88s valida=sim sinal=
+[08:37:01]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=27.44s valida=sim sinal=
+[08:38:15]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.65s valida=sim sinal=
+[08:39:30]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.21s valida=sim sinal=
+[08:40:45]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=28.85s valida=sim sinal=
+[08:40:45] === v6b / queda_banco: queda do PostgreSQL por 8 s
+[08:42:14]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.89s valida=sim sinal=
+[08:43:23]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=16.22s valida=sim sinal=
+[08:44:36]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=14.63s valida=sim sinal=
+[08:45:49]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.22s valida=sim sinal=
+[08:46:56]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=15.19s valida=sim sinal=
+[08:46:56] === v6b / restart_consumer: restart do consumer de pagamento no meio da carga (rebalanceamento)
+[08:48:09]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.77s valida=sim sinal=
+[08:49:01]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.08s valida=sim sinal=
+[08:49:54]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.13s valida=sim sinal=
+[08:50:46]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.15s valida=sim sinal=
+[08:51:37]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=11.88s valida=sim sinal=
+[08:51:37] === v6b / latencia_rede: latência de 1,5 s na rede entre os serviços e o Kafka, por 12 s
+[08:53:01]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.68s valida=sim sinal=
+[08:54:02]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.32s valida=sim sinal=
+[08:55:02]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.5s valida=sim sinal=
+[08:56:02]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.8s valida=sim sinal=
+[08:57:01]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=12.75s valida=sim sinal=
+[08:57:01] === v6b / particao_rede: partição de rede entre os serviços e o Kafka por 15 s
+[08:58:43]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=22.22s valida=sim sinal=
+[09:00:02]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=21.63s valida=sim sinal=
+[09:01:21]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.39s valida=sim sinal=
+[09:02:41]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=23.56s valida=sim sinal=
+[09:03:59]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=25.29s valida=sim sinal=
+[09:03:59] === v6b / particao_banco: partição de rede entre os serviços e o PostgreSQL por 8 s
+[09:05:29]     rep 1/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.98s valida=sim sinal=
+[09:06:36]     rep 2/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.3s valida=sim sinal=
+[09:07:43]     rep 3/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.77s valida=sim sinal=
+[09:08:51]     rep 4/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=10.08s valida=sim sinal=
+[09:09:58]     rep 5/5: concluidos=30/30 criacao_falhou=0 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=9.4s valida=sim sinal=
+[09:09:58] === v6b / queda_pedidos: queda do order-service (a porta de entrada) no meio da carga
+[09:11:30]     rep 1/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.85s valida=sim sinal=
+[09:12:40]     rep 2/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.72s valida=sim sinal=
+[09:13:51]     rep 3/5: concluidos=12/12 criacao_falhou=8 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.86s valida=sim sinal=
+[09:15:00]     rep 4/5: concluidos=9/9 criacao_falhou=11 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.29s valida=sim sinal=
+[09:16:11]     rep 5/5: concluidos=11/11 criacao_falhou=9 perdidos=0 cancelados=0 duplicados=0 estoque_extra=0 dlq=0 p95=45.54s valida=sim sinal=
+[09:16:14] concluído: C:\Users\pc\Desktop\kafka-reliability-experiment\results\bateria\matriz-completa\bateria.csv
